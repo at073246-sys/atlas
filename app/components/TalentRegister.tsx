@@ -2,8 +2,9 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { Upload, CheckCircle, ArrowRight } from 'lucide-react'
+import { supabase } from '../lib/supabase'
 
-const FORMSPREE_URL = 'https://formspree.io/f/mqewwolv'
+const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY || ''
 const WHATSAPP_NUMBER = '917550124573'
 
 const categories = [
@@ -85,22 +86,41 @@ export default function TalentRegister() {
     if (!validateStep3()) return
     setLoading(true)
     try {
-      await fetch(FORMSPREE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'TALENT REGISTRATION',
-          name: form.name,
-          email: form.email,
-          phone: form.phone,
-          category: form.category,
-          experience: form.experience,
-          bio: form.bio,
-          portfolio: form.portfolio,
-          certification: form.certification,
-          rate: form.rate,
-        }),
+      // 1. Save to Supabase
+      const { error: dbError } = await supabase.from('talents').insert({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        category: form.category,
+        experience: form.experience,
+        bio: form.bio,
+        portfolio: form.portfolio,
+        certification: form.certification,
+        rate: form.rate,
       })
+      if (dbError) console.error('Supabase Error:', dbError)
+
+      // 2. Send Email via Web3Forms
+      if (WEB3FORMS_KEY) {
+        await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            access_key: WEB3FORMS_KEY,
+            subject: '🌟 New Talent Registration on ATLAS',
+            from_name: 'ATLAS Talent Portal',
+            name: form.name,
+            email: form.email,
+            phone: form.phone,
+            category: form.category,
+            experience: form.experience,
+            bio: form.bio,
+            portfolio: form.portfolio,
+            certification: form.certification,
+            rate: form.rate,
+          }),
+        })
+      }
 
       const msg =
         `🌟 *New Talent Registration on ATLAS!*%0A%0A` +

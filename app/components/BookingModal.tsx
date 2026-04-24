@@ -2,8 +2,9 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Copy, Check, Smartphone, CreditCard, Building2 } from 'lucide-react'
 import { useState } from 'react'
+import { supabase } from '../lib/supabase'
 
-const FORMSPREE_URL = 'https://formspree.io/f/mqewwolv'
+const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY || ''
 const WHATSAPP_NUMBER = '917550124573'
 const UPI_ID = '7550124573@fam'
 
@@ -73,21 +74,39 @@ export default function BookingModal({ service, onClose }: Props) {
     setPayError('')
     setLoading(true)
     try {
-      await fetch(FORMSPREE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: '✅ NEW BOOKING — PAYMENT RECEIVED',
-          client_name: name,
-          client_phone: phone,
-          client_email: email,
-          service_name: service.title,
-          duration: durations[selectedDuration].label,
-          amount: `₹${finalPrice}`,
-          payment_method: paymentMethod,
-          transaction_id: transactionId,
-        }),
+      // 1. Save to Supabase
+      const { error: dbError } = await supabase.from('bookings').insert({
+        client_name: name,
+        client_phone: phone,
+        client_email: email,
+        service_name: service.title,
+        duration: durations[selectedDuration].label,
+        amount: `₹${finalPrice}`,
+        payment_method: paymentMethod,
+        transaction_id: transactionId,
       })
+      if (dbError) console.error('Supabase Error:', dbError)
+
+      // 2. Send Email via Web3Forms
+      if (WEB3FORMS_KEY) {
+        await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            access_key: WEB3FORMS_KEY,
+            subject: '✅ NEW BOOKING — PAYMENT RECEIVED',
+            from_name: 'ATLAS Booking System',
+            client_name: name,
+            client_phone: phone,
+            client_email: email,
+            service_name: service.title,
+            duration: durations[selectedDuration].label,
+            amount: `₹${finalPrice}`,
+            payment_method: paymentMethod,
+            transaction_id: transactionId,
+          }),
+        })
+      }
 
       const msg =
         `✅ *Payment Received — New Booking!*%0A%0A` +
