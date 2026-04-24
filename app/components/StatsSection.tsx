@@ -20,7 +20,7 @@ export default function StatsSection() {
         style={{ opacity: 0.18 }}
       >
         <img
-          src="/music.jpg"
+          src="/music.jpg.jpeg"
           alt=""
           className="w-full h-full object-cover rounded-full"
           style={{

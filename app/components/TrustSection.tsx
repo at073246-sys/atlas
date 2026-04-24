@@ -62,7 +62,7 @@ export default function TrustSection() {
         style={{ opacity: 0.15 }}
       >
         <img
-          src="/king.jpg"
+          src="/king.jpg.jpeg"
           alt=""
           className="w-full h-full object-cover rounded-full"
           style={{

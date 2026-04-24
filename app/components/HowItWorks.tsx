@@ -35,7 +35,7 @@ export default function HowItWorks() {
         style={{ opacity: 0.12 }}
       >
         <img
-          src="/watch.jpg"
+          src="/watch.jpg.jpeg"
           alt=""
           className="w-full h-full object-cover rounded-full"
           style={{

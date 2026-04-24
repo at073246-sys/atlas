@@ -164,7 +164,7 @@ export default function TalentRegister() {
         style={{ opacity: 0.15 }}
       >
         <img
-          src="/brain.jpg"
+          src="/brain.jpg.jpeg"
           alt=""
           className="w-full h-full object-contain"
           style={{
