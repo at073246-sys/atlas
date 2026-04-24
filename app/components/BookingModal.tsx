@@ -1,10 +1,12 @@
 'use client'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, CreditCard, Smartphone, Building2 } from 'lucide-react'
+import { X, CreditCard, Smartphone, Building2, Copy, Check } from 'lucide-react'
 import { useState } from 'react'
+import Image from 'next/image'
 
 const FORMSPREE_URL = 'https://formspree.io/f/mqewwolv'
 const WHATSAPP_NUMBER = '917550124573'
+const UPI_ID = '7550124573@fam'
 
 const durations = [
   { label: '1 Day', multiplier: 1 },
@@ -13,7 +15,8 @@ const durations = [
 ]
 
 const paymentMethods = [
-  { id: 'upi', label: 'UPI / GPay / PhonePe', icon: <Smartphone className="w-5 h-5" /> },
+  { id: 'upi_qr', label: 'UPI QR Code', icon: <Smartphone className="w-5 h-5" /> },
+  { id: 'upi_id', label: 'UPI ID / GPay / PhonePe', icon: <Smartphone className="w-5 h-5" /> },
   { id: 'card', label: 'Credit / Debit Card', icon: <CreditCard className="w-5 h-5" /> },
   { id: 'bank', label: 'Net Banking', icon: <Building2 className="w-5 h-5" /> },
 ]
@@ -25,24 +28,29 @@ interface Props {
 
 export default function BookingModal({ service, onClose }: Props) {
   const [selectedDuration, setSelectedDuration] = useState(0)
-  const [selectedPayment, setSelectedPayment] = useState('upi')
+  const [selectedPayment, setSelectedPayment] = useState('upi_qr')
   const [step, setStep] = useState(1)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [booked, setBooked] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   const basePrice = service.pricing[0]?.price || '₹99'
   const numericPrice = parseInt(basePrice.replace(/[^\d]/g, '')) || 99
   const finalPrice = numericPrice * durations[selectedDuration].multiplier
 
+  const copyUPI = () => {
+    navigator.clipboard.writeText(UPI_ID)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   const handleBook = async () => {
     if (!name || !phone || !email) return
     setLoading(true)
-
     try {
-      // Send to Formspree (Email notification)
       await fetch(FORMSPREE_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -58,7 +66,6 @@ export default function BookingModal({ service, onClose }: Props) {
         }),
       })
 
-      // Send WhatsApp notification
       const msg = `🔔 *New Booking on ATLAS!*%0A%0A` +
         `👤 *Name:* ${name}%0A` +
         `📱 *Phone:* ${phone}%0A` +
@@ -70,7 +77,6 @@ export default function BookingModal({ service, onClose }: Props) {
         `_ATLAS — Your World, Our Promise._`
 
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
-
       setBooked(true)
     } catch (err) {
       console.error(err)
@@ -85,7 +91,7 @@ export default function BookingModal({ service, onClose }: Props) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center px-4"
+        className="fixed inset-0 z-50 flex items-center justify-center px-4 overflow-y-auto py-8"
         style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}
         onClick={onClose}
       >
@@ -119,7 +125,7 @@ export default function BookingModal({ service, onClose }: Props) {
             </div>
           ) : (
             <>
-              <div className="mb-8">
+              <div className="mb-6">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="h-px w-8 bg-[#C9A84C]/50" />
                   <span className="text-xs tracking-[0.4em] text-[#C9A84C] uppercase">Book Service</span>
@@ -129,12 +135,13 @@ export default function BookingModal({ service, onClose }: Props) {
 
               {step === 1 && (
                 <>
+                  {/* Duration */}
                   <div className="mb-6">
-                    <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-4">Select Duration</p>
+                    <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-3">Select Duration</p>
                     <div className="grid grid-cols-3 gap-3">
                       {durations.map((d, i) => (
                         <button key={d.label} onClick={() => setSelectedDuration(i)}
-                          className={`p-4 border rounded-xl text-center transition-all duration-300
+                          className={`p-3 border rounded-xl text-center transition-all duration-300
                             ${selectedDuration === i ? 'border-[#C9A84C] bg-[#C9A84C]/10' : 'border-[#C9A84C]/20 hover:border-[#C9A84C]/50'}`}>
                           <div className="text-sm font-bold text-white mb-1">{d.label}</div>
                           <div className="text-xs text-[#C9A84C]">₹{numericPrice * d.multiplier}</div>
@@ -143,12 +150,13 @@ export default function BookingModal({ service, onClose }: Props) {
                     </div>
                   </div>
 
-                  <div className="mb-6">
-                    <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-4">Payment Method</p>
-                    <div className="space-y-3">
+                  {/* Payment Method */}
+                  <div className="mb-4">
+                    <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-3">Payment Method</p>
+                    <div className="space-y-2">
                       {paymentMethods.map((method) => (
                         <button key={method.id} onClick={() => setSelectedPayment(method.id)}
-                          className={`w-full flex items-center gap-4 p-4 border rounded-xl transition-all duration-300
+                          className={`w-full flex items-center gap-4 p-3 border rounded-xl transition-all duration-300
                             ${selectedPayment === method.id ? 'border-[#C9A84C] bg-[#C9A84C]/10' : 'border-[#C9A84C]/20 hover:border-[#C9A84C]/50'}`}>
                           <span className="text-[#C9A84C]">{method.icon}</span>
                           <span className="text-sm text-white">{method.label}</span>
@@ -158,7 +166,34 @@ export default function BookingModal({ service, onClose }: Props) {
                     </div>
                   </div>
 
-                  <div className="flex justify-between items-center mb-6 p-4 border border-[#C9A84C]/20 rounded-xl">
+                  {/* QR Code */}
+                  {selectedPayment === 'upi_qr' && (
+                    <div className="mb-4 p-4 border border-[#C9A84C]/20 rounded-xl text-center">
+                      <p className="text-xs text-[#C9A84C] tracking-widest uppercase mb-3">Scan & Pay</p>
+                      <div className="flex justify-center mb-3">
+                        <Image src="/qr.jpg" alt="UPI QR Code" width={180} height={180} className="rounded-xl" />
+                      </div>
+                      <p className="text-xs text-[#E5E4E2]/50">Ayan Thakur · {UPI_ID}</p>
+                      <p className="text-lg font-bold text-[#C9A84C] mt-1">₹{finalPrice}</p>
+                    </div>
+                  )}
+
+                  {/* UPI ID Copy */}
+                  {selectedPayment === 'upi_id' && (
+                    <div className="mb-4 p-4 border border-[#C9A84C]/20 rounded-xl">
+                      <p className="text-xs text-[#C9A84C] tracking-widest uppercase mb-3">UPI ID</p>
+                      <div className="flex items-center justify-between bg-[#0A0A0A] px-4 py-3 rounded-xl">
+                        <span className="text-white font-bold">{UPI_ID}</span>
+                        <button onClick={copyUPI} className="text-[#C9A84C] hover:scale-110 transition-transform">
+                          {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                        </button>
+                      </div>
+                      <p className="text-xs text-[#E5E4E2]/40 mt-2">Amount: <span className="text-[#C9A84C] font-bold">₹{finalPrice}</span></p>
+                    </div>
+                  )}
+
+                  {/* Total */}
+                  <div className="flex justify-between items-center mb-4 p-3 border border-[#C9A84C]/20 rounded-xl">
                     <span className="text-[#E5E4E2]/60 text-sm">Total Amount</span>
                     <span className="text-2xl font-playfair font-black bg-gradient-to-r from-[#C9A84C] to-[#F0D080] bg-clip-text text-transparent">
                       ₹{finalPrice}
@@ -174,7 +209,7 @@ export default function BookingModal({ service, onClose }: Props) {
 
               {step === 2 && (
                 <>
-                  <div className="space-y-4 mb-8">
+                  <div className="space-y-4 mb-6">
                     <div>
                       <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Your Name</p>
                       <input type="text" value={name} onChange={(e) => setName(e.target.value)}
