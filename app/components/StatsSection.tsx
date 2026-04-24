@@ -16,8 +16,7 @@ export default function StatsSection() {
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
-        className="absolute -right-40 top-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none z-0"
-        style={{ opacity: 0.18 }}
+        className="absolute -right-40 md:right-[-10rem] top-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[600px] md:h-[600px] pointer-events-none z-0 opacity-10 md:opacity-18"
       >
         <img
           src="/music.jpg.jpeg"

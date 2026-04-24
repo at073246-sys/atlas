@@ -31,11 +31,15 @@ function SuperPremiumGlobe() {
     }
   })
 
+  const scale = typeof window !== 'undefined' && window.innerWidth < 768 ? 1.8 : 2.5
+  const auraScale = typeof window !== 'undefined' && window.innerWidth < 768 ? 2.0 : 2.7
+  const glowScale = typeof window !== 'undefined' && window.innerWidth < 768 ? 2.3 : 2.8
+
   return (
     <group>
-      {/* 1. Core Globe - standard blending so texture is clearly visible */}
+      {/* 1. Core Globe */}
       <mesh ref={meshRef}>
-        <sphereGeometry args={[2.5, 64, 64]} />
+        <sphereGeometry args={[scale, 64, 64]} />
         <meshStandardMaterial
           map={texture}
           emissiveMap={texture}
@@ -46,9 +50,9 @@ function SuperPremiumGlobe() {
         />
       </mesh>
 
-      {/* 2. Outer glow shell - additive so it adds golden glow without obscuring */}
+      {/* 2. Outer glow shell */}
       <mesh ref={auraRef}>
-        <sphereGeometry args={[2.7, 32, 32]} />
+        <sphereGeometry args={[auraScale, 32, 32]} />
         <meshBasicMaterial
           color="#C9A84C"
           transparent
@@ -59,9 +63,9 @@ function SuperPremiumGlobe() {
         />
       </mesh>
 
-      {/* 3. Network wireframe overlay - rotates slightly faster for depth effect */}
+      {/* 3. Network wireframe overlay */}
       <mesh ref={networkRef}>
-        <sphereGeometry args={[2.52, 24, 24]} />
+        <sphereGeometry args={[scale + 0.02, 24, 24]} />
         <meshBasicMaterial
           color="#C9A84C"
           wireframe

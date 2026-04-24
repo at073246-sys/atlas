@@ -31,8 +31,7 @@ export default function HowItWorks() {
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
-        className="absolute -left-48 top-1/2 -translate-y-1/2 w-[550px] h-[550px] pointer-events-none z-0"
-        style={{ opacity: 0.12 }}
+        className="absolute -left-40 md:-left-48 top-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[550px] md:h-[550px] pointer-events-none z-0 opacity-10 md:opacity-12"
       >
         <img
           src="/watch.jpg.jpeg"

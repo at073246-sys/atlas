@@ -160,8 +160,7 @@ export default function TalentRegister() {
           repeat: Infinity, 
           ease: 'easeInOut' 
         }}
-        className="absolute -left-20 top-1/4 w-[450px] h-[450px] pointer-events-none z-0"
-        style={{ opacity: 0.15 }}
+        className="absolute -left-10 md:-left-20 top-1/4 w-[250px] h-[250px] md:w-[450px] md:h-[450px] pointer-events-none z-0 opacity-10 md:opacity-15"
       >
         <img
           src="/brain.jpg.jpeg"
