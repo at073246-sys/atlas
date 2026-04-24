@@ -13,10 +13,14 @@ const categories = [
   'Security Expert', 'Financial Advisor'
 ]
 
+const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+const validatePhone = (phone: string) => /^[6-9]\d{9}$/.test(phone.replace(/\s+/g, ''))
+
 export default function TalentRegister() {
   const [step, setStep] = useState(1)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const [form, setForm] = useState({
     name: '', email: '', phone: '', category: '',
     experience: '', bio: '', portfolio: '', certification: '', rate: '',
@@ -24,12 +28,63 @@ export default function TalentRegister() {
 
   const update = (key: string, value: string) => {
     setForm(prev => ({ ...prev, [key]: value }))
+    setErrors(prev => ({ ...prev, [key]: '' }))
+  }
+
+  const validateStep1 = () => {
+    const newErrors: { [key: string]: string } = {}
+    if (!form.name.trim() || form.name.trim().length < 2) {
+      newErrors.name = '⚠️ Valid naam daalo (min 2 characters)'
+    }
+    if (!validateEmail(form.email)) {
+      newErrors.email = '⚠️ Valid email daalo (e.g. name@gmail.com)'
+    }
+    if (!validatePhone(form.phone)) {
+      newErrors.phone = '⚠️ Valid 10 digit Indian mobile number daalo'
+    }
+    if (!form.category) {
+      newErrors.category = '⚠️ Category select karo'
+    }
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const validateStep2 = () => {
+    const newErrors: { [key: string]: string } = {}
+    if (!form.experience.trim()) {
+      newErrors.experience = '⚠️ Experience daalo'
+    }
+    if (!form.bio.trim() || form.bio.trim().length < 20) {
+      newErrors.bio = '⚠️ Bio thoda detail mein likho (min 20 characters)'
+    }
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const validateStep3 = () => {
+    const newErrors: { [key: string]: string } = {}
+    if (!form.certification.trim()) {
+      newErrors.certification = '⚠️ Certification daalo'
+    }
+    if (!form.rate.trim()) {
+      newErrors.rate = '⚠️ Expected rate daalo'
+    }
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleNext1 = () => {
+    if (validateStep1()) setStep(2)
+  }
+
+  const handleNext2 = () => {
+    if (validateStep2()) setStep(3)
   }
 
   const handleSubmit = async () => {
+    if (!validateStep3()) return
     setLoading(true)
     try {
-      // Email notification
       await fetch(FORMSPREE_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -47,19 +102,18 @@ export default function TalentRegister() {
         }),
       })
 
-      // WhatsApp notification
-      const msg = `🌟 *New Talent Registration on ATLAS!*%0A%0A` +
+      const msg =
+        `🌟 *New Talent Registration on ATLAS!*%0A%0A` +
         `👤 *Name:* ${form.name}%0A` +
         `📱 *Phone:* ${form.phone}%0A` +
         `📧 *Email:* ${form.email}%0A` +
         `🎯 *Category:* ${form.category}%0A` +
         `⏳ *Experience:* ${form.experience}%0A` +
         `💰 *Expected Rate:* ${form.rate}/day%0A` +
-        `🔗 *Portfolio:* ${form.portfolio}%0A%0A` +
+        `🔗 *Portfolio:* ${form.portfolio || 'Not provided'}%0A%0A` +
         `_ATLAS — Your World, Our Promise._`
 
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
-
       setSubmitted(true)
     } catch (err) {
       console.error(err)
@@ -68,7 +122,9 @@ export default function TalentRegister() {
     }
   }
 
-  const inputClass = "w-full bg-[#0A0A0A] border border-[#C9A84C]/20 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm"
+  const inputClass = (field: string) =>
+    `w-full bg-[#0A0A0A] border ${errors[field] ? 'border-red-500/50' : 'border-[#C9A84C]/20'} rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm`
+
   const labelClass = "text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2 block"
 
   return (
@@ -145,11 +201,14 @@ export default function TalentRegister() {
               </div>
             ) : (
               <>
+                {/* Step indicator */}
                 <div className="flex items-center justify-center gap-3 mb-10">
                   {[1, 2, 3].map((s) => (
                     <div key={s} className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300
-                        ${step >= s ? 'bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A]' : 'border border-[#C9A84C]/30 text-[#C9A84C]/50'}`}>
+                        ${step >= s
+                          ? 'bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A]'
+                          : 'border border-[#C9A84C]/30 text-[#C9A84C]/50'}`}>
                         {s}
                       </div>
                       {s < 3 && <div className={`w-12 h-px transition-all duration-300 ${step > s ? 'bg-[#C9A84C]' : 'bg-[#C9A84C]/20'}`} />}
@@ -157,106 +216,137 @@ export default function TalentRegister() {
                   ))}
                 </div>
 
+                {/* STEP 1 */}
                 {step === 1 && (
                   <div className="space-y-5">
                     <h3 className="text-xl font-playfair font-bold text-white mb-6">Basic Information</h3>
+
                     <div>
                       <label className={labelClass}>Full Name</label>
-                      <input type="text" className={inputClass} placeholder="Your full name"
+                      <input type="text" className={inputClass('name')}
+                        placeholder="Your full name"
                         value={form.name} onChange={(e) => update('name', e.target.value)} />
+                      {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
                     </div>
+
                     <div>
                       <label className={labelClass}>Email Address</label>
-                      <input type="email" className={inputClass} placeholder="your@email.com"
+                      <input type="email" className={inputClass('email')}
+                        placeholder="your@email.com"
                         value={form.email} onChange={(e) => update('email', e.target.value)} />
+                      {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
                     </div>
+
                     <div>
                       <label className={labelClass}>Phone Number</label>
-                      <input type="tel" className={inputClass} placeholder="+91 XXXXX XXXXX"
+                      <input type="tel" className={inputClass('phone')}
+                        placeholder="10 digit mobile number"
                         value={form.phone} onChange={(e) => update('phone', e.target.value)} />
+                      {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone}</p>}
                     </div>
+
                     <div>
                       <label className={labelClass}>Your Category</label>
-                      <select className={inputClass} value={form.category}
+                      <select className={inputClass('category')}
+                        value={form.category}
                         onChange={(e) => update('category', e.target.value)}>
                         <option value="" disabled>Select your expertise</option>
                         {categories.map((cat) => (
                           <option key={cat} value={cat} className="bg-[#0A0A0A]">{cat}</option>
                         ))}
                       </select>
+                      {errors.category && <p className="text-red-400 text-xs mt-1">{errors.category}</p>}
                     </div>
-                    <button onClick={() => setStep(2)}
-                      disabled={!form.name || !form.email || !form.phone || !form.category}
-                      className="w-full bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+
+                    <button onClick={handleNext1}
+                      className="w-full bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
                       Next Step <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
                 )}
 
+                {/* STEP 2 */}
                 {step === 2 && (
                   <div className="space-y-5">
                     <h3 className="text-xl font-playfair font-bold text-white mb-6">Professional Details</h3>
+
                     <div>
                       <label className={labelClass}>Years of Experience</label>
-                      <input type="text" className={inputClass} placeholder="e.g. 5 years"
+                      <input type="text" className={inputClass('experience')}
+                        placeholder="e.g. 5 years"
                         value={form.experience} onChange={(e) => update('experience', e.target.value)} />
+                      {errors.experience && <p className="text-red-400 text-xs mt-1">{errors.experience}</p>}
                     </div>
+
                     <div>
                       <label className={labelClass}>Your Bio / About You</label>
-                      <textarea className={inputClass + " h-32 resize-none"}
-                        placeholder="Tell us about yourself..."
+                      <textarea className={inputClass('bio') + " h-32 resize-none"}
+                        placeholder="Tell us about yourself, your expertise..."
                         value={form.bio} onChange={(e) => update('bio', e.target.value)} />
+                      {errors.bio && <p className="text-red-400 text-xs mt-1">{errors.bio}</p>}
                     </div>
+
                     <div>
-                      <label className={labelClass}>Portfolio Link</label>
-                      <input type="url" className={inputClass} placeholder="https://yourportfolio.com"
+                      <label className={labelClass}>Portfolio Link (Optional)</label>
+                      <input type="url" className={inputClass('portfolio')}
+                        placeholder="https://yourportfolio.com"
                         value={form.portfolio} onChange={(e) => update('portfolio', e.target.value)} />
                     </div>
+
                     <div className="flex gap-3">
                       <button onClick={() => setStep(1)}
                         className="flex-1 py-4 border border-[#C9A84C]/30 text-[#C9A84C] text-sm tracking-widest uppercase hover:bg-[#C9A84C]/5 transition-all duration-300">
                         ← Back
                       </button>
-                      <button onClick={() => setStep(3)}
-                        disabled={!form.experience || !form.bio}
-                        className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                      <button onClick={handleNext2}
+                        className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300">
                         Next →
                       </button>
                     </div>
                   </div>
                 )}
 
+                {/* STEP 3 */}
                 {step === 3 && (
                   <div className="space-y-5">
                     <h3 className="text-xl font-playfair font-bold text-white mb-6">Certifications & Rate</h3>
+
                     <div>
                       <label className={labelClass}>Certifications</label>
-                      <textarea className={inputClass + " h-28 resize-none"}
+                      <textarea className={inputClass('certification') + " h-28 resize-none"}
                         placeholder="List your certifications, degrees, awards..."
                         value={form.certification} onChange={(e) => update('certification', e.target.value)} />
+                      {errors.certification && <p className="text-red-400 text-xs mt-1">{errors.certification}</p>}
                     </div>
+
                     <div>
                       <label className={labelClass}>Expected Rate (per day in ₹)</label>
-                      <input type="text" className={inputClass} placeholder="e.g. ₹500"
+                      <input type="text" className={inputClass('rate')}
+                        placeholder="e.g. ₹500"
                         value={form.rate} onChange={(e) => update('rate', e.target.value)} />
+                      {errors.rate && <p className="text-red-400 text-xs mt-1">{errors.rate}</p>}
                     </div>
+
                     <div className="p-4 border border-[#C9A84C]/20 rounded-xl">
                       <div className="flex items-start gap-3">
                         <Upload className="w-5 h-5 text-[#C9A84C] mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="text-sm text-white mb-1">Document Upload</p>
-                          <p className="text-xs text-[#E5E4E2]/40">Our team will contact you to collect certificates and ID proof via email.</p>
+                          <p className="text-xs text-[#E5E4E2]/40">
+                            Our team will contact you to collect certificates and ID proof via email.
+                          </p>
                         </div>
                       </div>
                     </div>
+
                     <div className="flex gap-3">
                       <button onClick={() => setStep(2)}
                         className="flex-1 py-4 border border-[#C9A84C]/30 text-[#C9A84C] text-sm tracking-widest uppercase hover:bg-[#C9A84C]/5 transition-all duration-300">
                         ← Back
                       </button>
                       <button onClick={handleSubmit}
-                        disabled={!form.certification || !form.rate || loading}
-                        className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                        disabled={loading}
+                        className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 disabled:opacity-50">
                         {loading ? 'Submitting...' : 'Submit Application'}
                       </button>
                     </div>
