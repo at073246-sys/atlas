@@ -82,22 +82,28 @@ export default function TalentRegister() {
     if (validateStep2()) setStep(3)
   }
 
+  const sanitizeInput = (str: string) => str.replace(/<[^>]*>?/gm, '').trim()
+
   const handleSubmit = async () => {
     if (!validateStep3()) return
     setLoading(true)
+
+    // Sanitize all inputs before submission
+    const sanitizedForm = {
+      name: sanitizeInput(form.name),
+      email: sanitizeInput(form.email),
+      phone: sanitizeInput(form.phone),
+      category: sanitizeInput(form.category),
+      experience: sanitizeInput(form.experience),
+      bio: sanitizeInput(form.bio),
+      portfolio: sanitizeInput(form.portfolio),
+      certification: sanitizeInput(form.certification),
+      rate: sanitizeInput(form.rate),
+    }
+
     try {
       // 1. Save to Supabase
-      const { error: dbError } = await supabase.from('talents').insert({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        category: form.category,
-        experience: form.experience,
-        bio: form.bio,
-        portfolio: form.portfolio,
-        certification: form.certification,
-        rate: form.rate,
-      })
+      const { error: dbError } = await supabase.from('talents').insert(sanitizedForm)
       if (dbError) console.error('Supabase Error:', dbError)
 
       // 2. Send Email via Web3Forms
@@ -109,28 +115,20 @@ export default function TalentRegister() {
             access_key: WEB3FORMS_KEY,
             subject: '🌟 New Talent Registration on ATLAS',
             from_name: 'ATLAS Talent Portal',
-            name: form.name,
-            email: form.email,
-            phone: form.phone,
-            category: form.category,
-            experience: form.experience,
-            bio: form.bio,
-            portfolio: form.portfolio,
-            certification: form.certification,
-            rate: form.rate,
+            ...sanitizedForm
           }),
         })
       }
 
       const msg =
         `🌟 *New Talent Registration on ATLAS!*%0A%0A` +
-        `👤 *Name:* ${form.name}%0A` +
-        `📱 *Phone:* ${form.phone}%0A` +
-        `📧 *Email:* ${form.email}%0A` +
-        `🎯 *Category:* ${form.category}%0A` +
-        `⏳ *Experience:* ${form.experience}%0A` +
-        `💰 *Expected Rate:* ${form.rate}/day%0A` +
-        `🔗 *Portfolio:* ${form.portfolio || 'Not provided'}%0A%0A` +
+        `👤 *Name:* ${sanitizedForm.name}%0A` +
+        `📱 *Phone:* ${sanitizedForm.phone}%0A` +
+        `📧 *Email:* ${sanitizedForm.email}%0A` +
+        `🎯 *Category:* ${sanitizedForm.category}%0A` +
+        `⏳ *Experience:* ${sanitizedForm.experience}%0A` +
+        `💰 *Expected Rate:* ${sanitizedForm.rate}/day%0A` +
+        `🔗 *Portfolio:* ${sanitizedForm.portfolio || 'Not provided'}%0A%0A` +
         `_ATLAS — Your World, Our Promise._`
 
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')

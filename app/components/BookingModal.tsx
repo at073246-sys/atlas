@@ -62,6 +62,8 @@ export default function BookingModal({ service, onClose }: Props) {
     return Object.keys(newErrors).length === 0
   }
 
+  const sanitizeInput = (str: string) => str.replace(/<[^>]*>?/gm, '').trim()
+
   const handleConfirmPayment = async () => {
     if (!paymentConfirmed) {
       setPayError('⚠️ Pehle payment confirm karo — checkbox tick karo')
@@ -73,18 +75,21 @@ export default function BookingModal({ service, onClose }: Props) {
     }
     setPayError('')
     setLoading(true)
+
+    const sanitizedData = {
+      client_name: sanitizeInput(name),
+      client_phone: sanitizeInput(phone),
+      client_email: sanitizeInput(email),
+      service_name: sanitizeInput(service.title),
+      duration: durations[selectedDuration].label,
+      amount: `₹${finalPrice}`,
+      payment_method: paymentMethod,
+      transaction_id: sanitizeInput(transactionId),
+    }
+
     try {
       // 1. Save to Supabase
-      const { error: dbError } = await supabase.from('bookings').insert({
-        client_name: name,
-        client_phone: phone,
-        client_email: email,
-        service_name: service.title,
-        duration: durations[selectedDuration].label,
-        amount: `₹${finalPrice}`,
-        payment_method: paymentMethod,
-        transaction_id: transactionId,
-      })
+      const { error: dbError } = await supabase.from('bookings').insert(sanitizedData)
       if (dbError) console.error('Supabase Error:', dbError)
 
       // 2. Send Email via Web3Forms
@@ -96,28 +101,21 @@ export default function BookingModal({ service, onClose }: Props) {
             access_key: WEB3FORMS_KEY,
             subject: '✅ NEW BOOKING — PAYMENT RECEIVED',
             from_name: 'ATLAS Booking System',
-            client_name: name,
-            client_phone: phone,
-            client_email: email,
-            service_name: service.title,
-            duration: durations[selectedDuration].label,
-            amount: `₹${finalPrice}`,
-            payment_method: paymentMethod,
-            transaction_id: transactionId,
+            ...sanitizedData
           }),
         })
       }
 
       const msg =
         `✅ *Payment Received — New Booking!*%0A%0A` +
-        `👤 *Name:* ${name}%0A` +
-        `📱 *Phone:* ${phone}%0A` +
-        `📧 *Email:* ${email}%0A` +
-        `🛠 *Service:* ${service.title}%0A` +
-        `⏳ *Duration:* ${durations[selectedDuration].label}%0A` +
-        `💰 *Amount:* ₹${finalPrice}%0A` +
-        `💳 *Payment:* ${paymentMethod}%0A` +
-        `🔖 *Transaction ID:* ${transactionId}%0A%0A` +
+        `👤 *Name:* ${sanitizedData.client_name}%0A` +
+        `📱 *Phone:* ${sanitizedData.client_phone}%0A` +
+        `📧 *Email:* ${sanitizedData.client_email}%0A` +
+        `🛠 *Service:* ${sanitizedData.service_name}%0A` +
+        `⏳ *Duration:* ${sanitizedData.duration}%0A` +
+        `💰 *Amount:* ${sanitizedData.amount}%0A` +
+        `💳 *Payment:* ${sanitizedData.payment_method}%0A` +
+        `🔖 *Transaction ID:* ${sanitizedData.transaction_id}%0A%0A` +
         `_ATLAS — Your World, Our Promise._`
 
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
