@@ -25,9 +25,11 @@ export default function BookingModal({ service, onClose }: Props) {
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('upi_qr')
+  const [transactionId, setTransactionId] = useState('')
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
   const [done, setDone] = useState(false)
+  const [error, setError] = useState('')
 
   const basePrice = service.pricing[0]?.price || '₹99'
   const numericPrice = parseInt(basePrice.replace(/[^\d]/g, '')) || 99
@@ -40,13 +42,18 @@ export default function BookingModal({ service, onClose }: Props) {
   }
 
   const handleConfirmPayment = async () => {
+    if (!transactionId.trim()) {
+      setError('⚠️ Please enter your Transaction ID / UTR Number')
+      return
+    }
+    setError('')
     setLoading(true)
     try {
       await fetch(FORMSPREE_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: 'NEW BOOKING',
+          type: '✅ NEW BOOKING — PAYMENT RECEIVED',
           client_name: name,
           client_phone: phone,
           client_email: email,
@@ -54,17 +61,20 @@ export default function BookingModal({ service, onClose }: Props) {
           duration: durations[selectedDuration].label,
           amount: `₹${finalPrice}`,
           payment_method: paymentMethod,
+          transaction_id: transactionId,
         }),
       })
 
-      const msg = `🔔 *New Booking - ATLAS!*%0A%0A` +
+      const msg =
+        `✅ *Payment Received — New Booking!*%0A%0A` +
         `👤 *Name:* ${name}%0A` +
         `📱 *Phone:* ${phone}%0A` +
         `📧 *Email:* ${email}%0A` +
         `🛠 *Service:* ${service.title}%0A` +
         `⏳ *Duration:* ${durations[selectedDuration].label}%0A` +
         `💰 *Amount:* ₹${finalPrice}%0A` +
-        `💳 *Payment:* ${paymentMethod}%0A%0A` +
+        `💳 *Payment:* ${paymentMethod}%0A` +
+        `🔖 *Transaction ID:* ${transactionId}%0A%0A` +
         `_ATLAS — Your World, Our Promise._`
 
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
@@ -108,20 +118,21 @@ export default function BookingModal({ service, onClose }: Props) {
               </div>
               <h3 className="text-xl font-playfair font-black text-white">{service.title}</h3>
 
-              {/* Step indicator */}
-              <div className="flex items-center gap-2 mt-4">
-                {['Details', 'Payment', 'Done'].map((s, i) => (
-                  <div key={s} className="flex items-center gap-2 flex-1">
+              {/* Steps */}
+              <div className="flex items-center gap-1 mt-4">
+                {['Details', 'Pay', 'Confirm'].map((s, i) => (
+                  <div key={s} className="flex items-center gap-1 flex-1">
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all
                       ${step > i + 1 ? 'bg-[#C9A84C] text-[#0A0A0A]' :
                         step === i + 1 ? 'bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A]' :
                         'border border-[#C9A84C]/30 text-[#C9A84C]/40'}`}>
                       {i + 1}
                     </div>
-                    <span className={`text-[10px] tracking-wider uppercase ${step === i + 1 ? 'text-[#C9A84C]' : 'text-[#E5E4E2]/30'}`}>
+                    <span className={`text-[10px] tracking-wider uppercase flex-1
+                      ${step === i + 1 ? 'text-[#C9A84C]' : 'text-[#E5E4E2]/20'}`}>
                       {s}
                     </span>
-                    {i < 2 && <div className="flex-1 h-px bg-[#C9A84C]/20" />}
+                    {i < 2 && <div className="w-4 h-px bg-[#C9A84C]/20" />}
                   </div>
                 ))}
               </div>
@@ -131,7 +142,6 @@ export default function BookingModal({ service, onClose }: Props) {
           {/* STEP 1 — Details */}
           {step === 1 && (
             <div className="space-y-4">
-              {/* Duration */}
               <div>
                 <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-3">Select Duration</p>
                 <div className="grid grid-cols-3 gap-2">
@@ -146,7 +156,6 @@ export default function BookingModal({ service, onClose }: Props) {
                 </div>
               </div>
 
-              {/* Name */}
               <div>
                 <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Full Name</p>
                 <input type="text" value={name} onChange={(e) => setName(e.target.value)}
@@ -154,7 +163,6 @@ export default function BookingModal({ service, onClose }: Props) {
                   className="w-full bg-[#0A0A0A] border border-[#C9A84C]/20 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm" />
               </div>
 
-              {/* Phone */}
               <div>
                 <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Phone Number</p>
                 <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
@@ -162,7 +170,6 @@ export default function BookingModal({ service, onClose }: Props) {
                   className="w-full bg-[#0A0A0A] border border-[#C9A84C]/20 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm" />
               </div>
 
-              {/* Email */}
               <div>
                 <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Email</p>
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
@@ -170,9 +177,8 @@ export default function BookingModal({ service, onClose }: Props) {
                   className="w-full bg-[#0A0A0A] border border-[#C9A84C]/20 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm" />
               </div>
 
-              {/* Total */}
               <div className="flex justify-between items-center p-3 border border-[#C9A84C]/20 rounded-xl">
-                <span className="text-[#E5E4E2]/50 text-sm">Total</span>
+                <span className="text-[#E5E4E2]/50 text-sm">Total Amount</span>
                 <span className="text-xl font-playfair font-black bg-gradient-to-r from-[#C9A84C] to-[#F0D080] bg-clip-text text-transparent">
                   ₹{finalPrice}
                 </span>
@@ -190,10 +196,9 @@ export default function BookingModal({ service, onClose }: Props) {
           {/* STEP 2 — Payment */}
           {step === 2 && (
             <div className="space-y-4">
-              <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-3">Select Payment Method</p>
+              <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Payment Method</p>
 
-              {/* Payment options */}
-              <div className="grid grid-cols-3 gap-2 mb-4">
+              <div className="grid grid-cols-3 gap-2">
                 {[
                   { id: 'upi_qr', label: 'QR Code', icon: <Smartphone className="w-4 h-4" /> },
                   { id: 'upi_id', label: 'UPI ID', icon: <CreditCard className="w-4 h-4" /> },
@@ -214,27 +219,22 @@ export default function BookingModal({ service, onClose }: Props) {
                   <p className="text-xs text-[#C9A84C] tracking-widest uppercase mb-3">Scan & Pay</p>
                   <div className="flex justify-center mb-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src="/qr.jpg"
-                      alt="UPI QR Code"
-                      width={180}
-                      height={180}
-                      className="rounded-xl border border-[#C9A84C]/20"
-                    />
+                    <img src="/qr.jpg" alt="UPI QR" width={160} height={160}
+                      className="rounded-xl border border-[#C9A84C]/20" />
                   </div>
                   <p className="text-sm font-bold text-white">Ayan Thakur</p>
-                  <p className="text-xs text-[#E5E4E2]/50">{UPI_ID}</p>
-                  <div className="mt-2 p-2 bg-[#C9A84C]/10 rounded-xl">
+                  <p className="text-xs text-[#E5E4E2]/50 mb-2">{UPI_ID}</p>
+                  <div className="p-2 bg-[#C9A84C]/10 rounded-xl">
                     <p className="text-lg font-black text-[#C9A84C]">₹{finalPrice}</p>
                   </div>
-                  <p className="text-[10px] text-[#E5E4E2]/30 mt-2">Open GPay / PhonePe / Paytm → Scan QR → Pay</p>
+                  <p className="text-[10px] text-[#E5E4E2]/30 mt-2">GPay / PhonePe / Paytm → Scan → Pay</p>
                 </div>
               )}
 
               {/* UPI ID */}
               {paymentMethod === 'upi_id' && (
                 <div className="p-4 border border-[#C9A84C]/20 rounded-2xl">
-                  <p className="text-xs text-[#C9A84C] tracking-widest uppercase mb-3">UPI ID</p>
+                  <p className="text-xs text-[#C9A84C] tracking-widest uppercase mb-3">UPI ID Copy Karo</p>
                   <div className="flex items-center justify-between bg-[#0A0A0A] px-4 py-3 rounded-xl mb-3">
                     <span className="text-white font-bold text-sm">{UPI_ID}</span>
                     <button onClick={copyUPI} className="text-[#C9A84C] hover:scale-110 transition-transform ml-2">
@@ -244,31 +244,47 @@ export default function BookingModal({ service, onClose }: Props) {
                   <div className="p-2 bg-[#C9A84C]/10 rounded-xl text-center">
                     <p className="text-lg font-black text-[#C9A84C]">₹{finalPrice}</p>
                   </div>
-                  <p className="text-[10px] text-[#E5E4E2]/30 mt-2">Copy UPI ID → Open any UPI app → Pay to this ID</p>
+                  <p className="text-[10px] text-[#E5E4E2]/30 mt-2">UPI ID copy karo → GPay/PhonePe → Pay</p>
                 </div>
               )}
 
               {/* Net Banking */}
               {paymentMethod === 'bank' && (
                 <div className="p-4 border border-[#C9A84C]/20 rounded-2xl text-center">
-                  <p className="text-sm text-white mb-2">Contact us for bank transfer details</p>
+                  <p className="text-sm text-white mb-2">Bank transfer ke liye contact karo</p>
                   <p className="text-xs text-[#E5E4E2]/40">📧 atlasofficial2090@gmail.com</p>
                   <p className="text-xs text-[#E5E4E2]/40">📱 +91 7550124573</p>
                 </div>
               )}
 
-              <p className="text-[10px] text-[#E5E4E2]/30 text-center tracking-wider">
-                ✅ After payment, click "I Have Paid" below
-              </p>
+              {/* Transaction ID — REQUIRED */}
+              <div className="p-4 border-2 border-[#C9A84C]/40 rounded-2xl bg-[#C9A84C]/5">
+                <p className="text-xs tracking-widest text-[#C9A84C] uppercase mb-2">
+                  ⚠️ Payment karne ke baad Transaction ID daalo
+                </p>
+                <input
+                  type="text"
+                  value={transactionId}
+                  onChange={(e) => { setTransactionId(e.target.value); setError('') }}
+                  placeholder="UTR / Transaction ID (e.g. 426789123456)"
+                  className="w-full bg-[#0A0A0A] border border-[#C9A84C]/30 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm"
+                />
+                {error && <p className="text-red-400 text-xs mt-2">{error}</p>}
+                <p className="text-[10px] text-[#E5E4E2]/30 mt-2">
+                  GPay/PhonePe → Transaction History → UTR number copy karo
+                </p>
+              </div>
 
               <div className="flex gap-3">
                 <button onClick={() => setStep(1)}
                   className="flex-1 py-3 border border-[#C9A84C]/30 text-[#C9A84C] text-xs tracking-widest uppercase hover:bg-[#C9A84C]/5 transition-all duration-300">
                   ← Back
                 </button>
-                <button onClick={handleConfirmPayment} disabled={loading}
-                  className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-3 uppercase tracking-widest text-xs hover:scale-105 transition-all duration-300 disabled:opacity-50">
-                  {loading ? 'Processing...' : '✅ I Have Paid'}
+                <button
+                  onClick={handleConfirmPayment}
+                  disabled={loading || !transactionId.trim()}
+                  className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-3 uppercase tracking-widest text-xs hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                  {loading ? 'Confirming...' : '✅ Confirm Payment'}
                 </button>
               </div>
             </div>
@@ -283,9 +299,10 @@ export default function BookingModal({ service, onClose }: Props) {
               </h3>
               <p className="text-[#E5E4E2]/60 mb-2">Service: <span className="text-white font-bold">{service.title}</span></p>
               <p className="text-[#E5E4E2]/60 mb-2">Duration: <span className="text-white font-bold">{durations[selectedDuration].label}</span></p>
-              <p className="text-[#E5E4E2]/60 mb-6">Amount Paid: <span className="text-[#C9A84C] font-bold">₹{finalPrice}</span></p>
+              <p className="text-[#E5E4E2]/60 mb-2">Amount: <span className="text-[#C9A84C] font-bold">₹{finalPrice}</span></p>
+              <p className="text-[#E5E4E2]/60 mb-6">Transaction ID: <span className="text-white font-bold">{transactionId}</span></p>
               <p className="text-xs text-[#E5E4E2]/40 tracking-widest uppercase mb-8">
-                Our team will contact you on {phone} within 2 hours
+                Hamari team 2 ghante mein {phone} pe contact karegi
               </p>
               <button onClick={onClose}
                 className="bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold px-8 py-3 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300">
