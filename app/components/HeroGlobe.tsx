@@ -4,7 +4,6 @@ import {
   OrbitControls, 
   PerspectiveCamera, 
   Float, 
-  Sphere,
   Stars,
   Sparkles
 } from '@react-three/drei'
@@ -34,59 +33,48 @@ function SuperPremiumGlobe() {
 
   return (
     <group>
-      {/* 1. Core Globe Layer (Texture from photo) */}
+      {/* 1. Core Globe - standard blending so texture is clearly visible */}
       <mesh ref={meshRef}>
         <sphereGeometry args={[2.5, 64, 64]} />
         <meshStandardMaterial
           map={texture}
           emissiveMap={texture}
           emissive="#C9A84C"
-          emissiveIntensity={3}
-          transparent={true}
-          opacity={0.8}
+          emissiveIntensity={0.8}
+          metalness={0.3}
+          roughness={0.4}
+        />
+      </mesh>
+
+      {/* 2. Outer glow shell - additive so it adds golden glow without obscuring */}
+      <mesh ref={auraRef}>
+        <sphereGeometry args={[2.7, 32, 32]} />
+        <meshBasicMaterial
+          color="#C9A84C"
+          transparent
+          opacity={0.06}
+          side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
         />
       </mesh>
 
-      {/* 2. Network / Wireframe Overlay (Popping lines like in the photo) */}
+      {/* 3. Network wireframe overlay - rotates slightly faster for depth effect */}
       <mesh ref={networkRef}>
-        <sphereGeometry args={[2.52, 32, 32]} />
-        <meshBasicMaterial 
-          color="#C9A84C" 
-          wireframe 
-          transparent 
-          opacity={0.15} 
+        <sphereGeometry args={[2.52, 24, 24]} />
+        <meshBasicMaterial
+          color="#C9A84C"
+          wireframe
+          transparent
+          opacity={0.12}
           blending={THREE.AdditiveBlending}
+          depthWrite={false}
         />
       </mesh>
 
-      {/* 3. Atmospheric Aura (Soft blending edges) */}
-      <mesh ref={auraRef}>
-        <sphereGeometry args={[2.8, 64, 64]} />
-        <meshBasicMaterial 
-          color="#C9A84C" 
-          transparent 
-          opacity={0.05} 
-          side={THREE.BackSide}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
-
-      {/* 4. Global Glow (Deep atmosphere) */}
-      <Sphere args={[3.2, 32, 32]}>
-        <meshBasicMaterial 
-          color="#C9A84C" 
-          transparent 
-          opacity={0.02} 
-          side={THREE.BackSide}
-          blending={THREE.AdditiveBlending}
-        />
-      </Sphere>
-
-      {/* 5. Golden Particles (Sparkles like in the photo) */}
-      <Sparkles count={100} scale={10} size={1.5} speed={0.2} color="#C9A84C" />
-      <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
+      {/* 4. Sparkles & Stars */}
+      <Sparkles count={80} scale={8} size={1.2} speed={0.15} color="#C9A84C" />
+      <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={0.5} />
     </group>
   )
 }
