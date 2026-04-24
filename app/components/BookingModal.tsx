@@ -1,8 +1,7 @@
 'use client'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, CreditCard, Smartphone, Building2, Copy, Check } from 'lucide-react'
+import { X, Copy, Check, Smartphone, CreditCard, Building2 } from 'lucide-react'
 import { useState } from 'react'
-import Image from 'next/image'
 
 const FORMSPREE_URL = 'https://formspree.io/f/mqewwolv'
 const WHATSAPP_NUMBER = '917550124573'
@@ -14,28 +13,21 @@ const durations = [
   { label: '1 Month', multiplier: 15 },
 ]
 
-const paymentMethods = [
-  { id: 'upi_qr', label: 'UPI QR Code', icon: <Smartphone className="w-5 h-5" /> },
-  { id: 'upi_id', label: 'UPI ID / GPay / PhonePe', icon: <Smartphone className="w-5 h-5" /> },
-  { id: 'card', label: 'Credit / Debit Card', icon: <CreditCard className="w-5 h-5" /> },
-  { id: 'bank', label: 'Net Banking', icon: <Building2 className="w-5 h-5" /> },
-]
-
 interface Props {
   service: { title: string; pricing: { label: string; price: string }[] }
   onClose: () => void
 }
 
 export default function BookingModal({ service, onClose }: Props) {
-  const [selectedDuration, setSelectedDuration] = useState(0)
-  const [selectedPayment, setSelectedPayment] = useState('upi_qr')
   const [step, setStep] = useState(1)
+  const [selectedDuration, setSelectedDuration] = useState(0)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
-  const [booked, setBooked] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState('upi_qr')
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [done, setDone] = useState(false)
 
   const basePrice = service.pricing[0]?.price || '₹99'
   const numericPrice = parseInt(basePrice.replace(/[^\d]/g, '')) || 99
@@ -47,37 +39,36 @@ export default function BookingModal({ service, onClose }: Props) {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const handleBook = async () => {
-    if (!name || !phone || !email) return
+  const handleConfirmPayment = async () => {
     setLoading(true)
     try {
       await fetch(FORMSPREE_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: 'BOOKING',
+          type: 'NEW BOOKING',
           client_name: name,
           client_phone: phone,
           client_email: email,
           service_name: service.title,
           duration: durations[selectedDuration].label,
           amount: `₹${finalPrice}`,
-          payment_method: selectedPayment,
+          payment_method: paymentMethod,
         }),
       })
 
-      const msg = `🔔 *New Booking on ATLAS!*%0A%0A` +
+      const msg = `🔔 *New Booking - ATLAS!*%0A%0A` +
         `👤 *Name:* ${name}%0A` +
         `📱 *Phone:* ${phone}%0A` +
         `📧 *Email:* ${email}%0A` +
         `🛠 *Service:* ${service.title}%0A` +
         `⏳ *Duration:* ${durations[selectedDuration].label}%0A` +
         `💰 *Amount:* ₹${finalPrice}%0A` +
-        `💳 *Payment:* ${selectedPayment}%0A%0A` +
+        `💳 *Payment:* ${paymentMethod}%0A%0A` +
         `_ATLAS — Your World, Our Promise._`
 
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
-      setBooked(true)
+      setDone(true)
     } catch (err) {
       console.error(err)
     } finally {
@@ -92,7 +83,7 @@ export default function BookingModal({ service, onClose }: Props) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-center justify-center px-4 overflow-y-auto py-8"
-        style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}
+        style={{ backgroundColor: 'rgba(0,0,0,0.88)' }}
         onClick={onClose}
       >
         <motion.div
@@ -100,14 +91,191 @@ export default function BookingModal({ service, onClose }: Props) {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 50 }}
           transition={{ duration: 0.3 }}
-          className="w-full max-w-lg bg-[#0D1B2A] border border-[#C9A84C]/30 rounded-3xl p-8 relative"
+          className="w-full max-w-lg bg-[#0D1B2A] border border-[#C9A84C]/30 rounded-3xl p-8 relative my-auto"
           onClick={(e) => e.stopPropagation()}
         >
+          {/* Close */}
           <button onClick={onClose} className="absolute top-4 right-4 text-[#E5E4E2]/40 hover:text-[#C9A84C] transition-colors">
             <X className="w-6 h-6" />
           </button>
 
-          {booked ? (
+          {/* Header */}
+          {!done && (
+            <div className="mb-6">
+              <div className="flex items-center gap-3 mb-1">
+                <div className="h-px w-8 bg-[#C9A84C]/50" />
+                <span className="text-xs tracking-[0.4em] text-[#C9A84C] uppercase">Book Service</span>
+              </div>
+              <h3 className="text-xl font-playfair font-black text-white">{service.title}</h3>
+
+              {/* Step indicator */}
+              <div className="flex items-center gap-2 mt-4">
+                {['Details', 'Payment', 'Done'].map((s, i) => (
+                  <div key={s} className="flex items-center gap-2 flex-1">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all
+                      ${step > i + 1 ? 'bg-[#C9A84C] text-[#0A0A0A]' :
+                        step === i + 1 ? 'bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A]' :
+                        'border border-[#C9A84C]/30 text-[#C9A84C]/40'}`}>
+                      {i + 1}
+                    </div>
+                    <span className={`text-[10px] tracking-wider uppercase ${step === i + 1 ? 'text-[#C9A84C]' : 'text-[#E5E4E2]/30'}`}>
+                      {s}
+                    </span>
+                    {i < 2 && <div className="flex-1 h-px bg-[#C9A84C]/20" />}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* STEP 1 — Details */}
+          {step === 1 && (
+            <div className="space-y-4">
+              {/* Duration */}
+              <div>
+                <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-3">Select Duration</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {durations.map((d, i) => (
+                    <button key={d.label} onClick={() => setSelectedDuration(i)}
+                      className={`p-3 border rounded-xl text-center transition-all duration-300
+                        ${selectedDuration === i ? 'border-[#C9A84C] bg-[#C9A84C]/10' : 'border-[#C9A84C]/20 hover:border-[#C9A84C]/50'}`}>
+                      <div className="text-xs font-bold text-white">{d.label}</div>
+                      <div className="text-xs text-[#C9A84C] mt-1">₹{numericPrice * d.multiplier}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Name */}
+              <div>
+                <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Full Name</p>
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)}
+                  placeholder="Your name"
+                  className="w-full bg-[#0A0A0A] border border-[#C9A84C]/20 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm" />
+              </div>
+
+              {/* Phone */}
+              <div>
+                <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Phone Number</p>
+                <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+91 XXXXX XXXXX"
+                  className="w-full bg-[#0A0A0A] border border-[#C9A84C]/20 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm" />
+              </div>
+
+              {/* Email */}
+              <div>
+                <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Email</p>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  className="w-full bg-[#0A0A0A] border border-[#C9A84C]/20 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm" />
+              </div>
+
+              {/* Total */}
+              <div className="flex justify-between items-center p-3 border border-[#C9A84C]/20 rounded-xl">
+                <span className="text-[#E5E4E2]/50 text-sm">Total</span>
+                <span className="text-xl font-playfair font-black bg-gradient-to-r from-[#C9A84C] to-[#F0D080] bg-clip-text text-transparent">
+                  ₹{finalPrice}
+                </span>
+              </div>
+
+              <button
+                onClick={() => setStep(2)}
+                disabled={!name || !phone || !email}
+                className="w-full bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                Proceed to Payment →
+              </button>
+            </div>
+          )}
+
+          {/* STEP 2 — Payment */}
+          {step === 2 && (
+            <div className="space-y-4">
+              <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-3">Select Payment Method</p>
+
+              {/* Payment options */}
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                {[
+                  { id: 'upi_qr', label: 'QR Code', icon: <Smartphone className="w-4 h-4" /> },
+                  { id: 'upi_id', label: 'UPI ID', icon: <CreditCard className="w-4 h-4" /> },
+                  { id: 'bank', label: 'Net Banking', icon: <Building2 className="w-4 h-4" /> },
+                ].map((m) => (
+                  <button key={m.id} onClick={() => setPaymentMethod(m.id)}
+                    className={`p-3 border rounded-xl flex flex-col items-center gap-1 transition-all
+                      ${paymentMethod === m.id ? 'border-[#C9A84C] bg-[#C9A84C]/10' : 'border-[#C9A84C]/20'}`}>
+                    <span className="text-[#C9A84C]">{m.icon}</span>
+                    <span className="text-[10px] text-white">{m.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* QR Code */}
+              {paymentMethod === 'upi_qr' && (
+                <div className="p-4 border border-[#C9A84C]/20 rounded-2xl text-center">
+                  <p className="text-xs text-[#C9A84C] tracking-widest uppercase mb-3">Scan & Pay</p>
+                  <div className="flex justify-center mb-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/qr.jpg"
+                      alt="UPI QR Code"
+                      width={180}
+                      height={180}
+                      className="rounded-xl border border-[#C9A84C]/20"
+                    />
+                  </div>
+                  <p className="text-sm font-bold text-white">Ayan Thakur</p>
+                  <p className="text-xs text-[#E5E4E2]/50">{UPI_ID}</p>
+                  <div className="mt-2 p-2 bg-[#C9A84C]/10 rounded-xl">
+                    <p className="text-lg font-black text-[#C9A84C]">₹{finalPrice}</p>
+                  </div>
+                  <p className="text-[10px] text-[#E5E4E2]/30 mt-2">Open GPay / PhonePe / Paytm → Scan QR → Pay</p>
+                </div>
+              )}
+
+              {/* UPI ID */}
+              {paymentMethod === 'upi_id' && (
+                <div className="p-4 border border-[#C9A84C]/20 rounded-2xl">
+                  <p className="text-xs text-[#C9A84C] tracking-widest uppercase mb-3">UPI ID</p>
+                  <div className="flex items-center justify-between bg-[#0A0A0A] px-4 py-3 rounded-xl mb-3">
+                    <span className="text-white font-bold text-sm">{UPI_ID}</span>
+                    <button onClick={copyUPI} className="text-[#C9A84C] hover:scale-110 transition-transform ml-2">
+                      {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  <div className="p-2 bg-[#C9A84C]/10 rounded-xl text-center">
+                    <p className="text-lg font-black text-[#C9A84C]">₹{finalPrice}</p>
+                  </div>
+                  <p className="text-[10px] text-[#E5E4E2]/30 mt-2">Copy UPI ID → Open any UPI app → Pay to this ID</p>
+                </div>
+              )}
+
+              {/* Net Banking */}
+              {paymentMethod === 'bank' && (
+                <div className="p-4 border border-[#C9A84C]/20 rounded-2xl text-center">
+                  <p className="text-sm text-white mb-2">Contact us for bank transfer details</p>
+                  <p className="text-xs text-[#E5E4E2]/40">📧 atlasofficial2090@gmail.com</p>
+                  <p className="text-xs text-[#E5E4E2]/40">📱 +91 7550124573</p>
+                </div>
+              )}
+
+              <p className="text-[10px] text-[#E5E4E2]/30 text-center tracking-wider">
+                ✅ After payment, click "I Have Paid" below
+              </p>
+
+              <div className="flex gap-3">
+                <button onClick={() => setStep(1)}
+                  className="flex-1 py-3 border border-[#C9A84C]/30 text-[#C9A84C] text-xs tracking-widest uppercase hover:bg-[#C9A84C]/5 transition-all duration-300">
+                  ← Back
+                </button>
+                <button onClick={handleConfirmPayment} disabled={loading}
+                  className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-3 uppercase tracking-widest text-xs hover:scale-105 transition-all duration-300 disabled:opacity-50">
+                  {loading ? 'Processing...' : '✅ I Have Paid'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* DONE */}
+          {done && (
             <div className="text-center py-8">
               <div className="text-6xl mb-6">🎉</div>
               <h3 className="text-3xl font-playfair font-black bg-gradient-to-r from-[#C9A84C] to-[#F0D080] bg-clip-text text-transparent mb-4">
@@ -115,135 +283,15 @@ export default function BookingModal({ service, onClose }: Props) {
               </h3>
               <p className="text-[#E5E4E2]/60 mb-2">Service: <span className="text-white font-bold">{service.title}</span></p>
               <p className="text-[#E5E4E2]/60 mb-2">Duration: <span className="text-white font-bold">{durations[selectedDuration].label}</span></p>
-              <p className="text-[#E5E4E2]/60 mb-6">Amount: <span className="text-[#C9A84C] font-bold">₹{finalPrice}</span></p>
+              <p className="text-[#E5E4E2]/60 mb-6">Amount Paid: <span className="text-[#C9A84C] font-bold">₹{finalPrice}</span></p>
               <p className="text-xs text-[#E5E4E2]/40 tracking-widest uppercase mb-8">
-                Our team will contact you within 2 hours on {phone}
+                Our team will contact you on {phone} within 2 hours
               </p>
-              <button onClick={onClose} className="bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold px-8 py-3 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300">
+              <button onClick={onClose}
+                className="bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold px-8 py-3 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300">
                 Done
               </button>
             </div>
-          ) : (
-            <>
-              <div className="mb-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="h-px w-8 bg-[#C9A84C]/50" />
-                  <span className="text-xs tracking-[0.4em] text-[#C9A84C] uppercase">Book Service</span>
-                </div>
-                <h3 className="text-2xl font-playfair font-black text-white">{service.title}</h3>
-              </div>
-
-              {step === 1 && (
-                <>
-                  {/* Duration */}
-                  <div className="mb-6">
-                    <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-3">Select Duration</p>
-                    <div className="grid grid-cols-3 gap-3">
-                      {durations.map((d, i) => (
-                        <button key={d.label} onClick={() => setSelectedDuration(i)}
-                          className={`p-3 border rounded-xl text-center transition-all duration-300
-                            ${selectedDuration === i ? 'border-[#C9A84C] bg-[#C9A84C]/10' : 'border-[#C9A84C]/20 hover:border-[#C9A84C]/50'}`}>
-                          <div className="text-sm font-bold text-white mb-1">{d.label}</div>
-                          <div className="text-xs text-[#C9A84C]">₹{numericPrice * d.multiplier}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Payment Method */}
-                  <div className="mb-4">
-                    <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-3">Payment Method</p>
-                    <div className="space-y-2">
-                      {paymentMethods.map((method) => (
-                        <button key={method.id} onClick={() => setSelectedPayment(method.id)}
-                          className={`w-full flex items-center gap-4 p-3 border rounded-xl transition-all duration-300
-                            ${selectedPayment === method.id ? 'border-[#C9A84C] bg-[#C9A84C]/10' : 'border-[#C9A84C]/20 hover:border-[#C9A84C]/50'}`}>
-                          <span className="text-[#C9A84C]">{method.icon}</span>
-                          <span className="text-sm text-white">{method.label}</span>
-                          {selectedPayment === method.id && <span className="ml-auto w-3 h-3 rounded-full bg-[#C9A84C]" />}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* QR Code */}
-                  {selectedPayment === 'upi_qr' && (
-                    <div className="mb-4 p-4 border border-[#C9A84C]/20 rounded-xl text-center">
-                      <p className="text-xs text-[#C9A84C] tracking-widest uppercase mb-3">Scan & Pay</p>
-                      <div className="flex justify-center mb-3">
-                        <Image src="/qr.jpg" alt="UPI QR Code" width={180} height={180} className="rounded-xl" />
-                      </div>
-                      <p className="text-xs text-[#E5E4E2]/50">Ayan Thakur · {UPI_ID}</p>
-                      <p className="text-lg font-bold text-[#C9A84C] mt-1">₹{finalPrice}</p>
-                    </div>
-                  )}
-
-                  {/* UPI ID Copy */}
-                  {selectedPayment === 'upi_id' && (
-                    <div className="mb-4 p-4 border border-[#C9A84C]/20 rounded-xl">
-                      <p className="text-xs text-[#C9A84C] tracking-widest uppercase mb-3">UPI ID</p>
-                      <div className="flex items-center justify-between bg-[#0A0A0A] px-4 py-3 rounded-xl">
-                        <span className="text-white font-bold">{UPI_ID}</span>
-                        <button onClick={copyUPI} className="text-[#C9A84C] hover:scale-110 transition-transform">
-                          {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-                        </button>
-                      </div>
-                      <p className="text-xs text-[#E5E4E2]/40 mt-2">Amount: <span className="text-[#C9A84C] font-bold">₹{finalPrice}</span></p>
-                    </div>
-                  )}
-
-                  {/* Total */}
-                  <div className="flex justify-between items-center mb-4 p-3 border border-[#C9A84C]/20 rounded-xl">
-                    <span className="text-[#E5E4E2]/60 text-sm">Total Amount</span>
-                    <span className="text-2xl font-playfair font-black bg-gradient-to-r from-[#C9A84C] to-[#F0D080] bg-clip-text text-transparent">
-                      ₹{finalPrice}
-                    </span>
-                  </div>
-
-                  <button onClick={() => setStep(2)}
-                    className="w-full bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300">
-                    Continue →
-                  </button>
-                </>
-              )}
-
-              {step === 2 && (
-                <>
-                  <div className="space-y-4 mb-6">
-                    <div>
-                      <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Your Name</p>
-                      <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-                        placeholder="Full Name"
-                        className="w-full bg-[#0A0A0A] border border-[#C9A84C]/20 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors" />
-                    </div>
-                    <div>
-                      <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Phone Number</p>
-                      <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+91 XXXXX XXXXX"
-                        className="w-full bg-[#0A0A0A] border border-[#C9A84C]/20 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors" />
-                    </div>
-                    <div>
-                      <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Email</p>
-                      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                        placeholder="your@email.com"
-                        className="w-full bg-[#0A0A0A] border border-[#C9A84C]/20 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors" />
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <button onClick={() => setStep(1)}
-                      className="flex-1 py-4 border border-[#C9A84C]/30 text-[#C9A84C] text-sm tracking-widest uppercase hover:bg-[#C9A84C]/5 transition-all duration-300">
-                      ← Back
-                    </button>
-                    <button onClick={handleBook}
-                      disabled={!name || !phone || !email || loading}
-                      className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-                      {loading ? 'Booking...' : 'Confirm Booking'}
-                    </button>
-                  </div>
-                </>
-              )}
-            </>
           )}
         </motion.div>
       </motion.div>
