@@ -82,7 +82,7 @@ function SuperPremiumGlobe() {
 export default function HeroGlobe() {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-      <Canvas dpr={[1, 2]} alpha>
+      <Canvas dpr={[1, 2]} gl={{ alpha: true }}>
         <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={35} />
         
         <ambientLight intensity={0.5} />
