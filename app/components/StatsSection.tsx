@@ -11,6 +11,28 @@ const badges = [
 export default function StatsSection() {
   return (
     <section className="py-28 relative overflow-hidden">
+
+      {/* Spinning Vinyl Record — blended 3D background */}
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+        className="absolute -right-40 top-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none z-0"
+        style={{ opacity: 0.18 }}
+      >
+        <img
+          src="/music.jpg"
+          alt=""
+          className="w-full h-full object-cover rounded-full"
+          style={{
+            filter: 'brightness(0.7) saturate(1.4) sepia(0.3)',
+            mixBlendMode: 'screen',
+          }}
+        />
+      </motion.div>
+
+      {/* Soft vignette so vinyl fades into background */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_100%_at_100%_50%,transparent_30%,#0A0A0A_80%)] pointer-events-none z-[1]" />
+
       <div className="container mx-auto px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -25,7 +47,7 @@ export default function StatsSection() {
             <div className="h-px w-12 bg-[#C9A84C]/50" />
           </div>
           <h2 className="text-4xl md:text-6xl font-playfair font-black text-white mb-6">
-            We don’t sell products.
+            We don't sell products.
             <br />
             <span className="bg-gradient-to-r from-[#C9A84C] to-[#F0D080] bg-clip-text text-transparent">
               We deliver people.

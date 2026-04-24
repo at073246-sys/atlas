@@ -53,6 +53,28 @@ const testimonials = [
 export default function TrustSection() {
   return (
     <section id="trust" className="py-28 relative overflow-hidden">
+
+      {/* Floating Crown — right side background */}
+      <motion.div
+        animate={{ y: [-20, 20, -20], rotate: [-3, 3, -3] }}
+        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute -right-32 top-10 w-[500px] h-[500px] pointer-events-none z-0"
+        style={{ opacity: 0.15 }}
+      >
+        <img
+          src="/king.jpg"
+          alt=""
+          className="w-full h-full object-cover rounded-full"
+          style={{
+            filter: 'brightness(0.6) saturate(1.2)',
+            mixBlendMode: 'screen',
+          }}
+        />
+      </motion.div>
+
+      {/* Right vignette */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_100%_at_100%_0%,transparent_20%,#0A0A0A_70%)] pointer-events-none z-[1]" />
+
       <div className="container mx-auto px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 40 }}

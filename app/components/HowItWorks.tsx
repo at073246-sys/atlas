@@ -26,6 +26,28 @@ const steps = [
 export default function HowItWorks() {
   return (
     <section className="py-28 relative overflow-hidden">
+
+      {/* Clock — left side, very slow rotation like time passing */}
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
+        className="absolute -left-48 top-1/2 -translate-y-1/2 w-[550px] h-[550px] pointer-events-none z-0"
+        style={{ opacity: 0.12 }}
+      >
+        <img
+          src="/watch.jpg"
+          alt=""
+          className="w-full h-full object-cover rounded-full"
+          style={{
+            filter: 'brightness(0.5) saturate(0.6) hue-rotate(180deg)',
+            mixBlendMode: 'screen',
+          }}
+        />
+      </motion.div>
+
+      {/* Left vignette */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_100%_at_0%_50%,transparent_20%,#0A0A0A_75%)] pointer-events-none z-[1]" />
+
       <div className="container mx-auto px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 40 }}

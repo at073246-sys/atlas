@@ -149,6 +149,34 @@ export default function TalentRegister() {
 
   return (
     <section id="join" className="py-28 relative overflow-hidden">
+      {/* Blended 3D Background Element — Brain/Balance */}
+      <motion.div
+        animate={{ 
+          rotate: [-1, 1, -1],
+          y: [-5, 5, -5]
+        }}
+        transition={{ 
+          duration: 10, 
+          repeat: Infinity, 
+          ease: 'easeInOut' 
+        }}
+        className="absolute -left-20 top-1/4 w-[450px] h-[450px] pointer-events-none z-0"
+        style={{ opacity: 0.15 }}
+      >
+        <img
+          src="/brain.jpg"
+          alt=""
+          className="w-full h-full object-contain"
+          style={{
+            filter: 'brightness(0.6) saturate(1.2) contrast(1.1)',
+            mixBlendMode: 'screen',
+          }}
+        />
+      </motion.div>
+
+      {/* Soft vignette for the brain element */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_0%_30%,transparent_20%,#0A0A0A_80%)] pointer-events-none z-[1]" />
+
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(13,27,42,0.5),transparent_70%)]" />
 
       <div className="container mx-auto px-6 relative z-10">
