@@ -3,6 +3,9 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { Upload, CheckCircle, ArrowRight } from 'lucide-react'
 
+const FORMSPREE_URL = 'https://formspree.io/f/mqewwolv'
+const WHATSAPP_NUMBER = '917550124573'
+
 const categories = [
   'Daily Planner', 'Dietitian', 'Content Writer', 'Digital Designer',
   'Personal Editor', 'Communication Coach', 'Personal Mentor',
@@ -13,24 +16,56 @@ const categories = [
 export default function TalentRegister() {
   const [step, setStep] = useState(1)
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    category: '',
-    experience: '',
-    bio: '',
-    portfolio: '',
-    certification: '',
-    rate: '',
+    name: '', email: '', phone: '', category: '',
+    experience: '', bio: '', portfolio: '', certification: '', rate: '',
   })
 
   const update = (key: string, value: string) => {
     setForm(prev => ({ ...prev, [key]: value }))
   }
 
-  const handleSubmit = () => {
-    setSubmitted(true)
+  const handleSubmit = async () => {
+    setLoading(true)
+    try {
+      // Email notification
+      await fetch(FORMSPREE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'TALENT REGISTRATION',
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          category: form.category,
+          experience: form.experience,
+          bio: form.bio,
+          portfolio: form.portfolio,
+          certification: form.certification,
+          rate: form.rate,
+        }),
+      })
+
+      // WhatsApp notification
+      const msg = `🌟 *New Talent Registration on ATLAS!*%0A%0A` +
+        `👤 *Name:* ${form.name}%0A` +
+        `📱 *Phone:* ${form.phone}%0A` +
+        `📧 *Email:* ${form.email}%0A` +
+        `🎯 *Category:* ${form.category}%0A` +
+        `⏳ *Experience:* ${form.experience}%0A` +
+        `💰 *Expected Rate:* ${form.rate}/day%0A` +
+        `🔗 *Portfolio:* ${form.portfolio}%0A%0A` +
+        `_ATLAS — Your World, Our Promise._`
+
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
+
+      setSubmitted(true)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const inputClass = "w-full bg-[#0A0A0A] border border-[#C9A84C]/20 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm"
@@ -41,7 +76,6 @@ export default function TalentRegister() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(13,27,42,0.5),transparent_70%)]" />
 
       <div className="container mx-auto px-6 relative z-10">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -64,7 +98,6 @@ export default function TalentRegister() {
           </p>
         </motion.div>
 
-        {/* How it works for talent */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -86,7 +119,6 @@ export default function TalentRegister() {
           ))}
         </motion.div>
 
-        {/* Registration Form */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -94,7 +126,6 @@ export default function TalentRegister() {
           className="max-w-2xl mx-auto"
         >
           <div className="bg-gradient-to-br from-[#0A0A0A]/85 to-[#0D1B2A]/85 border border-[#C9A84C]/30 rounded-3xl p-10">
-
             {submitted ? (
               <div className="text-center py-8">
                 <CheckCircle className="w-16 h-16 text-[#C9A84C] mx-auto mb-6" />
@@ -105,7 +136,7 @@ export default function TalentRegister() {
                   Thank you, <span className="text-white font-bold">{form.name}</span>!
                 </p>
                 <p className="text-[#E5E4E2]/60 mb-6">
-                  Our team will review your profile and contact you at <span className="text-[#C9A84C]">{form.email}</span> within 48 hours.
+                  Our team will contact you at <span className="text-[#C9A84C]">{form.email}</span> within 48 hours.
                 </p>
                 <div className="w-24 h-px bg-gradient-to-r from-transparent via-[#C9A84C] to-transparent mx-auto mb-6" />
                 <p className="text-xs text-[#E5E4E2]/30 tracking-widest uppercase">
@@ -114,14 +145,11 @@ export default function TalentRegister() {
               </div>
             ) : (
               <>
-                {/* Steps indicator */}
                 <div className="flex items-center justify-center gap-3 mb-10">
                   {[1, 2, 3].map((s) => (
                     <div key={s} className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300
-                        ${step >= s
-                          ? 'bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A]'
-                          : 'border border-[#C9A84C]/30 text-[#C9A84C]/50'}`}>
+                        ${step >= s ? 'bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A]' : 'border border-[#C9A84C]/30 text-[#C9A84C]/50'}`}>
                         {s}
                       </div>
                       {s < 3 && <div className={`w-12 h-px transition-all duration-300 ${step > s ? 'bg-[#C9A84C]' : 'bg-[#C9A84C]/20'}`} />}
@@ -129,7 +157,6 @@ export default function TalentRegister() {
                   ))}
                 </div>
 
-                {/* Step 1 - Basic Info */}
                 {step === 1 && (
                   <div className="space-y-5">
                     <h3 className="text-xl font-playfair font-bold text-white mb-6">Basic Information</h3>
@@ -158,17 +185,14 @@ export default function TalentRegister() {
                         ))}
                       </select>
                     </div>
-                    <button
-                      onClick={() => setStep(2)}
+                    <button onClick={() => setStep(2)}
                       disabled={!form.name || !form.email || !form.phone || !form.category}
-                      className="w-full bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
+                      className="w-full bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                       Next Step <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
                 )}
 
-                {/* Step 2 - Professional Info */}
                 {step === 2 && (
                   <div className="space-y-5">
                     <h3 className="text-xl font-playfair font-bold text-white mb-6">Professional Details</h3>
@@ -179,7 +203,8 @@ export default function TalentRegister() {
                     </div>
                     <div>
                       <label className={labelClass}>Your Bio / About You</label>
-                      <textarea className={inputClass + " h-32 resize-none"} placeholder="Tell us about yourself, your expertise and what makes you elite..."
+                      <textarea className={inputClass + " h-32 resize-none"}
+                        placeholder="Tell us about yourself..."
                         value={form.bio} onChange={(e) => update('bio', e.target.value)} />
                     </div>
                     <div>
@@ -192,29 +217,26 @@ export default function TalentRegister() {
                         className="flex-1 py-4 border border-[#C9A84C]/30 text-[#C9A84C] text-sm tracking-widest uppercase hover:bg-[#C9A84C]/5 transition-all duration-300">
                         ← Back
                       </button>
-                      <button
-                        onClick={() => setStep(3)}
+                      <button onClick={() => setStep(3)}
                         disabled={!form.experience || !form.bio}
-                        className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
+                        className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                         Next →
                       </button>
                     </div>
                   </div>
                 )}
 
-                {/* Step 3 - Certifications & Rate */}
                 {step === 3 && (
                   <div className="space-y-5">
                     <h3 className="text-xl font-playfair font-bold text-white mb-6">Certifications & Rate</h3>
                     <div>
                       <label className={labelClass}>Certifications</label>
                       <textarea className={inputClass + " h-28 resize-none"}
-                        placeholder="List your certifications, degrees, awards (e.g. MBA from IIM, Certified Nutritionist...)"
+                        placeholder="List your certifications, degrees, awards..."
                         value={form.certification} onChange={(e) => update('certification', e.target.value)} />
                     </div>
                     <div>
-                      <label className={labelClass}>Your Expected Rate (per day in ₹)</label>
+                      <label className={labelClass}>Expected Rate (per day in ₹)</label>
                       <input type="text" className={inputClass} placeholder="e.g. ₹500"
                         value={form.rate} onChange={(e) => update('rate', e.target.value)} />
                     </div>
@@ -223,7 +245,7 @@ export default function TalentRegister() {
                         <Upload className="w-5 h-5 text-[#C9A84C] mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="text-sm text-white mb-1">Document Upload</p>
-                          <p className="text-xs text-[#E5E4E2]/40">After registration, our team will contact you to collect your certificates and ID proof via email.</p>
+                          <p className="text-xs text-[#E5E4E2]/40">Our team will contact you to collect certificates and ID proof via email.</p>
                         </div>
                       </div>
                     </div>
@@ -232,12 +254,10 @@ export default function TalentRegister() {
                         className="flex-1 py-4 border border-[#C9A84C]/30 text-[#C9A84C] text-sm tracking-widest uppercase hover:bg-[#C9A84C]/5 transition-all duration-300">
                         ← Back
                       </button>
-                      <button
-                        onClick={handleSubmit}
-                        disabled={!form.certification || !form.rate}
-                        className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Submit Application
+                      <button onClick={handleSubmit}
+                        disabled={!form.certification || !form.rate || loading}
+                        className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                        {loading ? 'Submitting...' : 'Submit Application'}
                       </button>
                     </div>
                   </div>
