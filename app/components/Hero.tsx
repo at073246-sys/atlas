@@ -7,12 +7,23 @@ import HeroGlobe from './HeroGlobe'
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+      {/* Base background */}
       <div className="absolute inset-0 bg-[#0A0A0A]" />
+      
+      {/* 3D Globe - sits above base, below overlays */}
       <HeroGlobe />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(13,27,42,0.9),transparent)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(201,168,76,0.06),transparent_50%)]" />
+      
+      {/* Very subtle dark vignette on edges only — does NOT cover center where globe is */}
+      <div className="absolute inset-0" style={{
+        background: 'radial-gradient(ellipse 90% 90% at 50% 50%, transparent 40%, rgba(10,10,10,0.85) 100%)'
+      }} />
+      
+      {/* Subtle golden accent bottom-left */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(201,168,76,0.04),transparent_50%)]" />
+      
+      {/* Very subtle grid */}
       <div
-        className="absolute inset-0 opacity-[0.03]"
+        className="absolute inset-0 opacity-[0.02]"
         style={{
           backgroundImage: `linear-gradient(rgba(201,168,76,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.5) 1px, transparent 1px)`,
           backgroundSize: '80px 80px',
@@ -24,7 +35,7 @@ export default function Hero() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
-        className="absolute top-8 w-full flex justify-between items-center px-8 md:px-16"
+        className="absolute top-8 w-full flex justify-between items-center px-8 md:px-16 z-20"
       >
         <div className="text-xs tracking-[0.3em] text-[#C9A84C] uppercase font-light">Est. 2024</div>
         <div className="hidden md:flex gap-8 text-xs tracking-widest text-[#E5E4E2]/50 uppercase">
@@ -36,8 +47,8 @@ export default function Hero() {
         <div className="text-xs tracking-[0.3em] text-[#E5E4E2]/40 uppercase font-light">Private. Verified. Elite.</div>
       </motion.div>
 
-      {/* Main Content */}
-      <div className="relative z-10 text-center px-6 max-w-6xl mx-auto">
+      {/* Main Content — on top of everything */}
+      <div className="relative z-20 text-center px-6 max-w-6xl mx-auto">
 
         {/* Eyebrow */}
         <motion.div
@@ -58,7 +69,7 @@ export default function Hero() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.5, delay: 0.5 }}
-          className="relative z-10 mb-8"
+          className="relative mb-8"
         >
           <h1 className="text-7xl md:text-9xl font-playfair font-black tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-b from-[#E5E4E2] via-[#C9A84C] to-[#8A6D3B] drop-shadow-[0_0_50px_rgba(201,168,76,0.3)]">
             ATLAS
@@ -97,7 +108,7 @@ export default function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20"
       >
         <span className="text-xs tracking-[0.3em] text-[#E5E4E2]/30 uppercase">Scroll</span>
         <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>

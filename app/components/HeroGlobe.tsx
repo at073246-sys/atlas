@@ -1,91 +1,113 @@
 'use client'
-import React, { useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { Sphere, MeshDistortMaterial, Float, Stars, PerspectiveCamera, Torus } from '@react-three/drei'
+import { Canvas, useFrame, useLoader } from '@react-three/fiber'
+import { 
+  OrbitControls, 
+  PerspectiveCamera, 
+  Float, 
+  Sphere,
+  Stars,
+  Sparkles
+} from '@react-three/drei'
+import { useRef, Suspense, useMemo } from 'react'
 import * as THREE from 'three'
 
-function Globe() {
+function SuperPremiumGlobe() {
   const meshRef = useRef<THREE.Mesh>(null)
-  const ring1Ref = useRef<THREE.Mesh>(null)
-  const ring2Ref = useRef<THREE.Mesh>(null)
-
+  const networkRef = useRef<THREE.Mesh>(null)
+  const auraRef = useRef<THREE.Mesh>(null)
+  
+  const texture = useLoader(THREE.TextureLoader, '/globe.jpg.jpeg')
+  
   useFrame((state) => {
     const time = state.clock.getElapsedTime()
-    
-    // Slow, elegant rotation for the main globe
     if (meshRef.current) {
-      meshRef.current.rotation.y = time * 0.03
-      meshRef.current.rotation.z = time * 0.01
+      meshRef.current.rotation.y = time * 0.05 // Very slow, graceful
     }
-    
-    // Smooth, opposing rotations for the orbital rings
-    if (ring1Ref.current) {
-      ring1Ref.current.rotation.x = time * 0.08
-      ring1Ref.current.rotation.y = time * 0.05
+    if (networkRef.current) {
+      networkRef.current.rotation.y = time * 0.07 // Slightly faster for parallax
+      networkRef.current.rotation.z = Math.sin(time * 0.2) * 0.1
     }
-    if (ring2Ref.current) {
-      ring2Ref.current.rotation.x = -time * 0.05
-      ring2Ref.current.rotation.y = time * 0.07
+    if (auraRef.current) {
+      auraRef.current.scale.setScalar(1 + Math.sin(time * 0.5) * 0.03)
     }
   })
 
   return (
-    <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.6}>
-      {/* Main Golden Globe */}
-      <Sphere ref={meshRef} args={[1, 100, 100]} scale={2.4}>
-        <MeshDistortMaterial
-          color="#F0D080"
-          speed={1.5}
-          distort={0.25}
-          metalness={0.7}
-          roughness={0.2}
+    <group>
+      {/* 1. Core Globe Layer (Texture from photo) */}
+      <mesh ref={meshRef}>
+        <sphereGeometry args={[2.5, 64, 64]} />
+        <meshStandardMaterial
+          map={texture}
+          emissiveMap={texture}
           emissive="#C9A84C"
-          emissiveIntensity={0.8}
+          emissiveIntensity={3}
+          transparent={true}
+          opacity={0.8}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </mesh>
+
+      {/* 2. Network / Wireframe Overlay (Popping lines like in the photo) */}
+      <mesh ref={networkRef}>
+        <sphereGeometry args={[2.52, 32, 32]} />
+        <meshBasicMaterial 
+          color="#C9A84C" 
+          wireframe 
+          transparent 
+          opacity={0.15} 
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+
+      {/* 3. Atmospheric Aura (Soft blending edges) */}
+      <mesh ref={auraRef}>
+        <sphereGeometry args={[2.8, 64, 64]} />
+        <meshBasicMaterial 
+          color="#C9A84C" 
+          transparent 
+          opacity={0.05} 
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+
+      {/* 4. Global Glow (Deep atmosphere) */}
+      <Sphere args={[3.2, 32, 32]}>
+        <meshBasicMaterial 
+          color="#C9A84C" 
+          transparent 
+          opacity={0.02} 
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending}
         />
       </Sphere>
-      
-      {/* Inner Orbital Ring (Gold) */}
-      <Torus ref={ring1Ref} args={[3.2, 0.02, 16, 100]} rotation={[Math.PI/3, 0, 0]}>
-        <meshStandardMaterial 
-          color="#F0D080" 
-          metalness={0.8} 
-          roughness={0.1} 
-          emissive="#C9A84C" 
-          emissiveIntensity={1.2} 
-          transparent 
-          opacity={0.8} 
-        />
-      </Torus>
 
-      {/* Outer Orbital Ring (Platinum) */}
-      <Torus ref={ring2Ref} args={[4.5, 0.01, 16, 100]} rotation={[-Math.PI/4, Math.PI/4, 0]}>
-        <meshStandardMaterial 
-          color="#E5E4E2" 
-          metalness={1} 
-          roughness={0.1} 
-          emissive="#ffffff" 
-          emissiveIntensity={0.2} 
-          transparent 
-          opacity={0.3} 
-        />
-      </Torus>
-    </Float>
+      {/* 5. Golden Particles (Sparkles like in the photo) */}
+      <Sparkles count={100} scale={10} size={1.5} speed={0.2} color="#C9A84C" />
+      <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
+    </group>
   )
 }
 
 export default function HeroGlobe() {
   return (
-    <div className="absolute inset-0 z-0 opacity-100">
-      <Canvas>
-        <PerspectiveCamera makeDefault position={[0, 0, 8]} />
-        <ambientLight intensity={1.5} />
-        <spotLight position={[10, 10, 10]} angle={0.2} penumbra={1} intensity={4} color="#ffffff" />
-        <pointLight position={[-10, -10, -10]} intensity={3} color="#F0D080" />
+    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+      <Canvas dpr={[1, 2]} alpha>
+        <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={35} />
         
-        <Globe />
+        <ambientLight intensity={0.5} />
+        <pointLight position={[10, 10, 10]} intensity={2} color="#C9A84C" />
+        <pointLight position={[-10, -10, -10]} intensity={1} color="#8A6D3B" />
+
+        <Suspense fallback={null}>
+          <Float speed={0.8} rotationIntensity={0.2} floatIntensity={0.3}>
+            <SuperPremiumGlobe />
+          </Float>
+        </Suspense>
         
-        {/* Slow moving, subtle starfield background */}
-        <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={0.5} />
+        <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} />
       </Canvas>
     </div>
   )

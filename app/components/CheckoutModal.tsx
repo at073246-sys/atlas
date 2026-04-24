@@ -62,66 +62,77 @@ export default function CheckoutModal({
                 <X className="w-6 h-6" />
               </button>
 
-              <div className="text-center mb-6 mt-4">
-                <h3 className="text-2xl font-playfair font-black text-white mb-2">Secure Payment</h3>
-                <p className="text-sm text-[#E5E4E2]/60">Scan the QR code below to complete your booking for the <strong className="text-[#C9A84C]">{planName}</strong> ({duration})</p>
+              <div className="text-center mb-8 mt-4">
+                <div className="inline-block px-3 py-1 border border-[#C9A84C]/30 rounded-full mb-4">
+                  <span className="text-[10px] text-[#C9A84C] uppercase tracking-[0.3em] font-bold">Elite Concierge</span>
+                </div>
+                <h3 className="text-3xl font-playfair font-black text-white mb-2 tracking-tight">Finalize Selection</h3>
+                <p className="text-xs text-[#E5E4E2]/50 tracking-wide">The <strong className="text-[#C9A84C]">{planName}</strong> awaits you.</p>
               </div>
 
               {/* Order Summary */}
-              <div className="bg-[#0A0A0A] border border-[#C9A84C]/20 rounded-xl p-4 mb-6 flex justify-between items-center">
-                <span className="text-[#E5E4E2]/70 text-sm">Total Amount to Pay</span>
-                <span className="text-2xl font-bold bg-gradient-to-r from-[#C9A84C] to-[#F0D080] bg-clip-text text-transparent">
+              <div className="bg-gradient-to-r from-[#1A1A1A] to-[#0A0A0A] border border-[#C9A84C]/20 rounded-2xl p-5 mb-8 flex justify-between items-center group hover:border-[#C9A84C]/40 transition-colors duration-500">
+                <div className="flex flex-col">
+                  <span className="text-[#E5E4E2]/40 text-[10px] uppercase tracking-widest mb-1">Membership Value</span>
+                  <span className="text-[#E5E4E2]/80 text-xs font-medium uppercase tracking-widest">{duration} Access</span>
+                </div>
+                <span className="text-3xl font-playfair font-bold bg-gradient-to-r from-[#C9A84C] to-[#F0D080] bg-clip-text text-transparent">
                   {price}
                 </span>
               </div>
 
               {/* QR Code Area */}
-              <div className="flex flex-col items-center justify-center mb-6">
-                <div className="w-48 h-48 bg-white p-2 rounded-2xl mb-4 relative overflow-hidden group">
-                  {/* Replace this div with an actual <img> tag pointing to your QR code image */}
-                  <div className="w-full h-full bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300 relative">
-                    <QrCode className="w-12 h-12 text-gray-400" />
-                    {/* Instructions for the user */}
-                    <p className="absolute inset-x-2 text-center text-[10px] text-gray-500 mt-16 font-medium">
-                      (Please place your QR image in <br/>/public/qr.jpg and use an img tag here)
-                    </p>
-                  </div>
-                </div>
+              <div className="flex flex-col items-center justify-center mb-8">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="w-60 h-60 bg-white p-4 rounded-3xl mb-6 relative overflow-hidden group shadow-[0_0_50px_rgba(201,168,76,0.15)] hover:shadow-[0_0_60px_rgba(201,168,76,0.25)] transition-shadow duration-500"
+                >
+                  <img 
+                    src="/qr.jpg.jpeg" 
+                    alt="Payment QR Code" 
+                    className="w-full h-full object-contain rounded-xl"
+                  />
+                  <div className="absolute inset-0 border-[3px] border-[#C9A84C]/10 rounded-3xl pointer-events-none" />
+                </motion.div>
                 
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-[#E5E4E2]/50 text-xs uppercase tracking-widest">Or Pay via UPI ID</span>
-                  <div className="bg-[#1A1A1A] px-4 py-2 rounded-lg border border-white/5 flex items-center gap-3">
-                    <span className="text-[#C9A84C] font-mono font-bold tracking-wider">{UPI_ID}</span>
+                <div className="flex flex-col items-center gap-3 w-full">
+                  <span className="text-[#E5E4E2]/40 text-[10px] uppercase tracking-[0.4em] font-light">Direct UPI Transfer</span>
+                  <div className="bg-[#111] w-full px-6 py-4 rounded-2xl border border-[#C9A84C]/10 flex items-center justify-between group hover:border-[#C9A84C]/30 transition-all duration-300">
+                    <span className="text-[#C9A84C] font-mono font-bold tracking-[0.15em] text-sm">{UPI_ID}</span>
                     <button 
-                      onClick={() => navigator.clipboard.writeText(UPI_ID)}
-                      className="text-xs text-[#E5E4E2]/40 hover:text-white transition-colors uppercase"
+                      onClick={() => {
+                        navigator.clipboard.writeText(UPI_ID)
+                      }}
+                      className="text-[10px] text-[#C9A84C] hover:text-white transition-colors uppercase font-black tracking-widest"
                     >
-                      Copy
+                      Copy ID
                     </button>
                   </div>
                 </div>
               </div>
 
               {/* Security Badge */}
-              <div className="flex items-center justify-center gap-2 mb-8 text-[#E5E4E2]/40 text-xs">
-                <ShieldCheck className="w-4 h-4 text-[#C9A84C]/70" />
-                <span>100% Secure & Encrypted Payment</span>
+              <div className="flex items-center justify-center gap-3 mb-10 text-[#E5E4E2]/30 text-[10px] uppercase tracking-[0.2em]">
+                <ShieldCheck className="w-4 h-4 text-[#C9A84C]/50" />
+                <span>Verified ATLAS Secure Payment</span>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-4">
                 <button
                   onClick={handleConfirmPaid}
-                  className="w-full bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 rounded-xl uppercase tracking-widest text-xs hover:scale-[1.02] transition-transform duration-300 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(201,168,76,0.3)]"
+                  className="w-full bg-gradient-to-r from-[#C9A84C] via-[#F0D080] to-[#C9A84C] bg-[length:200%_auto] hover:bg-right text-[#0A0A0A] font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-[11px] transition-all duration-500 flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(201,168,76,0.2)] hover:scale-[1.02]"
                 >
-                  I Have Paid - Confirm
+                  I have completed payment
                   <ArrowRight className="w-4 h-4" />
                 </button>
                 <button
                   onClick={onClose}
-                  className="w-full py-4 text-[#E5E4E2]/50 text-xs tracking-widest uppercase hover:text-white transition-colors"
+                  className="w-full py-2 text-[#E5E4E2]/30 text-[10px] tracking-[0.3em] uppercase hover:text-white transition-colors font-medium"
                 >
-                  Cancel
+                  Return to selection
                 </button>
               </div>
 

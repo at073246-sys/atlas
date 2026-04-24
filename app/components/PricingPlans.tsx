@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion'
 import { CheckCircle, Crown, Sparkles } from 'lucide-react'
 import { useState } from 'react'
+import CheckoutModal from './CheckoutModal'
 
 const plans = [
   {
@@ -105,6 +106,22 @@ export default function PricingPlans() {
     'GOLD PLAN': '1 Month',
     'ELITE PLAN': '1 Month',
   })
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+  const [selectedPlanForCheckout, setSelectedPlanForCheckout] = useState<any>(null)
+
+  const handleBookNow = (plan: typeof plans[0]) => {
+    const duration = selectedDurations[plan.name] || '1 Month'
+    const durationObj = plan.durations.find(d => d.label === duration)
+    const price = durationObj?.price || plan.offerPrice
+    
+    setSelectedPlanForCheckout({
+      name: plan.name,
+      duration,
+      price,
+      whatsappMsg: plan.whatsappMsg
+    })
+    setIsCheckoutOpen(true)
+  }
 
   const handleWhatsApp = (plan: typeof plans[0]) => {
     const duration = selectedDurations[plan.name] || '1 Month'
@@ -248,24 +265,35 @@ export default function PricingPlans() {
                 </button>
               ) : plan.popular ? (
                 <button
-                  onClick={() => handleWhatsApp(plan)}
+                  onClick={() => handleBookNow(plan)}
                   className="w-full bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-xs hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
                 >
                   <Crown className="w-4 h-4" />
-                  Book on WhatsApp
+                  Book Now
                 </button>
               ) : (
                 <button
-                  onClick={() => handleWhatsApp(plan)}
+                  onClick={() => handleBookNow(plan)}
                   className="w-full py-4 border border-[#C9A84C]/40 text-[#C9A84C] text-xs tracking-widest uppercase hover:bg-[#C9A84C]/5 transition-all duration-300 flex items-center justify-center gap-2"
                 >
-                  Book on WhatsApp
+                  Book Now
                 </button>
               )}
             </motion.div>
           ))}
         </div>
       </div>
+
+      {selectedPlanForCheckout && (
+        <CheckoutModal
+          isOpen={isCheckoutOpen}
+          onClose={() => setIsCheckoutOpen(false)}
+          planName={selectedPlanForCheckout.name}
+          duration={selectedPlanForCheckout.duration}
+          price={selectedPlanForCheckout.price}
+          whatsappMsg={selectedPlanForCheckout.whatsappMsg}
+        />
+      )}
     </section>
   )
 }
