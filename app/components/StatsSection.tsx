@@ -1,11 +1,11 @@
 'use client'
 import { motion } from 'framer-motion'
-import { ShieldCheck, Lock, Star } from 'lucide-react'
+import { ShieldCheck, Lock, CheckCircle, Shield } from 'lucide-react'
 
 const badges = [
-  { icon: <ShieldCheck className="w-5 h-5" />, label: 'Background Verified' },
+  { icon: <CheckCircle className="w-5 h-5" />, label: 'Verified Professionals' },
   { icon: <Lock className="w-5 h-5" />, label: 'NDA Protected' },
-  { icon: <Star className="w-5 h-5" />, label: 'Elite Rated' },
+  { icon: <Shield className="w-5 h-5" />, label: 'Secure Platform' },
 ]
 
 export default function StatsSection() {
@@ -21,19 +21,19 @@ export default function StatsSection() {
         >
           <div className="flex items-center justify-center gap-4 mb-6">
             <div className="h-px w-12 bg-[#C9A84C]/50" />
-            <span className="text-xs tracking-[0.4em] text-[#C9A84C] uppercase">Who We Are</span>
+            <span className="text-xs tracking-[0.4em] text-[#C9A84C] uppercase">The Concept</span>
             <div className="h-px w-12 bg-[#C9A84C]/50" />
           </div>
           <h2 className="text-4xl md:text-6xl font-playfair font-black text-white mb-6">
-            We Don&apos;t Sell Products.
+            We don’t sell products.
             <br />
             <span className="bg-gradient-to-r from-[#C9A84C] to-[#F0D080] bg-clip-text text-transparent">
-              We Deliver People.
+              We deliver people.
             </span>
           </h2>
           <p className="text-[#E5E4E2]/60 text-lg max-w-2xl mx-auto font-light leading-relaxed">
-            ATLAS connects you with the right professional — verified, elite, and ready on demand.
-            Your exact need. Your exact time. Zero compromise.
+            The right professional, for your exact need, at your exact time.
+            Experience the future of elite human talent.
           </p>
         </motion.div>
 
@@ -47,14 +47,14 @@ export default function StatsSection() {
           {badges.map((badge) => (
             <div
               key={badge.label}
-              className="flex items-center gap-2 px-5 py-2 border border-[#C9A84C]/20 rounded-full text-[#C9A84C] text-sm tracking-wide"
+              className="flex items-center gap-2 px-6 py-3 border border-[#C9A84C]/20 bg-[#0D1B2A]/30 backdrop-blur-sm rounded-full text-[#C9A84C] text-sm tracking-wide"
             >
               {badge.icon}
-              <span>{badge.label}</span>
+              <span className="font-medium">{badge.label}</span>
             </div>
           ))}
         </motion.div>
       </div>
     </section>
   )
-}
+}

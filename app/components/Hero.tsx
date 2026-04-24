@@ -2,11 +2,13 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import Image from 'next/image'
+import HeroGlobe from './HeroGlobe'
 
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
       <div className="absolute inset-0 bg-[#0A0A0A]" />
+      <HeroGlobe />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(13,27,42,0.9),transparent)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(201,168,76,0.06),transparent_50%)]" />
       <div
@@ -51,20 +53,16 @@ export default function Hero() {
           <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#C9A84C]" />
         </motion.div>
 
-        {/* LOGO */}
+        {/* ATLAS Title */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, delay: 0.4 }}
-          className="flex justify-center mb-8"
+          transition={{ duration: 1.5, delay: 0.5 }}
+          className="relative z-10 mb-8"
         >
-          <Image
-            src="/logo.png"
-            alt="ATLAS Logo"
-            width={300}
-            height={300}
-            className="object-contain drop-shadow-[0_0_40px_rgba(201,168,76,0.3)]"
-          />
+          <h1 className="text-7xl md:text-9xl font-playfair font-black tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-b from-[#E5E4E2] via-[#C9A84C] to-[#8A6D3B] drop-shadow-[0_0_50px_rgba(201,168,76,0.3)]">
+            ATLAS
+          </h1>
         </motion.div>
 
         {/* Tagline */}
@@ -74,7 +72,7 @@ export default function Hero() {
           transition={{ duration: 1.2, delay: 0.8 }}
           className="text-2xl md:text-4xl font-light text-[#E5E4E2]/70 tracking-[0.2em] mb-16 italic"
         >
-          Your World, Our Promise.
+          Your World, Our Promises.
         </motion.p>
 
         {/* CTAs */}

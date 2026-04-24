@@ -26,6 +26,7 @@ export default function BookingModal({ service, onClose }: Props) {
   const [email, setEmail] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('upi_qr')
   const [transactionId, setTransactionId] = useState('')
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false)
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
   const [done, setDone] = useState(false)
@@ -42,8 +43,12 @@ export default function BookingModal({ service, onClose }: Props) {
   }
 
   const handleConfirmPayment = async () => {
-    if (!transactionId.trim()) {
-      setError('⚠️ Please enter your Transaction ID / UTR Number')
+    if (!paymentConfirmed) {
+      setError('⚠️ Pehle payment confirm karo — checkbox tick karo')
+      return
+    }
+    if (!transactionId.trim() || transactionId.trim().length < 10) {
+      setError('⚠️ Valid Transaction ID / UTR Number daalo (min 10 digits)')
       return
     }
     setError('')
@@ -120,7 +125,7 @@ export default function BookingModal({ service, onClose }: Props) {
 
               {/* Steps */}
               <div className="flex items-center gap-1 mt-4">
-                {['Details', 'Pay', 'Confirm'].map((s, i) => (
+                {['Details', 'Pay', 'Done'].map((s, i) => (
                   <div key={s} className="flex items-center gap-1 flex-1">
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all
                       ${step > i + 1 ? 'bg-[#C9A84C] text-[#0A0A0A]' :
@@ -148,7 +153,9 @@ export default function BookingModal({ service, onClose }: Props) {
                   {durations.map((d, i) => (
                     <button key={d.label} onClick={() => setSelectedDuration(i)}
                       className={`p-3 border rounded-xl text-center transition-all duration-300
-                        ${selectedDuration === i ? 'border-[#C9A84C] bg-[#C9A84C]/10' : 'border-[#C9A84C]/20 hover:border-[#C9A84C]/50'}`}>
+                        ${selectedDuration === i
+                          ? 'border-[#C9A84C] bg-[#C9A84C]/10'
+                          : 'border-[#C9A84C]/20 hover:border-[#C9A84C]/50'}`}>
                       <div className="text-xs font-bold text-white">{d.label}</div>
                       <div className="text-xs text-[#C9A84C] mt-1">₹{numericPrice * d.multiplier}</div>
                     </button>
@@ -206,7 +213,9 @@ export default function BookingModal({ service, onClose }: Props) {
                 ].map((m) => (
                   <button key={m.id} onClick={() => setPaymentMethod(m.id)}
                     className={`p-3 border rounded-xl flex flex-col items-center gap-1 transition-all
-                      ${paymentMethod === m.id ? 'border-[#C9A84C] bg-[#C9A84C]/10' : 'border-[#C9A84C]/20'}`}>
+                      ${paymentMethod === m.id
+                        ? 'border-[#C9A84C] bg-[#C9A84C]/10'
+                        : 'border-[#C9A84C]/20'}`}>
                     <span className="text-[#C9A84C]">{m.icon}</span>
                     <span className="text-[10px] text-white">{m.label}</span>
                   </button>
@@ -219,15 +228,17 @@ export default function BookingModal({ service, onClose }: Props) {
                   <p className="text-xs text-[#C9A84C] tracking-widest uppercase mb-3">Scan & Pay</p>
                   <div className="flex justify-center mb-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/qr.jpg" alt="UPI QR" width={160} height={160}
-                      className="rounded-xl border border-[#C9A84C]/20" />
+                    <img src="/qr.jpg" alt="UPI QR"
+                      className="rounded-xl border border-[#C9A84C]/20 w-40 h-40 object-cover" />
                   </div>
                   <p className="text-sm font-bold text-white">Ayan Thakur</p>
                   <p className="text-xs text-[#E5E4E2]/50 mb-2">{UPI_ID}</p>
                   <div className="p-2 bg-[#C9A84C]/10 rounded-xl">
                     <p className="text-lg font-black text-[#C9A84C]">₹{finalPrice}</p>
                   </div>
-                  <p className="text-[10px] text-[#E5E4E2]/30 mt-2">GPay / PhonePe / Paytm → Scan → Pay</p>
+                  <p className="text-[10px] text-[#E5E4E2]/30 mt-2">
+                    GPay / PhonePe / Paytm kholo → Scan QR → Pay karo
+                  </p>
                 </div>
               )}
 
@@ -241,39 +252,61 @@ export default function BookingModal({ service, onClose }: Props) {
                       {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                     </button>
                   </div>
-                  <div className="p-2 bg-[#C9A84C]/10 rounded-xl text-center">
+                  <div className="p-2 bg-[#C9A84C]/10 rounded-xl text-center mb-2">
                     <p className="text-lg font-black text-[#C9A84C]">₹{finalPrice}</p>
                   </div>
-                  <p className="text-[10px] text-[#E5E4E2]/30 mt-2">UPI ID copy karo → GPay/PhonePe → Pay</p>
+                  <p className="text-[10px] text-[#E5E4E2]/30">
+                    UPI ID copy karo → GPay/PhonePe kholo → Pay karo
+                  </p>
                 </div>
               )}
 
               {/* Net Banking */}
               {paymentMethod === 'bank' && (
                 <div className="p-4 border border-[#C9A84C]/20 rounded-2xl text-center">
-                  <p className="text-sm text-white mb-2">Bank transfer ke liye contact karo</p>
-                  <p className="text-xs text-[#E5E4E2]/40">📧 atlasofficial2090@gmail.com</p>
+                  <p className="text-sm text-white mb-3">Bank transfer ke liye contact karo</p>
+                  <p className="text-xs text-[#E5E4E2]/40 mb-1">📧 atlasofficial2090@gmail.com</p>
                   <p className="text-xs text-[#E5E4E2]/40">📱 +91 7550124573</p>
                 </div>
               )}
 
-              {/* Transaction ID — REQUIRED */}
+              {/* Transaction ID */}
               <div className="p-4 border-2 border-[#C9A84C]/40 rounded-2xl bg-[#C9A84C]/5">
                 <p className="text-xs tracking-widest text-[#C9A84C] uppercase mb-2">
-                  ⚠️ Payment karne ke baad Transaction ID daalo
+                  Transaction ID / UTR Number
                 </p>
                 <input
                   type="text"
                   value={transactionId}
                   onChange={(e) => { setTransactionId(e.target.value); setError('') }}
-                  placeholder="UTR / Transaction ID (e.g. 426789123456)"
+                  placeholder="e.g. 426789123456 (min 10 digits)"
                   className="w-full bg-[#0A0A0A] border border-[#C9A84C]/30 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm"
                 />
-                {error && <p className="text-red-400 text-xs mt-2">{error}</p>}
                 <p className="text-[10px] text-[#E5E4E2]/30 mt-2">
                   GPay/PhonePe → Transaction History → UTR number copy karo
                 </p>
               </div>
+
+              {/* Checkbox */}
+              <div className="flex items-start gap-3 p-3 border border-[#C9A84C]/20 rounded-xl">
+                <input
+                  type="checkbox"
+                  id="payconfirm"
+                  checked={paymentConfirmed}
+                  onChange={(e) => { setPaymentConfirmed(e.target.checked); setError('') }}
+                  className="mt-0.5 w-4 h-4 flex-shrink-0 accent-[#C9A84C]"
+                />
+                <label htmlFor="payconfirm" className="text-xs text-[#E5E4E2]/60 cursor-pointer leading-relaxed">
+                  ✅ Maine <span className="text-[#C9A84C] font-bold">₹{finalPrice}</span> ka payment kar diya hai aur upar diya Transaction ID bilkul sahi hai
+                </label>
+              </div>
+
+              {/* Error */}
+              {error && (
+                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl">
+                  <p className="text-red-400 text-xs">{error}</p>
+                </div>
+              )}
 
               <div className="flex gap-3">
                 <button onClick={() => setStep(1)}
@@ -282,9 +315,9 @@ export default function BookingModal({ service, onClose }: Props) {
                 </button>
                 <button
                   onClick={handleConfirmPayment}
-                  disabled={loading || !transactionId.trim()}
+                  disabled={loading || !transactionId.trim() || transactionId.trim().length < 10 || !paymentConfirmed}
                   className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-3 uppercase tracking-widest text-xs hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-                  {loading ? 'Confirming...' : '✅ Confirm Payment'}
+                  {loading ? 'Confirming...' : '✅ Confirm Booking'}
                 </button>
               </div>
             </div>
@@ -299,8 +332,8 @@ export default function BookingModal({ service, onClose }: Props) {
               </h3>
               <p className="text-[#E5E4E2]/60 mb-2">Service: <span className="text-white font-bold">{service.title}</span></p>
               <p className="text-[#E5E4E2]/60 mb-2">Duration: <span className="text-white font-bold">{durations[selectedDuration].label}</span></p>
-              <p className="text-[#E5E4E2]/60 mb-2">Amount: <span className="text-[#C9A84C] font-bold">₹{finalPrice}</span></p>
-              <p className="text-[#E5E4E2]/60 mb-6">Transaction ID: <span className="text-white font-bold">{transactionId}</span></p>
+              <p className="text-[#E5E4E2]/60 mb-2">Amount Paid: <span className="text-[#C9A84C] font-bold">₹{finalPrice}</span></p>
+              <p className="text-[#E5E4E2]/60 mb-6">Transaction ID: <span className="text-white font-bold text-xs">{transactionId}</span></p>
               <p className="text-xs text-[#E5E4E2]/40 tracking-widest uppercase mb-8">
                 Hamari team 2 ghante mein {phone} pe contact karegi
               </p>

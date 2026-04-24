@@ -7,25 +7,19 @@ const steps = [
     number: '01',
     icon: <Search className="w-7 h-7 text-[#0A0A0A]" />,
     title: 'Choose Your Need',
-    desc: 'Browse our curated categories. Tell us exactly what you need — we listen to every detail.',
+    desc: 'Browse categories and find your service. Tell us exactly what you need.',
   },
   {
     number: '02',
     icon: <UserCheck className="w-7 h-7 text-[#0A0A0A]" />,
     title: 'Pick Your Professional',
-    desc: 'Browse verified profiles, portfolios, fees, and availability. Only the best make it here.',
+    desc: 'View portfolios, fees, and availability. Choose the elite talent that fits your vision.',
   },
   {
     number: '03',
     icon: <CreditCard className="w-7 h-7 text-[#0A0A0A]" />,
     title: 'One Payment, Full Access',
-    desc: 'Book, pay securely, and they arrive. No hidden fees. Just seamless elite service.',
-  },
-  {
-    number: '04',
-    icon: <Sparkles className="w-7 h-7 text-[#0A0A0A]" />,
-    title: 'Experience Excellence',
-    desc: 'Sit back. Your professional is on the way. This is what it feels like when the world works for you.',
+    desc: 'Book, pay, and they arrive. Simple, seamless, and absolutely professional.',
   },
 ]
 
@@ -53,7 +47,7 @@ export default function HowItWorks() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
           {steps.map((step, index) => (
             <motion.div
               key={step.number}

@@ -5,33 +5,33 @@ import { ShieldCheck, Lock, Star, Eye, Clock, CreditCard } from 'lucide-react'
 const trustPoints = [
   {
     icon: <ShieldCheck className="w-8 h-8 text-[#C9A84C]" />,
-    title: '100% Background Verified',
-    desc: 'Every professional undergoes rigorous credential checks and background verification before joining.',
+    title: 'Background Verified',
+    desc: 'Every professional undergoes rigorous background and credential verification before joining.',
   },
   {
     icon: <Lock className="w-8 h-8 text-[#C9A84C]" />,
-    title: 'NDA on Every Engagement',
-    desc: 'Your privacy is sacred. Every professional signs a strict NDA before they meet you.',
-  },
-  {
-    icon: <Star className="w-8 h-8 text-[#C9A84C]" />,
-    title: '5-Star Client Reviews',
-    desc: 'We maintain a 4.9/5 rating across all categories — mediocrity is never acceptable.',
-  },
-  {
-    icon: <Eye className="w-8 h-8 text-[#C9A84C]" />,
-    title: 'Anonymous Review Option',
-    desc: 'Your identity stays yours. Leave reviews under "CEO, Fortune 500" — privacy guaranteed.',
-  },
-  {
-    icon: <Clock className="w-8 h-8 text-[#C9A84C]" />,
-    title: '24/7 Client Protection',
-    desc: 'Our dedicated client support team is available around the clock. Always.',
+    title: 'NDA Protection',
+    desc: 'Absolute privacy for every engagement. Non-disclosure agreements are standard on our platform.',
   },
   {
     icon: <CreditCard className="w-8 h-8 text-[#C9A84C]" />,
-    title: 'Secure Encrypted Payments',
-    desc: 'Bank-grade encryption on all transactions. Razorpay + Stripe. Your money, fully protected.',
+    title: 'Secure Payments',
+    desc: 'Bank-grade encryption on all transactions. Your financial security is our top priority.',
+  },
+  {
+    icon: <Star className="w-8 h-8 text-[#C9A84C]" />,
+    title: 'Elite Reviews',
+    desc: 'Real feedback from our world-class clients. Anonymous reviews available on request.',
+  },
+  {
+    icon: <Clock className="w-8 h-8 text-[#C9A84C]" />,
+    title: '24/7 Protection',
+    desc: 'Round-the-clock client support and dispute resolution for every booking.',
+  },
+  {
+    icon: <ShieldCheck className="w-8 h-8 text-[#C9A84C]" />,
+    title: 'Certified Talent',
+    desc: 'We only partner with recognized institutions and certified world-class professionals.',
   },
 ]
 

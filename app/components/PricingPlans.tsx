@@ -10,20 +10,22 @@ const plans = [
     tagline: 'Essential access at a smarter price',
     suitable: 'Students & early professionals',
     services: [
-      { name: 'Daily Planner', value: '₹299/month' },
-      { name: 'Communication Coach', value: '₹499/month' },
-      { name: 'Content Writer', value: '₹299 for 5 posts' },
-      { name: 'Dietitian', value: '₹399/month' },
+      { name: 'Daily Planner', value: 'Included' },
+      { name: 'Communication', value: 'Included' },
+      { name: 'Content Writer', value: 'Included' },
+      { name: 'Dietitian', value: 'Included' },
     ],
     note: 'Pick any 3 services',
     totalValue: '₹1,200',
+    offerPrice: '₹799',
+    savings: 'Save ₹401',
     durations: [
       { label: '1 Week', price: '₹299' },
       { label: '1 Month', price: '₹799' },
     ],
     popular: false,
     color: 'border-[#E5E4E2]/20',
-    whatsappMsg: 'Hi! I want to subscribe to the PRO PLAN on ATLAS.',
+    whatsappMsg: 'Hi! I want to subscribe to the PRO PLAN (₹799/month) on ATLAS.',
   },
   {
     icon: '🥇',
@@ -32,20 +34,20 @@ const plans = [
     suitable: 'Creators & entrepreneurs',
     services: [
       { name: 'All PRO Services', value: 'Included' },
-      { name: 'Digital Designer', value: '₹999 for 5 posts' },
-      { name: 'Personal Mentor', value: '₹799/month' },
-      { name: 'Communication Coach', value: '₹499/month' },
-      { name: 'Content Writer', value: '₹599/month' },
+      { name: 'Digital Designer', value: 'Included' },
+      { name: 'Personal Mentor', value: 'Included' },
     ],
     note: 'Pick any 5 services',
     totalValue: '₹2,500',
+    offerPrice: '₹1499',
+    savings: 'Save ₹1,001',
     durations: [
       { label: '1 Week', price: '₹599' },
-      { label: '1 Month', price: '₹1,499' },
+      { label: '1 Month', price: '₹1499' },
     ],
     popular: false,
     color: 'border-[#C9A84C]/30',
-    whatsappMsg: 'Hi! I want to subscribe to the GOLD PLAN on ATLAS.',
+    whatsappMsg: 'Hi! I want to subscribe to the GOLD PLAN (₹1499/month) on ATLAS.',
   },
   {
     icon: '💎',
@@ -53,23 +55,25 @@ const plans = [
     tagline: 'Everything. Unlimited. No compromise.',
     suitable: 'High-level clients who want it all',
     services: [
-      { name: 'Daily Planner', value: 'Included' },
-      { name: 'Dietitian', value: 'Included' },
-      { name: 'Content Writer', value: 'Included' },
-      { name: 'Digital Designer', value: 'Included' },
-      { name: 'Personal Editor', value: 'Included' },
-      { name: 'Communication Coach', value: 'Included' },
-      { name: 'Personal Mentor', value: 'Included' },
+      { name: 'Daily Planner', value: 'Unlimited' },
+      { name: 'Dietitian', value: 'Unlimited' },
+      { name: 'Content Writer', value: 'Unlimited' },
+      { name: 'Digital Designer', value: 'Unlimited' },
+      { name: 'Personal Editor', value: 'Unlimited' },
+      { name: 'Communication', value: 'Unlimited' },
+      { name: 'Personal Mentor', value: 'Unlimited' },
     ],
-    note: 'All 7 services included',
+    note: 'All services included',
     totalValue: '₹5,000+',
+    offerPrice: '₹2499',
+    savings: 'Save ₹2,500+',
     durations: [
       { label: '1 Week', price: '₹999' },
-      { label: '1 Month', price: '₹2,499' },
+      { label: '1 Month', price: '₹2499' },
     ],
     popular: true,
     color: 'border-[#C9A84C]/60',
-    whatsappMsg: 'Hi! I want to subscribe to the ELITE PLAN on ATLAS.',
+    whatsappMsg: 'Hi! I want to subscribe to the ELITE PLAN (₹2499/month) on ATLAS.',
   },
   {
     icon: '🔮',
@@ -77,13 +81,14 @@ const plans = [
     tagline: 'The ultimate 12-month commitment',
     suitable: 'Coming soon — join the waitlist',
     services: [
-      { name: 'All Elite Benefits', value: 'Included' },
+      { name: 'All Elite Benefits', value: '12 Months' },
+      { name: 'Exclusive Perks', value: 'Included' },
       { name: 'Loyalty Rewards', value: 'Included' },
-      { name: 'Early Access', value: 'New categories' },
-      { name: 'Annual Strategy Session', value: 'Included' },
     ],
-    note: 'All Elite benefits + more',
+    note: 'Extended partnership',
     totalValue: 'Best Value',
+    offerPrice: 'TBA',
+    savings: 'Coming Soon',
     durations: [],
     popular: false,
     comingSoon: true,
@@ -104,8 +109,13 @@ export default function PricingPlans() {
   const handleWhatsApp = (plan: typeof plans[0]) => {
     const duration = selectedDurations[plan.name] || '1 Month'
     const durationObj = plan.durations.find(d => d.label === duration)
-    const price = durationObj?.price || ''
-    const msg = `${plan.whatsappMsg}%0A%0APlan: ${plan.name}%0ADuration: ${duration}%0APrice: ${price}%0A%0APlease confirm my booking.`
+    const price = durationObj?.price || plan.offerPrice
+    const msg = `🌟 *New Membership Inquiry on ATLAS*%0A%0A` +
+      `🏆 *Plan:* ${plan.name}%0A` +
+      `⏳ *Duration:* ${duration}%0A` +
+      `💰 *Price:* ${price}%0A` +
+      `🎁 *Savings:* ${plan.savings}%0A%0A` +
+      `_Please confirm my membership. Your World, Our Promises._`
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
   }
 
@@ -187,11 +197,20 @@ export default function PricingPlans() {
                 ))}
               </ul>
 
-              {/* Total Value */}
+              {/* Pricing */}
               {!plan.comingSoon && (
-                <div className="flex justify-between items-center mb-4 p-3 border border-[#C9A84C]/10 rounded-xl">
-                  <span className="text-xs text-[#E5E4E2]/40">Total Value</span>
-                  <span className="text-sm font-bold text-[#E5E4E2]/40 line-through">{plan.totalValue}</span>
+                <div className="mb-6 space-y-2">
+                  <div className="flex justify-between items-center text-[10px] tracking-widest text-[#E5E4E2]/30 uppercase">
+                    <span>Actual Value</span>
+                    <span className="line-through">{plan.totalValue}</span>
+                  </div>
+                  <div className="flex justify-between items-end">
+                    <div className="text-3xl font-playfair font-black text-white">{plan.offerPrice}</div>
+                    <div className="text-[10px] font-bold text-[#C9A84C] px-2 py-1 bg-[#C9A84C]/10 rounded-lg uppercase tracking-widest">
+                      {plan.savings}
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-[#E5E4E2]/40 italic">One single payment. Zero extra charges.</p>
                 </div>
               )}
 

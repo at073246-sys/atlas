@@ -1,6 +1,6 @@
 'use client'
 import { motion } from 'framer-motion'
-import { Mail } from 'lucide-react'
+import { Mail, Phone } from 'lucide-react'
 
 const links = [
   { label: 'About', href: '#' },
@@ -13,7 +13,7 @@ const links = [
 
 export default function Footer() {
   return (
-    <footer className="pt-20 pb-10 relative overflow-hidden">
+    <footer className="pt-20 pb-10 relative overflow-hidden bg-[#0A0A0A]">
       <div className="container mx-auto px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -25,7 +25,7 @@ export default function Footer() {
             ATLAS
           </h3>
           <p className="text-xl text-[#E5E4E2]/50 italic tracking-[0.2em]">
-            Your World, Our Promise.
+            Your World, Our Promises.
           </p>
         </motion.div>
 
@@ -38,18 +38,28 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="flex justify-center gap-4 mb-12">
-          <a href="mailto:contact@atlas.com"
-            className="w-10 h-10 border border-[#C9A84C]/20 flex items-center justify-center text-[#E5E4E2]/40 hover:text-[#C9A84C] transition-all duration-300">
-            <Mail className="w-4 h-4" />
+        <div className="flex justify-center gap-6 mb-12">
+          <a href="mailto:atlasofficial2090@gmail.com"
+            className="w-12 h-12 border border-[#C9A84C]/20 flex items-center justify-center text-[#E5E4E2]/40 hover:text-[#C9A84C] hover:border-[#C9A84C]/50 transition-all duration-300 rounded-full">
+            <Mail className="w-5 h-5" />
+          </a>
+          <a href="https://wa.me/917550124573" target="_blank" rel="noopener noreferrer"
+            className="w-12 h-12 border border-[#C9A84C]/20 flex items-center justify-center text-[#E5E4E2]/40 hover:text-[#C9A84C] hover:border-[#C9A84C]/50 transition-all duration-300 rounded-full">
+            <Phone className="w-5 h-5" />
           </a>
         </div>
 
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-[#C9A84C] to-transparent mb-8" />
+        <div className="text-center mb-12">
+          <p className="text-sm text-[#E5E4E2]/30 italic tracking-widest">
+            "Trusted by the world&apos;s most demanding individuals."
+          </p>
+        </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs tracking-widest text-[#E5E4E2]/20 uppercase">
-          <span>2024 Atlas. All rights reserved.</span>
-          <span className="text-[#C9A84C]/40">Your World, Our Promise.</span>
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-[#C9A84C] to-transparent mb-8 opacity-20" />
+
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] tracking-widest text-[#E5E4E2]/20 uppercase">
+          <span>&copy; 2024 ATLAS. All rights reserved.</span>
+          <span className="text-[#C9A84C]/40">Your World, Our Promises.</span>
           <span>Privacy · Security · Excellence</span>
         </div>
       </div>
