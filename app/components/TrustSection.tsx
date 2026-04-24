@@ -116,25 +116,34 @@ export default function TrustSection() {
         </div>
 
         <div className="text-center mb-12">
-          <h3 className="text-2xl font-playfair font-bold text-white">Voices from the Elite</h3>
+          <h3 className="text-2xl font-playfair font-bold text-white uppercase tracking-[0.2em]">Our Commitment</h3>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {testimonials.map((t, i) => (
+          {[
+            {
+              title: 'Absolute Privacy',
+              desc: 'Your identity and requirements are guarded by the highest standards of confidentiality.'
+            },
+            {
+              title: 'Unrivaled Quality',
+              desc: 'We do not compromise. Only the top 1% of talent makes it through our selection process.'
+            },
+            {
+              title: 'Rapid Execution',
+              desc: 'Elite service means moving at your speed. Most placements are completed within 24 hours.'
+            }
+          ].map((item, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.15 }}
-              className="bg-gradient-to-br from-[#0A0A0A]/85 to-[#0D1B2A]/85 border border-[#C9A84C]/20 shadow-2xl rounded-2xl p-8 border-l-2 border-l-[#C9A84C]/40"
+              className="bg-gradient-to-br from-[#0A0A0A]/85 to-[#0D1B2A]/85 border border-[#C9A84C]/20 shadow-2xl rounded-2xl p-8 border-t-2 border-t-[#C9A84C]/40"
             >
-              <div className="text-[#C9A84C]/40 text-5xl font-playfair leading-none mb-4">&ldquo;</div>
-              <p className="text-[#E5E4E2]/70 text-sm leading-relaxed italic mb-6">{t.quote}</p>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-px bg-[#C9A84C]/40" />
-                <span className="text-xs tracking-widest text-[#C9A84C]/60 uppercase">{t.from}</span>
-              </div>
+              <h4 className="text-lg font-playfair font-bold text-[#C9A84C] mb-4 uppercase tracking-wider">{item.title}</h4>
+              <p className="text-[#E5E4E2]/70 text-sm leading-relaxed">{item.desc}</p>
             </motion.div>
           ))}
         </div>
