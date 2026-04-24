@@ -31,14 +31,14 @@ export default function HowItWorks() {
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
-        className="absolute -left-40 md:-left-48 top-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[550px] md:h-[550px] pointer-events-none z-0 opacity-10 md:opacity-12"
+        className="absolute -left-20 md:-left-48 top-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[550px] md:h-[550px] pointer-events-none z-0 opacity-25 md:opacity-12"
       >
         <img
           src="/watch.jpg.jpeg"
           alt=""
           className="w-full h-full object-cover rounded-full"
           style={{
-            filter: 'brightness(0.5) saturate(0.6) hue-rotate(180deg)',
+            filter: 'brightness(0.6) saturate(0.8) hue-rotate(180deg)',
             mixBlendMode: 'screen',
           }}
         />

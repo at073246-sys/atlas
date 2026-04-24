@@ -160,14 +160,14 @@ export default function TalentRegister() {
           repeat: Infinity, 
           ease: 'easeInOut' 
         }}
-        className="absolute -left-10 md:-left-20 top-1/4 w-[250px] h-[250px] md:w-[450px] md:h-[450px] pointer-events-none z-0 opacity-10 md:opacity-15"
+        className="absolute -left-5 md:-left-20 top-1/4 w-[250px] h-[250px] md:w-[450px] md:h-[450px] pointer-events-none z-0 opacity-30 md:opacity-15"
       >
         <img
           src="/brain.jpg.jpeg"
           alt=""
           className="w-full h-full object-contain"
           style={{
-            filter: 'brightness(0.6) saturate(1.2) contrast(1.1)',
+            filter: 'brightness(0.7) saturate(1.2) contrast(1.1)',
             mixBlendMode: 'screen',
           }}
         />

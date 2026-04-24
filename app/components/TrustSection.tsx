@@ -58,14 +58,14 @@ export default function TrustSection() {
       <motion.div
         animate={{ y: [-20, 20, -20], rotate: [-3, 3, -3] }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute -right-20 md:-right-32 top-10 w-[300px] h-[300px] md:w-[500px] md:h-[500px] pointer-events-none z-0 opacity-10 md:opacity-15"
+        className="absolute -right-15 md:-right-32 top-10 w-[300px] h-[300px] md:w-[500px] md:h-[500px] pointer-events-none z-0 opacity-30 md:opacity-15"
       >
         <img
           src="/king.jpg.jpeg"
           alt=""
           className="w-full h-full object-cover rounded-full"
           style={{
-            filter: 'brightness(0.6) saturate(1.2)',
+            filter: 'brightness(0.7) saturate(1.2)',
             mixBlendMode: 'screen',
           }}
         />

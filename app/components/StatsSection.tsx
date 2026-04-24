@@ -16,14 +16,14 @@ export default function StatsSection() {
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
-        className="absolute -right-40 md:right-[-10rem] top-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[600px] md:h-[600px] pointer-events-none z-0 opacity-10 md:opacity-18"
+        className="absolute -right-20 md:-right-40 top-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[600px] md:h-[600px] pointer-events-none z-0 opacity-30 md:opacity-18"
       >
         <img
           src="/music.jpg.jpeg"
           alt=""
           className="w-full h-full object-cover rounded-full"
           style={{
-            filter: 'brightness(0.7) saturate(1.4) sepia(0.3)',
+            filter: 'brightness(0.8) saturate(1.4) sepia(0.2)',
             mixBlendMode: 'screen',
           }}
         />
