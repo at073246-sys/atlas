@@ -13,6 +13,9 @@ const durations = [
   { label: '1 Month', multiplier: 15 },
 ]
 
+const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+const validatePhone = (phone: string) => /^[6-9]\d{9}$/.test(phone.replace(/\s+/g, ''))
+
 interface Props {
   service: { title: string; pricing: { label: string; price: string }[] }
   onClose: () => void
@@ -30,7 +33,8 @@ export default function BookingModal({ service, onClose }: Props) {
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
   const [done, setDone] = useState(false)
-  const [error, setError] = useState('')
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const [payError, setPayError] = useState('')
 
   const basePrice = service.pricing[0]?.price || '₹99'
   const numericPrice = parseInt(basePrice.replace(/[^\d]/g, '')) || 99
@@ -42,16 +46,31 @@ export default function BookingModal({ service, onClose }: Props) {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const validateStep1 = () => {
+    const newErrors: { [key: string]: string } = {}
+    if (!name.trim() || name.trim().length < 2) {
+      newErrors.name = '⚠️ Valid naam daalo (min 2 characters)'
+    }
+    if (!validatePhone(phone)) {
+      newErrors.phone = '⚠️ Valid 10 digit Indian mobile number daalo'
+    }
+    if (!validateEmail(email)) {
+      newErrors.email = '⚠️ Valid email daalo (e.g. name@gmail.com)'
+    }
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const handleConfirmPayment = async () => {
     if (!paymentConfirmed) {
-      setError('⚠️ Pehle payment confirm karo — checkbox tick karo')
+      setPayError('⚠️ Pehle payment confirm karo — checkbox tick karo')
       return
     }
     if (!transactionId.trim() || transactionId.trim().length < 10) {
-      setError('⚠️ Valid Transaction ID / UTR Number daalo (min 10 digits)')
+      setPayError('⚠️ Valid Transaction ID / UTR Number daalo (min 10 digits)')
       return
     }
-    setError('')
+    setPayError('')
     setLoading(true)
     try {
       await fetch(FORMSPREE_URL, {
@@ -90,6 +109,9 @@ export default function BookingModal({ service, onClose }: Props) {
       setLoading(false)
     }
   }
+
+  const inputClass = (field: string) =>
+    `w-full bg-[#0A0A0A] border ${errors[field] ? 'border-red-500/50' : 'border-[#C9A84C]/20'} rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm`
 
   return (
     <AnimatePresence>
@@ -147,6 +169,7 @@ export default function BookingModal({ service, onClose }: Props) {
           {/* STEP 1 — Details */}
           {step === 1 && (
             <div className="space-y-4">
+              {/* Duration */}
               <div>
                 <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-3">Select Duration</p>
                 <div className="grid grid-cols-3 gap-2">
@@ -163,27 +186,37 @@ export default function BookingModal({ service, onClose }: Props) {
                 </div>
               </div>
 
+              {/* Name */}
               <div>
                 <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Full Name</p>
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  className="w-full bg-[#0A0A0A] border border-[#C9A84C]/20 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm" />
+                <input type="text" value={name}
+                  onChange={(e) => { setName(e.target.value); setErrors(p => ({ ...p, name: '' })) }}
+                  placeholder="Your full name"
+                  className={inputClass('name')} />
+                {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
               </div>
 
+              {/* Phone */}
               <div>
                 <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Phone Number</p>
-                <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+91 XXXXX XXXXX"
-                  className="w-full bg-[#0A0A0A] border border-[#C9A84C]/20 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm" />
+                <input type="tel" value={phone}
+                  onChange={(e) => { setPhone(e.target.value); setErrors(p => ({ ...p, phone: '' })) }}
+                  placeholder="10 digit mobile number"
+                  className={inputClass('phone')} />
+                {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone}</p>}
               </div>
 
+              {/* Email */}
               <div>
                 <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Email</p>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                <input type="email" value={email}
+                  onChange={(e) => { setEmail(e.target.value); setErrors(p => ({ ...p, email: '' })) }}
                   placeholder="your@email.com"
-                  className="w-full bg-[#0A0A0A] border border-[#C9A84C]/20 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm" />
+                  className={inputClass('email')} />
+                {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
               </div>
 
+              {/* Total */}
               <div className="flex justify-between items-center p-3 border border-[#C9A84C]/20 rounded-xl">
                 <span className="text-[#E5E4E2]/50 text-sm">Total Amount</span>
                 <span className="text-xl font-playfair font-black bg-gradient-to-r from-[#C9A84C] to-[#F0D080] bg-clip-text text-transparent">
@@ -192,9 +225,8 @@ export default function BookingModal({ service, onClose }: Props) {
               </div>
 
               <button
-                onClick={() => setStep(2)}
-                disabled={!name || !phone || !email}
-                className="w-full bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                onClick={() => { if (validateStep1()) setStep(2) }}
+                className="w-full bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300">
                 Proceed to Payment →
               </button>
             </div>
@@ -213,9 +245,7 @@ export default function BookingModal({ service, onClose }: Props) {
                 ].map((m) => (
                   <button key={m.id} onClick={() => setPaymentMethod(m.id)}
                     className={`p-3 border rounded-xl flex flex-col items-center gap-1 transition-all
-                      ${paymentMethod === m.id
-                        ? 'border-[#C9A84C] bg-[#C9A84C]/10'
-                        : 'border-[#C9A84C]/20'}`}>
+                      ${paymentMethod === m.id ? 'border-[#C9A84C] bg-[#C9A84C]/10' : 'border-[#C9A84C]/20'}`}>
                     <span className="text-[#C9A84C]">{m.icon}</span>
                     <span className="text-[10px] text-white">{m.label}</span>
                   </button>
@@ -278,7 +308,7 @@ export default function BookingModal({ service, onClose }: Props) {
                 <input
                   type="text"
                   value={transactionId}
-                  onChange={(e) => { setTransactionId(e.target.value); setError('') }}
+                  onChange={(e) => { setTransactionId(e.target.value); setPayError('') }}
                   placeholder="e.g. 426789123456 (min 10 digits)"
                   className="w-full bg-[#0A0A0A] border border-[#C9A84C]/30 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm"
                 />
@@ -293,18 +323,18 @@ export default function BookingModal({ service, onClose }: Props) {
                   type="checkbox"
                   id="payconfirm"
                   checked={paymentConfirmed}
-                  onChange={(e) => { setPaymentConfirmed(e.target.checked); setError('') }}
+                  onChange={(e) => { setPaymentConfirmed(e.target.checked); setPayError('') }}
                   className="mt-0.5 w-4 h-4 flex-shrink-0 accent-[#C9A84C]"
                 />
                 <label htmlFor="payconfirm" className="text-xs text-[#E5E4E2]/60 cursor-pointer leading-relaxed">
-                  ✅ Maine <span className="text-[#C9A84C] font-bold">₹{finalPrice}</span> ka payment kar diya hai aur upar diya Transaction ID bilkul sahi hai
+                  ✅ Maine <span className="text-[#C9A84C] font-bold">₹{finalPrice}</span> ka payment kar diya hai aur Transaction ID bilkul sahi hai
                 </label>
               </div>
 
               {/* Error */}
-              {error && (
+              {payError && (
                 <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl">
-                  <p className="text-red-400 text-xs">{error}</p>
+                  <p className="text-red-400 text-xs">{payError}</p>
                 </div>
               )}
 
