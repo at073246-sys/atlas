@@ -1,10 +1,12 @@
 'use client'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { Upload, CheckCircle, ArrowRight } from 'lucide-react'
+import { CheckCircle, ArrowRight } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 
-const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY || ''
+const FORMSPREE_URL = 'https://formspree.io/f/mqewwolv'
 const WHATSAPP_NUMBER = '917550124573'
 
 const categories = [
@@ -15,7 +17,6 @@ const categories = [
 ]
 
 const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-const validatePhone = (phone: string) => /^[6-9]\d{9}$/.test(phone.replace(/\s+/g, ''))
 
 export default function TalentRegister() {
   const [step, setStep] = useState(1)
@@ -40,8 +41,8 @@ export default function TalentRegister() {
     if (!validateEmail(form.email)) {
       newErrors.email = '⚠️ Valid email daalo (e.g. name@gmail.com)'
     }
-    if (!validatePhone(form.phone)) {
-      newErrors.phone = '⚠️ Valid 10 digit Indian mobile number daalo'
+    if (!form.phone || !isValidPhoneNumber(form.phone)) {
+      newErrors.phone = '⚠️ Valid phone number daalo'
     }
     if (!form.category) {
       newErrors.category = '⚠️ Category select karo'
@@ -55,8 +56,8 @@ export default function TalentRegister() {
     if (!form.experience.trim()) {
       newErrors.experience = '⚠️ Experience daalo'
     }
-    if (!form.bio.trim() || form.bio.trim().length < 20) {
-      newErrors.bio = '⚠️ Bio thoda detail mein likho (min 20 characters)'
+    if (!form.bio.trim() || form.bio.trim().length < 10) {
+      newErrors.bio = '⚠️ Bio thoda detail mein likho (min 10 characters)'
     }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -74,61 +75,49 @@ export default function TalentRegister() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleNext1 = () => {
-    if (validateStep1()) setStep(2)
-  }
-
-  const handleNext2 = () => {
-    if (validateStep2()) setStep(3)
-  }
-
-  const sanitizeInput = (str: string) => str.replace(/<[^>]*>?/gm, '').trim()
-
   const handleSubmit = async () => {
     if (!validateStep3()) return
     setLoading(true)
-
-    // Sanitize all inputs before submission
-    const sanitizedForm = {
-      name: sanitizeInput(form.name),
-      email: sanitizeInput(form.email),
-      phone: sanitizeInput(form.phone),
-      category: sanitizeInput(form.category),
-      experience: sanitizeInput(form.experience),
-      bio: sanitizeInput(form.bio),
-      portfolio: sanitizeInput(form.portfolio),
-      certification: sanitizeInput(form.certification),
-      rate: sanitizeInput(form.rate),
-    }
-
     try {
-      // 1. Save to Supabase
-      const { error: dbError } = await supabase.from('talents').insert(sanitizedForm)
-      if (dbError) console.error('Supabase Error:', dbError)
+      await supabase.from('talent_registrations').insert({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        category: form.category,
+        experience: form.experience,
+        bio: form.bio,
+        portfolio: form.portfolio || 'Not provided',
+        certification: form.certification,
+        rate: form.rate,
+        status: 'pending'
+      })
 
-      // 2. Send Email via Web3Forms
-      if (WEB3FORMS_KEY) {
-        await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            access_key: WEB3FORMS_KEY,
-            subject: '🌟 New Talent Registration on ATLAS',
-            from_name: 'ATLAS Talent Portal',
-            ...sanitizedForm
-          }),
-        })
-      }
+      await fetch(FORMSPREE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'TALENT REGISTRATION',
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          category: form.category,
+          experience: form.experience,
+          bio: form.bio,
+          portfolio: form.portfolio || 'Not provided',
+          certification: form.certification,
+          rate: form.rate,
+        }),
+      })
 
       const msg =
         `🌟 *New Talent Registration on ATLAS!*%0A%0A` +
-        `👤 *Name:* ${sanitizedForm.name}%0A` +
-        `📱 *Phone:* ${sanitizedForm.phone}%0A` +
-        `📧 *Email:* ${sanitizedForm.email}%0A` +
-        `🎯 *Category:* ${sanitizedForm.category}%0A` +
-        `⏳ *Experience:* ${sanitizedForm.experience}%0A` +
-        `💰 *Expected Rate:* ${sanitizedForm.rate}/day%0A` +
-        `🔗 *Portfolio:* ${sanitizedForm.portfolio || 'Not provided'}%0A%0A` +
+        `👤 *Name:* ${form.name}%0A` +
+        `📱 *Phone:* ${form.phone}%0A` +
+        `📧 *Email:* ${form.email}%0A` +
+        `🎯 *Category:* ${form.category}%0A` +
+        `⏳ *Experience:* ${form.experience}%0A` +
+        `💰 *Expected Rate:* ${form.rate}/day%0A` +
+        `🔗 *Portfolio:* ${form.portfolio || 'Not provided'}%0A%0A` +
         `_ATLAS — Your World, Our Promise._`
 
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
@@ -147,33 +136,6 @@ export default function TalentRegister() {
 
   return (
     <section id="join" className="py-28 relative overflow-hidden">
-      {/* Blended 3D Background Element — Brain/Balance */}
-      <motion.div
-        animate={{ 
-          rotate: [-1, 1, -1],
-          y: [-5, 5, -5]
-        }}
-        transition={{ 
-          duration: 10, 
-          repeat: Infinity, 
-          ease: 'easeInOut' 
-        }}
-        className="absolute -left-5 md:-left-20 top-1/4 w-[250px] h-[250px] md:w-[450px] md:h-[450px] pointer-events-none z-0 opacity-30 md:opacity-15"
-      >
-        <img
-          src="/brain.jpg.jpeg"
-          alt=""
-          className="w-full h-full object-contain"
-          style={{
-            filter: 'brightness(0.7) saturate(1.2) contrast(1.1)',
-            mixBlendMode: 'screen',
-          }}
-        />
-      </motion.div>
-
-      {/* Soft vignette for the brain element */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_0%_30%,transparent_20%,#0A0A0A_80%)] pointer-events-none z-[1]" />
-
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(13,27,42,0.5),transparent_70%)]" />
 
       <div className="container mx-auto px-6 relative z-10">
@@ -195,7 +157,7 @@ export default function TalentRegister() {
             </span>
           </h2>
           <p className="text-[#E5E4E2]/60 text-lg max-w-2xl mx-auto">
-            Join ATLAS as a verified professional. Share your portfolio, certifications, and expertise — we connect you with elite clients and you earn on your terms.
+            Join ATLAS as a verified professional. Share your expertise — we connect you with elite clients and you earn on your terms.
           </p>
         </motion.div>
 
@@ -206,9 +168,9 @@ export default function TalentRegister() {
           className="grid md:grid-cols-3 gap-6 mb-20 max-w-4xl mx-auto"
         >
           {[
-            { step: '01', title: 'Register', desc: 'Fill your profile with skills, portfolio and certifications' },
-            { step: '02', title: 'Get Verified', desc: 'Our team reviews and verifies your credentials within 48 hours' },
-            { step: '03', title: 'Start Earning', desc: 'Get matched with elite clients and earn on your own terms' },
+            { step: '01', title: 'Register', desc: 'Fill your profile with skills and certifications' },
+            { step: '02', title: 'Get Verified', desc: 'Our team verifies your credentials within 48 hours' },
+            { step: '03', title: 'Start Earning', desc: 'Get matched with elite clients and earn on your terms' },
           ].map((item) => (
             <div key={item.step} className="bg-gradient-to-br from-[#0A0A0A]/85 to-[#0D1B2A]/85 border border-[#C9A84C]/20 rounded-2xl p-6 text-center">
               <div className="text-3xl font-playfair font-black bg-gradient-to-r from-[#C9A84C] to-[#F0D080] bg-clip-text text-transparent mb-3">
@@ -251,9 +213,7 @@ export default function TalentRegister() {
                   {[1, 2, 3].map((s) => (
                     <div key={s} className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300
-                        ${step >= s
-                          ? 'bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A]'
-                          : 'border border-[#C9A84C]/30 text-[#C9A84C]/50'}`}>
+                        ${step >= s ? 'bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A]' : 'border border-[#C9A84C]/30 text-[#C9A84C]/50'}`}>
                         {s}
                       </div>
                       {s < 3 && <div className={`w-12 h-px transition-all duration-300 ${step > s ? 'bg-[#C9A84C]' : 'bg-[#C9A84C]/20'}`} />}
@@ -284,9 +244,20 @@ export default function TalentRegister() {
 
                     <div>
                       <label className={labelClass}>Phone Number</label>
-                      <input type="tel" className={inputClass('phone')}
-                        placeholder="10 digit mobile number"
-                        value={form.phone} onChange={(e) => update('phone', e.target.value)} />
+                      <div className={`border ${errors.phone ? 'border-red-500/50' : 'border-[#C9A84C]/20'} rounded-xl overflow-hidden`}>
+                        <PhoneInput
+                          international
+                          defaultCountry="IN"
+                          value={form.phone}
+                          onChange={(val) => update('phone', val || '')}
+                          style={{
+                            background: '#0A0A0A',
+                            padding: '12px 16px',
+                            color: 'white',
+                            fontSize: '14px',
+                          }}
+                        />
+                      </div>
                       {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone}</p>}
                     </div>
 
@@ -303,7 +274,7 @@ export default function TalentRegister() {
                       {errors.category && <p className="text-red-400 text-xs mt-1">{errors.category}</p>}
                     </div>
 
-                    <button onClick={handleNext1}
+                    <button onClick={() => { if (validateStep1()) setStep(2) }}
                       className="w-full bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
                       Next Step <ArrowRight className="w-4 h-4" />
                     </button>
@@ -332,10 +303,15 @@ export default function TalentRegister() {
                     </div>
 
                     <div>
-                      <label className={labelClass}>Portfolio Link (Optional)</label>
+                      <label className={labelClass}>Portfolio / Work Link
+                        <span className="text-[#C9A84C]/50 ml-2 normal-case">(Optional)</span>
+                      </label>
                       <input type="url" className={inputClass('portfolio')}
-                        placeholder="https://yourportfolio.com"
+                        placeholder="https://yourportfolio.com (optional)"
                         value={form.portfolio} onChange={(e) => update('portfolio', e.target.value)} />
+                      <p className="text-[10px] text-[#E5E4E2]/30 mt-1">
+                        ✅ Agar koi portfolio/work link nahi hai toh chhod sakte ho
+                      </p>
                     </div>
 
                     <div className="flex gap-3">
@@ -343,7 +319,7 @@ export default function TalentRegister() {
                         className="flex-1 py-4 border border-[#C9A84C]/30 text-[#C9A84C] text-sm tracking-widest uppercase hover:bg-[#C9A84C]/5 transition-all duration-300">
                         ← Back
                       </button>
-                      <button onClick={handleNext2}
+                      <button onClick={() => { if (validateStep2()) setStep(3) }}
                         className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300">
                         Next →
                       </button>
@@ -357,11 +333,14 @@ export default function TalentRegister() {
                     <h3 className="text-xl font-playfair font-bold text-white mb-6">Certifications & Rate</h3>
 
                     <div>
-                      <label className={labelClass}>Certifications</label>
+                      <label className={labelClass}>Certifications / Qualifications</label>
                       <textarea className={inputClass('certification') + " h-28 resize-none"}
-                        placeholder="List your certifications, degrees, awards..."
+                        placeholder="e.g. MBA from IIM, Certified Nutritionist, 5 years teaching experience..."
                         value={form.certification} onChange={(e) => update('certification', e.target.value)} />
                       {errors.certification && <p className="text-red-400 text-xs mt-1">{errors.certification}</p>}
+                      <p className="text-[10px] text-[#E5E4E2]/30 mt-1">
+                        ✅ Degree, experience, skills — jo bhi hai likho
+                      </p>
                     </div>
 
                     <div>
@@ -372,16 +351,11 @@ export default function TalentRegister() {
                       {errors.rate && <p className="text-red-400 text-xs mt-1">{errors.rate}</p>}
                     </div>
 
-                    <div className="p-4 border border-[#C9A84C]/20 rounded-xl">
-                      <div className="flex items-start gap-3">
-                        <Upload className="w-5 h-5 text-[#C9A84C] mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="text-sm text-white mb-1">Document Upload</p>
-                          <p className="text-xs text-[#E5E4E2]/40">
-                            Our team will contact you to collect certificates and ID proof via email.
-                          </p>
-                        </div>
-                      </div>
+                    <div className="p-4 border border-[#C9A84C]/20 rounded-xl bg-[#C9A84C]/5">
+                      <p className="text-sm text-white mb-1">📋 Document Verification</p>
+                      <p className="text-xs text-[#E5E4E2]/40">
+                        Submit karne ke baad hamari team tumse email pe contact karegi — certificates aur ID proof verify karne ke liye.
+                      </p>
                     </div>
 
                     <div className="flex gap-3">
@@ -389,8 +363,7 @@ export default function TalentRegister() {
                         className="flex-1 py-4 border border-[#C9A84C]/30 text-[#C9A84C] text-sm tracking-widest uppercase hover:bg-[#C9A84C]/5 transition-all duration-300">
                         ← Back
                       </button>
-                      <button onClick={handleSubmit}
-                        disabled={loading}
+                      <button onClick={handleSubmit} disabled={loading}
                         className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 disabled:opacity-50">
                         {loading ? 'Submitting...' : 'Submit Application'}
                       </button>
