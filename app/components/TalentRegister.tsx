@@ -10,10 +10,95 @@ const FORMSPREE_URL = 'https://formspree.io/f/mqewwolv'
 const WHATSAPP_NUMBER = '917550124573'
 
 const categories = [
-  'Daily Planner', 'Dietitian', 'Content Writer', 'Digital Designer',
-  'Personal Editor', 'Communication Coach', 'Personal Mentor',
-  'Personal Trainer', 'Private Doctor', 'Personal Chef',
-  'Security Expert', 'Financial Advisor'
+  // Already Available
+  'Daily Planner',
+  'Dietitian',
+  'Content Writer',
+  'Digital Designer',
+  'Personal Editor',
+  'Communication Coach',
+  'Personal Mentor',
+
+  // Online — Creative & Content
+  'Video Editor',
+  'Thumbnail Designer',
+  'Social Media Manager',
+  'SEO Specialist',
+  'Copywriter',
+  'Scriptwriter',
+  'Podcast Editor',
+  'Motion Graphics Designer',
+  'UI/UX Designer',
+  'Logo & Brand Designer',
+  'Instagram Growth Expert',
+  'YouTube Channel Manager',
+
+  // Online — Tech & Development
+  'Web Developer',
+  'App Developer',
+  'WordPress Expert',
+  'Shopify Expert',
+  'Python Developer',
+  'Data Analyst',
+  'AI/ML Expert',
+  'Cybersecurity Expert',
+  'Database Manager',
+  'Tech Support Specialist',
+
+  // Online — Business & Finance
+  'Business Consultant',
+  'Financial Advisor',
+  'Investment Advisor',
+  'Tax Consultant',
+  'Accounting Expert',
+  'E-commerce Consultant',
+  'Amazon/Flipkart Seller Expert',
+  'Digital Marketing Expert',
+  'Performance Marketing Expert',
+  'Lead Generation Expert',
+
+  // Online — Education & Coaching
+  'Online Tutor',
+  'UPSC/IAS Coach',
+  'CAT/MBA Mentor',
+  'English Speaking Coach',
+  'Soft Skills Trainer',
+  'Interview Preparation Coach',
+  'Study Planner',
+  'Career Counselor',
+  'Life Coach',
+  'Relationship Coach',
+
+  // Online — Health & Wellness
+  'Online Fitness Trainer',
+  'Yoga Instructor',
+  'Meditation Coach',
+  'Mental Health Coach',
+  'Sleep Coach',
+  'Weight Loss Coach',
+  'Sports Nutritionist',
+
+  // Offline — Professional Services
+  'Personal Trainer',
+  'Private Doctor',
+  'Personal Chef',
+  'Security Expert / Bodyguard',
+  'Event Planner',
+  'Wedding Planner',
+  'Interior Designer',
+  'Personal Stylist / Fashion Consultant',
+  'Makeup Artist',
+  'Photographer',
+  'Videographer',
+  'Music Teacher',
+  'Dance Teacher',
+  'Driving Instructor',
+  'Home Tutor',
+  'Legal Advisor / Lawyer',
+  'Real Estate Consultant',
+  'Private Investigator',
+  'Language Translator',
+  'Sign Language Expert',
 ]
 
 const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -66,7 +151,7 @@ export default function TalentRegister() {
   const validateStep3 = () => {
     const newErrors: { [key: string]: string } = {}
     if (!form.certification.trim()) {
-      newErrors.certification = '⚠️ Certification daalo'
+      newErrors.certification = '⚠️ Certification / Qualification daalo'
     }
     if (!form.rate.trim()) {
       newErrors.rate = '⚠️ Expected rate daalo'
@@ -208,7 +293,6 @@ export default function TalentRegister() {
               </div>
             ) : (
               <>
-                {/* Step indicator */}
                 <div className="flex items-center justify-center gap-3 mb-10">
                   {[1, 2, 3].map((s) => (
                     <div key={s} className="flex items-center gap-3">
@@ -267,9 +351,41 @@ export default function TalentRegister() {
                         value={form.category}
                         onChange={(e) => update('category', e.target.value)}>
                         <option value="" disabled>Select your expertise</option>
-                        {categories.map((cat) => (
-                          <option key={cat} value={cat} className="bg-[#0A0A0A]">{cat}</option>
-                        ))}
+                        <optgroup label="✅ Available Now">
+                          {['Daily Planner', 'Dietitian', 'Content Writer', 'Digital Designer', 'Personal Editor', 'Communication Coach', 'Personal Mentor'].map(cat => (
+                            <option key={cat} value={cat} className="bg-[#0A0A0A]">{cat}</option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="💻 Online — Creative & Content">
+                          {['Video Editor', 'Thumbnail Designer', 'Social Media Manager', 'SEO Specialist', 'Copywriter', 'Scriptwriter', 'Podcast Editor', 'Motion Graphics Designer', 'UI/UX Designer', 'Logo & Brand Designer', 'Instagram Growth Expert', 'YouTube Channel Manager'].map(cat => (
+                            <option key={cat} value={cat} className="bg-[#0A0A0A]">{cat}</option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="💻 Online — Tech & Development">
+                          {['Web Developer', 'App Developer', 'WordPress Expert', 'Shopify Expert', 'Python Developer', 'Data Analyst', 'AI/ML Expert', 'Cybersecurity Expert', 'Database Manager', 'Tech Support Specialist'].map(cat => (
+                            <option key={cat} value={cat} className="bg-[#0A0A0A]">{cat}</option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="💻 Online — Business & Finance">
+                          {['Business Consultant', 'Financial Advisor', 'Investment Advisor', 'Tax Consultant', 'Accounting Expert', 'E-commerce Consultant', 'Amazon/Flipkart Seller Expert', 'Digital Marketing Expert', 'Performance Marketing Expert', 'Lead Generation Expert'].map(cat => (
+                            <option key={cat} value={cat} className="bg-[#0A0A0A]">{cat}</option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="💻 Online — Education & Coaching">
+                          {['Online Tutor', 'UPSC/IAS Coach', 'CAT/MBA Mentor', 'English Speaking Coach', 'Soft Skills Trainer', 'Interview Preparation Coach', 'Study Planner', 'Career Counselor', 'Life Coach', 'Relationship Coach'].map(cat => (
+                            <option key={cat} value={cat} className="bg-[#0A0A0A]">{cat}</option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="💻 Online — Health & Wellness">
+                          {['Online Fitness Trainer', 'Yoga Instructor', 'Meditation Coach', 'Mental Health Coach', 'Sleep Coach', 'Weight Loss Coach', 'Sports Nutritionist'].map(cat => (
+                            <option key={cat} value={cat} className="bg-[#0A0A0A]">{cat}</option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="🏢 Offline — Professional Services">
+                          {['Personal Trainer', 'Private Doctor', 'Personal Chef', 'Security Expert / Bodyguard', 'Event Planner', 'Wedding Planner', 'Interior Designer', 'Personal Stylist / Fashion Consultant', 'Makeup Artist', 'Photographer', 'Videographer', 'Music Teacher', 'Dance Teacher', 'Driving Instructor', 'Home Tutor', 'Legal Advisor / Lawyer', 'Real Estate Consultant', 'Private Investigator', 'Language Translator', 'Sign Language Expert'].map(cat => (
+                            <option key={cat} value={cat} className="bg-[#0A0A0A]">{cat}</option>
+                          ))}
+                        </optgroup>
                       </select>
                       {errors.category && <p className="text-red-400 text-xs mt-1">{errors.category}</p>}
                     </div>
@@ -289,7 +405,7 @@ export default function TalentRegister() {
                     <div>
                       <label className={labelClass}>Years of Experience</label>
                       <input type="text" className={inputClass('experience')}
-                        placeholder="e.g. 5 years"
+                        placeholder="e.g. 3 years"
                         value={form.experience} onChange={(e) => update('experience', e.target.value)} />
                       {errors.experience && <p className="text-red-400 text-xs mt-1">{errors.experience}</p>}
                     </div>
@@ -297,13 +413,14 @@ export default function TalentRegister() {
                     <div>
                       <label className={labelClass}>Your Bio / About You</label>
                       <textarea className={inputClass('bio') + " h-32 resize-none"}
-                        placeholder="Tell us about yourself, your expertise..."
+                        placeholder="Tell us about yourself, your expertise and achievements..."
                         value={form.bio} onChange={(e) => update('bio', e.target.value)} />
                       {errors.bio && <p className="text-red-400 text-xs mt-1">{errors.bio}</p>}
                     </div>
 
                     <div>
-                      <label className={labelClass}>Portfolio / Work Link
+                      <label className={labelClass}>
+                        Portfolio / Work Link
                         <span className="text-[#C9A84C]/50 ml-2 normal-case">(Optional)</span>
                       </label>
                       <input type="url" className={inputClass('portfolio')}
