@@ -63,3 +63,30 @@ h1, h2, h3, h4, h5, h6 {
 .gold-glow:hover {
   box-shadow: 0 0 20px rgba(201, 168, 76, 0.3);
 }
+.PhoneInput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #0A0A0A;
+}
+
+.PhoneInputInput {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 14px;
+  outline: none;
+  flex: 1;
+}
+
+.PhoneInputCountrySelect {
+  background: #0A0A0A;
+  color: white;
+  border: none;
+  outline: none;
+}
+
+.PhoneInputCountryIcon {
+  width: 1.5em;
+  height: 1em;
+}
