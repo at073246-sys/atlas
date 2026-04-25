@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "Ultra-luxury service marketplace for elite professionals and high-value clients.",
 };
 
+import CustomCursor from "./components/CustomCursor";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,11 @@ export default function RootLayout({
       lang="en"
       className={`${playfair.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-inter">{children}</body>
+      <body className="min-h-full flex flex-col font-inter">
+        <CustomCursor />
+        {children}
+      </body>
     </html>
   );
 }
+

@@ -1,23 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
+  --background: #020202;
   --foreground: #ffffff;
   --gold: #c9a84c;
   --champagne: #f0d080;
-  --navy: #0d1b2a;
-  --matte-black: #0a0a0a;
+  --cherry-red: #4a0404;
+  --crimson: #8b0000;
+  --matte-black: #000000;
+  --deep-navy: #010409;
 }
+
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-gold: var(--gold);
-  --color-champagne: var(--champagne);
-  --color-navy: var(--navy);
-  --color-matte: var(--matte-black);
-  --font-playfair: var(--font-playfair);
-  --font-inter: var(--font-inter);
+  --color-cherry: var(--cherry-red);
+}
+
+* {
+  cursor: none !important;
 }
 
 html {
@@ -26,10 +29,48 @@ html {
 
 body {
   background-color: var(--background);
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(201, 168, 76, 0.05) 0%, transparent 70%),
+    radial-gradient(circle at 0% 100%, rgba(139, 0, 0, 0.03) 0%, transparent 50%);
+  background-attachment: fixed;
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+/* Custom Glowing Cursor */
+.custom-cursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  transition: transform 0.1s ease-out;
+  box-shadow: 0 0 20px var(--gold), 0 0 40px var(--gold);
+}
+
+.custom-cursor-follower {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transition: transform 0.2s ease-out;
+  opacity: 0.3;
+}
+
+.cinematic-glow {
+  text-shadow: 0 0 20px rgba(201, 168, 76, 0.3), 0 0 40px rgba(201, 168, 76, 0.1);
+}
+
+.red-glow {
+  text-shadow: 0 0 20px rgba(139, 0, 0, 0.5), 0 0 40px rgba(139, 0, 0, 0.2);
 }
 
 /* Custom Scrollbar */

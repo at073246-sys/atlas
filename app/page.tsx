@@ -11,25 +11,31 @@ const TrustSection = dynamic(() => import('./components/TrustSection'), { ssr: f
 const HowItWorks = dynamic(() => import('./components/HowItWorks'), { ssr: false })
 const TalentRegister = dynamic(() => import('./components/TalentRegister'), { ssr: false })
 const Footer = dynamic(() => import('./components/Footer'), { ssr: false })
+const CinematicAssets = dynamic(() => import('./components/CinematicAssets'), { ssr: false })
+
 
 export default function Home() {
   return (
-    <main className="bg-[#0A0A0A]">
-      <Hero />
-      <GoldDivider />
-      <StatsSection />
-      <GoldDivider />
-      <ServicesGrid />
-      <GoldDivider />
-      <PricingPlans />
-      <GoldDivider />
-      <TrustSection />
-      <GoldDivider />
-      <HowItWorks />
-      <GoldDivider />
-      <TalentRegister />
-      <GoldDivider />
-      <Footer />
+    <main className="relative min-h-screen">
+      <CinematicAssets />
+      
+      <div className="relative z-10">
+        <Hero />
+        <GoldDivider />
+        <StatsSection />
+        <GoldDivider />
+        <ServicesGrid />
+        <GoldDivider />
+        <PricingPlans />
+        <GoldDivider />
+        <TrustSection />
+        <GoldDivider />
+        <HowItWorks />
+        <GoldDivider />
+        <TalentRegister />
+        <GoldDivider />
+        <Footer />
+      </div>
     </main>
   )
 }
