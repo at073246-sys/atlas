@@ -2,11 +2,9 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Copy, Check, Smartphone, CreditCard, Building2 } from 'lucide-react'
 import { useState } from 'react'
-import { supabase } from '../lib/supabase'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 
-const FORMSPREE_URL = 'https://formspree.io/f/mqewwolv'
 const WHATSAPP_NUMBER = '917550124573'
 const UPI_ID = '7550124573@fam'
 
@@ -75,23 +73,10 @@ export default function BookingModal({ service, onClose }: Props) {
     setPayError('')
     setLoading(true)
     try {
-      await supabase.from('bookings').insert({
-        client_name: name,
-        client_phone: phone,
-        client_email: email,
-        service_name: service.title,
-        duration: durations[selectedDuration].label,
-        amount: `₹${finalPrice}`,
-        payment_method: paymentMethod,
-        transaction_id: transactionId,
-        status: 'confirmed'
-      })
-
-      await fetch(FORMSPREE_URL, {
+      const response = await fetch('/api/booking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: '✅ NEW BOOKING — PAYMENT RECEIVED',
           client_name: name,
           client_phone: phone,
           client_email: email,
@@ -102,6 +87,8 @@ export default function BookingModal({ service, onClose }: Props) {
           transaction_id: transactionId,
         }),
       })
+
+      if (!response.ok) throw new Error('Booking failed')
 
       const msg =
         `✅ *Payment Received — New Booking!*%0A%0A` +

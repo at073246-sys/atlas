@@ -2,12 +2,10 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { CheckCircle, ArrowRight } from 'lucide-react'
-import { supabase } from '../lib/supabase'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 import Image from 'next/image'
 
-const FORMSPREE_URL = 'https://formspree.io/f/mqewwolv'
 const WHATSAPP_NUMBER = '917550124573'
 
 const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -65,18 +63,13 @@ export default function TalentRegister() {
     if (!validateStep3()) return
     setLoading(true)
     try {
-      await supabase.from('talent_registrations').insert({
-        name: form.name, email: form.email, phone: form.phone,
-        category: form.category, experience: form.experience,
-        bio: form.bio, portfolio: form.portfolio || 'Not provided',
-        certification: form.certification, rate: form.rate, status: 'pending'
-      })
-
-      await fetch(FORMSPREE_URL, {
+      const response = await fetch('/api/talent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'TALENT REGISTRATION', ...form }),
+        body: JSON.stringify(form),
       })
+
+      if (!response.ok) throw new Error('Registration failed')
 
       const msg =
         `🌟 *New Talent Registration on ATLAS!*%0A%0A` +
