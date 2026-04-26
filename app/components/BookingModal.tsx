@@ -50,15 +50,9 @@ export default function BookingModal({ service, onClose }: Props) {
 
   const validateStep1 = () => {
     const newErrors: { [key: string]: string } = {}
-    if (!name.trim() || name.trim().length < 2) {
-      newErrors.name = '⚠️ Valid naam daalo (min 2 characters)'
-    }
-    if (!phone || !isValidPhoneNumber(phone)) {
-      newErrors.phone = '⚠️ Valid phone number daalo'
-    }
-    if (!validateEmail(email)) {
-      newErrors.email = '⚠️ Valid email daalo (e.g. name@gmail.com)'
-    }
+    if (!name.trim() || name.trim().length < 2) newErrors.name = '⚠️ Valid naam daalo (min 2 characters)'
+    if (!phone || !isValidPhoneNumber(phone)) newErrors.phone = '⚠️ Valid phone number daalo'
+    if (!validateEmail(email)) newErrors.email = '⚠️ Valid email daalo (e.g. name@gmail.com)'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -75,6 +69,7 @@ export default function BookingModal({ service, onClose }: Props) {
     setPayError('')
     setLoading(true)
     try {
+      // Save to Supabase
       await supabase.from('bookings').insert({
         client_name: name,
         client_phone: phone,
@@ -87,10 +82,12 @@ export default function BookingModal({ service, onClose }: Props) {
         status: 'confirmed'
       })
 
+      // Email notification
       await fetch(FORMSPREE_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          _subject: `🔔 New Booking — ${service.title} — ATLAS`,
           type: '✅ NEW BOOKING — PAYMENT RECEIVED',
           client_name: name,
           client_phone: phone,
@@ -100,11 +97,13 @@ export default function BookingModal({ service, onClose }: Props) {
           amount: `₹${finalPrice}`,
           payment_method: paymentMethod,
           transaction_id: transactionId,
+          message: `New booking received on ATLAS! Please verify the transaction ID and confirm the service.`
         }),
       })
 
+      // WhatsApp notification
       const msg =
-        `✅ *Payment Received — New Booking!*%0A%0A` +
+        `✅ *New Booking — ATLAS!*%0A%0A` +
         `👤 *Name:* ${name}%0A` +
         `📱 *Phone:* ${phone}%0A` +
         `📧 *Email:* ${email}%0A` +
@@ -124,13 +123,16 @@ export default function BookingModal({ service, onClose }: Props) {
     }
   }
 
+  const inputClass = (field: string) =>
+    `w-full bg-[#0A0A0A] border ${errors[field] ? 'border-red-500/50' : 'border-[#C9A84C]/20'} rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm`
+
   return (
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center px-4 overflow-y-auto py-8"
+        className="fixed inset-0 z-50 flex items-center justify-center px-4 overflow-y-auto py-4"
         style={{ backgroundColor: 'rgba(0,0,0,0.88)' }}
         onClick={onClose}
       >
@@ -139,20 +141,21 @@ export default function BookingModal({ service, onClose }: Props) {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 50 }}
           transition={{ duration: 0.3 }}
-          className="w-full max-w-lg bg-[#0D1B2A] border border-[#C9A84C]/30 rounded-3xl p-8 relative my-auto"
+          className="w-full max-w-lg bg-[#0D1B2A] border border-[#C9A84C]/30 rounded-3xl p-6 md:p-8 relative my-auto"
           onClick={(e) => e.stopPropagation()}
         >
-          <button onClick={onClose} className="absolute top-4 right-4 text-[#E5E4E2]/40 hover:text-[#C9A84C] transition-colors">
+          <button onClick={onClose} className="absolute top-4 right-4 text-[#E5E4E2]/40 hover:text-[#C9A84C] transition-colors z-10">
             <X className="w-6 h-6" />
           </button>
 
+          {/* Header */}
           {!done && (
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-1">
                 <div className="h-px w-8 bg-[#C9A84C]/50" />
                 <span className="text-xs tracking-[0.4em] text-[#C9A84C] uppercase">Book Service</span>
               </div>
-              <h3 className="text-xl font-playfair font-black text-white">{service.title}</h3>
+              <h3 className="text-lg md:text-xl font-playfair font-black text-white">{service.title}</h3>
               <div className="flex items-center gap-1 mt-4">
                 {['Details', 'Pay', 'Done'].map((s, i) => (
                   <div key={s} className="flex items-center gap-1 flex-1">
@@ -162,10 +165,8 @@ export default function BookingModal({ service, onClose }: Props) {
                         'border border-[#C9A84C]/30 text-[#C9A84C]/40'}`}>
                       {i + 1}
                     </div>
-                    <span className={`text-[10px] tracking-wider uppercase flex-1 ${step === i + 1 ? 'text-[#C9A84C]' : 'text-[#E5E4E2]/20'}`}>
-                      {s}
-                    </span>
-                    {i < 2 && <div className="w-4 h-px bg-[#C9A84C]/20" />}
+                    <span className={`text-[10px] tracking-wider uppercase flex-1 ${step === i + 1 ? 'text-[#C9A84C]' : 'text-[#E5E4E2]/20'}`}>{s}</span>
+                    {i < 2 && <div className="w-3 h-px bg-[#C9A84C]/20" />}
                   </div>
                 ))}
               </div>
@@ -193,50 +194,35 @@ export default function BookingModal({ service, onClose }: Props) {
                 <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Full Name</p>
                 <input type="text" value={name}
                   onChange={(e) => { setName(e.target.value); setErrors(p => ({ ...p, name: '' })) }}
-                  placeholder="Your full name"
-                  className={`w-full bg-[#0A0A0A] border ${errors.name ? 'border-red-500/50' : 'border-[#C9A84C]/20'} rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm`} />
+                  placeholder="Your full name" className={inputClass('name')} />
                 {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
               </div>
 
-              {/* International Phone */}
               <div>
                 <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Phone Number</p>
-                <div className={`border ${errors.phone ? 'border-red-500/50' : 'border-[#C9A84C]/20'} rounded-xl overflow-hidden`}
-                  style={{
-                    '--PhoneInputCountryFlag-height': '1em',
-                    '--PhoneInput-color--focus': '#C9A84C',
-                  } as React.CSSProperties}>
+                <div className={`border ${errors.phone ? 'border-red-500/50' : 'border-[#C9A84C]/20'} rounded-xl overflow-hidden`}>
                   <PhoneInput
                     international
                     defaultCountry="IN"
                     value={phone}
                     onChange={(val) => { setPhone(val || ''); setErrors(p => ({ ...p, phone: '' })) }}
-                    className="phone-input-dark"
-                    style={{
-                      background: '#0A0A0A',
-                      padding: '12px 16px',
-                      color: 'white',
-                      fontSize: '14px',
-                    }}
+                    style={{ background: '#0A0A0A', padding: '12px 16px', color: 'white', fontSize: '14px' }}
                   />
                 </div>
                 {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone}</p>}
               </div>
 
               <div>
-                <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Email</p>
+                <p className="text-xs tracking-widets text-[#E5E4E2]/40 uppercase mb-2">Email</p>
                 <input type="email" value={email}
                   onChange={(e) => { setEmail(e.target.value); setErrors(p => ({ ...p, email: '' })) }}
-                  placeholder="your@email.com"
-                  className={`w-full bg-[#0A0A0A] border ${errors.email ? 'border-red-500/50' : 'border-[#C9A84C]/20'} rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm`} />
+                  placeholder="your@email.com" className={inputClass('email')} />
                 {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
               </div>
 
               <div className="flex justify-between items-center p-3 border border-[#C9A84C]/20 rounded-xl">
                 <span className="text-[#E5E4E2]/50 text-sm">Total Amount</span>
-                <span className="text-xl font-playfair font-black bg-gradient-to-r from-[#C9A84C] to-[#F0D080] bg-clip-text text-transparent">
-                  ₹{finalPrice}
-                </span>
+                <span className="text-xl font-playfair font-black gold-text">₹{finalPrice}</span>
               </div>
 
               <button onClick={() => { if (validateStep1()) setStep(2) }}
@@ -265,26 +251,27 @@ export default function BookingModal({ service, onClose }: Props) {
                 ))}
               </div>
 
+              {/* QR Code — pay.jpg */}
               {paymentMethod === 'upi_qr' && (
                 <div className="p-4 border border-[#C9A84C]/20 rounded-2xl text-center">
                   <p className="text-xs text-[#C9A84C] tracking-widest uppercase mb-3">Scan & Pay</p>
                   <div className="flex justify-center mb-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/qr.jpg" alt="UPI QR"
-                      className="rounded-xl border border-[#C9A84C]/20 w-40 h-40 object-cover" />
+                    <img src="/pay.jpg.jpeg" alt="UPI QR"
+                      className="rounded-xl border border-[#C9A84C]/20 w-44 h-44 object-cover" />
                   </div>
-                  <p className="text-sm font-bold text-white">Ayan Thakur</p>
                   <p className="text-xs text-[#E5E4E2]/50 mb-2">{UPI_ID}</p>
                   <div className="p-2 bg-[#C9A84C]/10 rounded-xl">
-                    <p className="text-lg font-black text-[#C9A84C]">₹{finalPrice}</p>
+                    <p className="text-lg font-black gold-text">₹{finalPrice}</p>
                   </div>
                   <p className="text-[10px] text-[#E5E4E2]/30 mt-2">GPay / PhonePe / Paytm → Scan QR → Pay</p>
                 </div>
               )}
 
+              {/* UPI ID */}
               {paymentMethod === 'upi_id' && (
                 <div className="p-4 border border-[#C9A84C]/20 rounded-2xl">
-                  <p className="text-xs text-[#C9A84C] tracking-widest uppercase mb-3">UPI ID Copy Karo</p>
+                  <p className="text-xs text-[#C9A84C] tracking-widets uppercase mb-3">UPI ID Copy Karo</p>
                   <div className="flex items-center justify-between bg-[#0A0A0A] px-4 py-3 rounded-xl mb-3">
                     <span className="text-white font-bold text-sm">{UPI_ID}</span>
                     <button onClick={copyUPI} className="text-[#C9A84C] hover:scale-110 transition-transform ml-2">
@@ -292,12 +279,13 @@ export default function BookingModal({ service, onClose }: Props) {
                     </button>
                   </div>
                   <div className="p-2 bg-[#C9A84C]/10 rounded-xl text-center mb-2">
-                    <p className="text-lg font-black text-[#C9A84C]">₹{finalPrice}</p>
+                    <p className="text-lg font-black gold-text">₹{finalPrice}</p>
                   </div>
                   <p className="text-[10px] text-[#E5E4E2]/30">UPI ID copy karo → GPay/PhonePe → Pay</p>
                 </div>
               )}
 
+              {/* Net Banking */}
               {paymentMethod === 'bank' && (
                 <div className="p-4 border border-[#C9A84C]/20 rounded-2xl text-center">
                   <p className="text-sm text-white mb-3">Bank transfer ke liye contact karo</p>
@@ -306,8 +294,9 @@ export default function BookingModal({ service, onClose }: Props) {
                 </div>
               )}
 
+              {/* Transaction ID */}
               <div className="p-4 border-2 border-[#C9A84C]/40 rounded-2xl bg-[#C9A84C]/5">
-                <p className="text-xs tracking-widest text-[#C9A84C] uppercase mb-2">Transaction ID / UTR Number</p>
+                <p className="text-xs tracking-widets text-[#C9A84C] uppercase mb-2">Transaction ID / UTR Number</p>
                 <input type="text" value={transactionId}
                   onChange={(e) => { setTransactionId(e.target.value); setPayError('') }}
                   placeholder="e.g. 426789123456 (min 10 digits)"
@@ -315,6 +304,7 @@ export default function BookingModal({ service, onClose }: Props) {
                 <p className="text-[10px] text-[#E5E4E2]/30 mt-2">GPay/PhonePe → Transaction History → UTR number</p>
               </div>
 
+              {/* Checkbox */}
               <div className="flex items-start gap-3 p-3 border border-[#C9A84C]/20 rounded-xl">
                 <input type="checkbox" id="payconfirm" checked={paymentConfirmed}
                   onChange={(e) => { setPaymentConfirmed(e.target.checked); setPayError('') }}
@@ -332,12 +322,12 @@ export default function BookingModal({ service, onClose }: Props) {
 
               <div className="flex gap-3">
                 <button onClick={() => setStep(1)}
-                  className="flex-1 py-3 border border-[#C9A84C]/30 text-[#C9A84C] text-xs tracking-widest uppercase hover:bg-[#C9A84C]/5 transition-all duration-300">
+                  className="flex-1 py-3 border border-[#C9A84C]/30 text-[#C9A84C] text-xs tracking-widets uppercase hover:bg-[#C9A84C]/5 transition-all duration-300">
                   ← Back
                 </button>
                 <button onClick={handleConfirmPayment}
                   disabled={loading || !transactionId.trim() || transactionId.trim().length < 10 || !paymentConfirmed}
-                  className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-3 uppercase tracking-widest text-xs hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                  className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-3 uppercase tracking-widets text-xs hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                   {loading ? 'Confirming...' : '✅ Confirm Booking'}
                 </button>
               </div>
@@ -346,20 +336,18 @@ export default function BookingModal({ service, onClose }: Props) {
 
           {/* DONE */}
           {done && (
-            <div className="text-center py-8">
-              <div className="text-6xl mb-6">🎉</div>
-              <h3 className="text-3xl font-playfair font-black bg-gradient-to-r from-[#C9A84C] to-[#F0D080] bg-clip-text text-transparent mb-4">
-                Booking Confirmed!
-              </h3>
-              <p className="text-[#E5E4E2]/60 mb-2">Service: <span className="text-white font-bold">{service.title}</span></p>
-              <p className="text-[#E5E4E2]/60 mb-2">Duration: <span className="text-white font-bold">{durations[selectedDuration].label}</span></p>
-              <p className="text-[#E5E4E2]/60 mb-2">Amount Paid: <span className="text-[#C9A84C] font-bold">₹{finalPrice}</span></p>
-              <p className="text-[#E5E4E2]/60 mb-6">Transaction ID: <span className="text-white font-bold text-xs">{transactionId}</span></p>
-              <p className="text-xs text-[#E5E4E2]/40 tracking-widest uppercase mb-8">
+            <div className="text-center py-6">
+              <div className="text-5xl mb-4">🎉</div>
+              <h3 className="text-2xl md:text-3xl font-playfair font-black gold-text mb-4">Booking Confirmed!</h3>
+              <p className="text-[#E5E4E2]/60 mb-2 text-sm">Service: <span className="text-white font-bold">{service.title}</span></p>
+              <p className="text-[#E5E4E2]/60 mb-2 text-sm">Duration: <span className="text-white font-bold">{durations[selectedDuration].label}</span></p>
+              <p className="text-[#E5E4E2]/60 mb-2 text-sm">Amount Paid: <span className="gold-text font-bold">₹{finalPrice}</span></p>
+              <p className="text-[#E5E4E2]/60 mb-6 text-sm">Transaction ID: <span className="text-white font-bold text-xs">{transactionId}</span></p>
+              <p className="text-xs text-[#E5E4E2]/40 tracking-widets uppercase mb-6">
                 Hamari team 2 ghante mein {phone} pe contact karegi
               </p>
               <button onClick={onClose}
-                className="bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold px-8 py-3 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300">
+                className="bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold px-8 py-3 uppercase tracking-widets text-sm hover:scale-105 transition-all duration-300">
                 Done
               </button>
             </div>
