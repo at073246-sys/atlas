@@ -12,9 +12,9 @@ const services = [
     desc: 'Structure your day with precision and purpose.',
     fullDesc: `Every goal begins with a single step, and for our Daily Planner, each step is anchored in discipline. An SGFI-certified sportsman who once pushed boundaries on the field, now crafts every day with precision and purpose. Whether you choose a single day, a week, or an entire month, each plan is a reflection of dedication — from early morning focus sessions to evening goal reviews. Designed for those who demand structure — whether you're a student in your 20s, a professional in your 30s, or a visionary balancing life's many demands — this is more than a planner. It is a daily ritual, a bridge between ambition and achievement, crafted for those who shape every day with intention.`,
     pricing: [
-      { label: '1 Day', price: '₹29' },
-      { label: '1 Week', price: '₹99' },
-      { label: '1 Month', price: '₹299' },
+      { label: '1 Day', price: '₹49' },
+      { label: '1 Week', price: '₹249' },
+      { label: '1 Month', price: '₹499' },
     ],
   },
   {
@@ -24,29 +24,27 @@ const services = [
     fullDesc: `From the cricket field to the forefront of health, our Dietitian's journey is one of dedication and transformation. As an SGFI-certified cricketer, they represented their state and KVS on the national stage — mastering discipline, resilience, and the power of precision. Today, that same commitment drives their approach to nutrition. With a masterful understanding of the body's potential, every one-week or one-month plan is a personal story of balance, focus, and peak performance.`,
     pricing: [
       { label: '1 Week', price: '₹199' },
-      { label: '1 Month', price: '₹399' },
+      { label: '1 Month', price: '₹599' },
     ],
   },
   {
     icon: '✍️',
     title: 'Content Writer',
     desc: 'Words crafted with purpose, strategy, and impact.',
-    fullDesc: `There was a time when words were just tools — until this Content Writer discovered their true mastery. With a profound command of English and a deep passion for storytelling, every piece they craft is a bridge between insight and emotion. Whether it's a single day of sharp, impactful copy, a week of strategic messaging, or a month of transformative storytelling, they bring quiet dedication to every line.`,
+    fullDesc: `There was a time when words were just tools — until this Content Writer discovered their true mastery. With a profound command of English and a deep passion for storytelling, every piece they craft is a bridge between insight and emotion. Whether it's a single sharp post or a month of transformative storytelling, they bring quiet dedication to every line.`,
     pricing: [
-      { label: '1 Post', price: '₹149' },
-      { label: '5 Posts', price: '₹299' },
-      { label: 'Monthly', price: '₹599' },
+      { label: 'Per Post', price: '₹99' },
+      { label: '5 Posts', price: '₹499' },
     ],
   },
   {
     icon: '🎨',
     title: 'Digital Designer',
     desc: 'Visual elegance that speaks before words do.',
-    fullDesc: `This Digital Designer's path is a fusion of imagination and discipline. With a relentless drive for perfection, they transform concepts into visual elegance — no matter if it's a one-day spark, a focused week, or a full month of creative evolution. Each design is a personal signature — timeless, bold, and crafted for those who aspire to stand out.`,
+    fullDesc: `This Digital Designer's path is a fusion of imagination and discipline. With a relentless drive for perfection, they transform concepts into visual elegance. Each design is a personal signature — timeless, bold, and crafted for those who aspire to stand out in a world full of noise.`,
     pricing: [
-      { label: '1 Post', price: '₹299' },
-      { label: '5 Posts', price: '₹999' },
-      { label: 'Monthly', price: '₹1,499' },
+      { label: '1 Post', price: '₹99' },
+      { label: '5 Posts', price: '₹399' },
     ],
   },
   {
@@ -55,7 +53,18 @@ const services = [
     desc: 'Every word refined. Every edit purposeful.',
     fullDesc: `This Editor's journey is one of quiet dedication and unwavering focus. With a deep passion for language and a disciplined approach to their craft, they refine every word with care and every edit with purpose. Because the difference between good and great often lies in a single, perfectly chosen word.`,
     pricing: [
-      { label: 'Per Project', price: '₹1,199' },
+      { label: '1 Work', price: '₹1,199' },
+      { label: '5 Works', price: '₹5,599' },
+    ],
+  },
+  {
+    icon: '🧠',
+    title: 'Skills Coach',
+    desc: 'Master any skill with a structured elite roadmap.',
+    fullDesc: `Whether you are starting from scratch or refining your expertise, our Skills Coach builds a personalized learning roadmap designed for real, measurable progress. From basic foundations to advanced mastery — every session is purposeful, every week is a transformation. Built for those who refuse to plateau.`,
+    pricing: [
+      { label: '1 Week', price: '₹499' },
+      { label: '1 Month', price: '₹1,899' },
     ],
   },
   {
@@ -64,8 +73,8 @@ const services = [
     desc: 'Turn your voice into your greatest asset.',
     fullDesc: `Once a quiet observer, now a voice that commands attention — our Communication Coach's story is one of discovery and mastery. With a Master's degree in English and a lifelong passion for language, they guide individuals from all walks of life on a journey to unlock their true voice. Speak with power. Lead with clarity. Transform every room you walk into.`,
     pricing: [
-      { label: '1 Week', price: '₹299' },
-      { label: '1 Month', price: '₹499' },
+      { label: '1 Week', price: '₹499' },
+      { label: '1 Month', price: '₹1,899' },
     ],
   },
   {
@@ -74,8 +83,8 @@ const services = [
     desc: 'From defense discipline to Google innovation — elite guidance.',
     fullDesc: `This Mentor's journey is a testament to reinvention and purpose. Once a disciplined leader in the defense forces, they now bring the same precision and resilience to Google's innovation hubs. Each weekend session is a bridge connecting past discipline with future ambition. Your potential is limitless — this mentor will help you prove it.`,
     pricing: [
-      { label: 'Weekend', price: '₹399' },
-      { label: '1 Month', price: '₹799' },
+      { label: 'Weekend', price: '₹699' },
+      { label: '4 Weekends', price: '₹2,499' },
     ],
     note: '*Different rates for Pro, Gold & Elite members',
   },
