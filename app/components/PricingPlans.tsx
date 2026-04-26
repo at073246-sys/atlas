@@ -8,74 +8,71 @@ const WHATSAPP_NUMBER = '917550124573'
 
 const plans = [
   {
-    icon: '🥉',
+    icon: '🔷',
     name: 'PRO PLAN',
-    tagline: 'Start your elite journey',
-    suitable: 'Students & early professionals',
+    tagline: 'Starter Premium — Foundation build karna',
+    suitable: 'Perfect for beginners jo structured growth chahte hain',
     services: [
-      { name: 'Daily Planner', value: '₹299/month' },
-      { name: 'Communication Coach', value: '₹499/month' },
-      { name: 'Content Writer', value: '₹299 for 5 posts' },
-      { name: 'Dietitian', value: '₹399/month' },
+      { name: 'Planner', value: 'Weekly + Monthly guidance' },
+      { name: 'Dietitian', value: 'Weekly plan + progress tracking' },
+      { name: 'Skills', value: 'Basic skill-building roadmap' },
+      { name: 'Content Writer', value: '2 posts/month' },
     ],
-    note: 'Pick any 3 services',
-    totalValue: '₹1,200',
+    focus: '🌟 Focus: Consistency + Foundation',
     durations: [
-      { label: '1 Week', price: '₹299' },
-      { label: '1 Month', price: '₹799' },
+      { label: '1 Week', price: '₹399' },
+      { label: '1 Month', price: '₹1,299' },
     ],
     popular: false,
     comingSoon: false,
     color: 'border-[#E5E4E2]/10',
-    whatsappMsg: 'Hi! I want to subscribe to the PRO PLAN on ATLAS.',
+    whatsappMsg: 'Hi! I want to subscribe to the PRO PLAN on ATLAS.%0A%0APrice: ',
   },
   {
-    icon: '🥇',
+    icon: '🟡',
     name: 'GOLD PLAN',
-    tagline: 'For those who demand more',
-    suitable: 'Creators & entrepreneurs',
+    tagline: 'Advanced Growth — Fast improvement',
+    suitable: 'For serious individuals jo fast improvement chahte hain',
     services: [
-      { name: 'All PRO Services', value: 'Included' },
-      { name: 'Digital Designer', value: '₹999 for 5 posts' },
-      { name: 'Personal Mentor', value: '₹799/month' },
-      { name: 'Communication Coach', value: '₹499/month' },
-      { name: 'Content Writer', value: '₹599/month' },
+      { name: 'Planner', value: 'Advanced + personalized' },
+      { name: 'Dietitian', value: 'Weekly + detailed tracking' },
+      { name: 'Skills', value: 'Advanced learning system' },
+      { name: 'Content Writer', value: '5 posts/month' },
+      { name: 'Digital Designer', value: '3 designs/month' },
+      { name: 'Personal Mentor', value: '2 weekend sessions/month' },
     ],
-    note: 'Pick any 5 services',
-    totalValue: '₹2,500',
+    focus: '🌟 Focus: Faster results + guided improvement',
     durations: [
-      { label: '1 Week', price: '₹599' },
-      { label: '1 Month', price: '₹1,499' },
+      { label: '1 Week', price: '₹799' },
+      { label: '1 Month', price: '₹2,499' },
     ],
     popular: false,
     comingSoon: false,
     color: 'border-[#C9A84C]/20',
-    whatsappMsg: 'Hi! I want to subscribe to the GOLD PLAN on ATLAS.',
+    whatsappMsg: 'Hi! I want to subscribe to the GOLD PLAN on ATLAS.%0A%0APrice: ',
   },
   {
-    icon: '💎',
+    icon: '🔶',
     name: 'ELITE PLAN',
-    tagline: 'Everything. Unlimited. No compromise.',
-    suitable: 'High-level clients who want it all',
+    tagline: 'All-in Premium — Complete transformation',
+    suitable: 'For high performers jo complete transformation chahte hain',
     services: [
-      { name: 'Daily Planner', value: 'Included' },
-      { name: 'Dietitian', value: 'Included' },
-      { name: 'Content Writer', value: 'Included' },
-      { name: 'Digital Designer', value: 'Included' },
-      { name: 'Personal Editor', value: 'Included' },
-      { name: 'Communication Coach', value: 'Included' },
-      { name: 'Personal Mentor', value: 'Included' },
+      { name: 'Planner', value: 'Fully personalized + priority' },
+      { name: 'Dietitian', value: 'Full month transformation plan' },
+      { name: 'Skills', value: 'Complete mastery roadmap' },
+      { name: 'Content Writer', value: '10 posts/month' },
+      { name: 'Digital Designer', value: '5 premium designs' },
+      { name: 'Personal Editor', value: '2 professional works' },
+      { name: 'Personal Mentor', value: 'Every weekend sessions' },
     ],
-    note: 'All 7 services included',
-    totalValue: '₹5,000+',
+    focus: '🌟 Focus: Total upgrade — lifestyle, skills & output',
     durations: [
-      { label: '1 Week', price: '₹999' },
-      { label: '1 Month', price: '₹2,499' },
+      { label: '1 Month', price: '₹1,999' },
     ],
     popular: true,
     comingSoon: false,
     color: 'border-[#C9A84C]/50',
-    whatsappMsg: 'Hi! I want to subscribe to the ELITE PLAN on ATLAS.',
+    whatsappMsg: 'Hi! I want to subscribe to the ELITE PLAN on ATLAS.%0A%0APrice: ',
   },
   {
     icon: '🔮',
@@ -88,8 +85,7 @@ const plans = [
       { name: 'Early Access', value: 'New categories' },
       { name: 'Annual Strategy Session', value: 'Included' },
     ],
-    note: 'All Elite benefits + more',
-    totalValue: 'Best Value',
+    focus: '🌟 Focus: Long-term mastery + exclusive perks',
     durations: [],
     popular: false,
     comingSoon: true,
@@ -109,10 +105,10 @@ export default function PricingPlans() {
   })
 
   const handleWhatsApp = (plan: typeof plans[0]) => {
-    const duration = selectedDurations[plan.name] || '1 Month'
+    const duration = selectedDurations[plan.name] || plan.durations[0]?.label || '1 Month'
     const durationObj = plan.durations.find(d => d.label === duration)
     const price = durationObj?.price || ''
-    const msg = `${plan.whatsappMsg}%0A%0APlan: ${plan.name}%0ADuration: ${duration}%0APrice: ${price}%0A%0APlease confirm my booking.`
+    const msg = `${plan.whatsappMsg}${price}%0ADuration: ${duration}%0A%0APlease confirm my booking.`
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
   }
 
@@ -120,13 +116,7 @@ export default function PricingPlans() {
     <section ref={ref} id="membership" className="relative py-28 overflow-hidden">
       {/* Cinematic Background */}
       <motion.div className="absolute inset-0 z-0" style={{ y }}>
-        <Image
-          src="/king.jpg.jpeg"
-          alt="Membership Background"
-          fill
-          className="object-cover object-center"
-          quality={90}
-        />
+        <Image src="/king.jpg.jpeg" alt="Membership Background" fill className="object-cover object-center" quality={90} />
         <div className="absolute inset-0 bg-[#0A0A0A]/88" />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A] via-transparent to-[#0A0A0A]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(201,168,76,0.07),transparent_70%)]" />
@@ -153,7 +143,7 @@ export default function PricingPlans() {
             <span className="gold-text">Level of Excellence</span>
           </h2>
           <p className="text-[#E5E4E2]/60 text-lg max-w-xl mx-auto">
-            Every plan saves you money. Pay less, get more, live elite.
+            Every plan is designed to transform you. Pick your level and start today.
           </p>
         </motion.div>
 
@@ -162,8 +152,8 @@ export default function PricingPlans() {
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
-              initial={{ opacity: 0, y: 60, rotateX: 15 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              initial={{ opacity: 0, y: 60 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: index * 0.1 }}
               whileHover={{ y: -10, scale: 1.02 }}
@@ -171,7 +161,6 @@ export default function PricingPlans() {
                 ${plan.color}
                 ${plan.popular ? 'shadow-[0_0_80px_rgba(201,168,76,0.25)]' : ''}
                 ${plan.comingSoon ? 'opacity-60' : ''}`}
-              style={{ transformStyle: 'preserve-3d' }}
             >
               {/* Popular badge */}
               {plan.popular && (
@@ -192,11 +181,11 @@ export default function PricingPlans() {
                 </div>
               )}
 
-              {/* Gold shimmer top line */}
               {plan.popular && (
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C9A84C] to-transparent" />
               )}
 
+              {/* Icon & Name */}
               <div className="text-4xl mb-4 float-animation" style={{ animationDelay: `${index * 0.3}s` }}>
                 {plan.icon}
               </div>
@@ -206,12 +195,12 @@ export default function PricingPlans() {
                 {plan.name}
               </h3>
               <p className="text-sm text-[#E5E4E2]/40 italic mb-1">{plan.tagline}</p>
-              <p className="text-xs text-[#E5E4E2]/30 tracking-wider mb-6 pb-4 border-b border-[#C9A84C]/10">
+              <p className="text-xs text-[#E5E4E2]/30 tracking-wider mb-4 pb-4 border-b border-[#C9A84C]/10">
                 {plan.suitable}
               </p>
 
-              <p className="text-[10px] tracking-widest text-[#C9A84C] uppercase mb-3">{plan.note}</p>
-              <ul className="space-y-2 mb-6 flex-1">
+              {/* Services */}
+              <ul className="space-y-2 mb-4 flex-1">
                 {plan.services.map((service) => (
                   <li key={service.name} className="flex items-start justify-between gap-2">
                     <div className="flex items-start gap-2">
@@ -219,20 +208,17 @@ export default function PricingPlans() {
                         ${plan.popular ? 'text-[#C9A84C]' : 'text-[#C9A84C]/50'}`} />
                       <span className="text-xs text-[#E5E4E2]/60">{service.name}</span>
                     </div>
-                    <span className="text-[10px] text-[#C9A84C]/50 whitespace-nowrap">{service.value}</span>
+                    <span className="text-[10px] text-[#C9A84C]/50 whitespace-nowrap text-right">{service.value}</span>
                   </li>
                 ))}
               </ul>
 
-              {/* Total Value */}
-              {!plan.comingSoon && (
-                <div className="flex justify-between items-center mb-4 p-3 border border-[#C9A84C]/10 rounded-xl bg-[#C9A84C]/3">
-                  <span className="text-xs text-[#E5E4E2]/30">Total Value</span>
-                  <span className="text-sm font-bold text-[#E5E4E2]/30 line-through">{plan.totalValue}</span>
-                </div>
-              )}
+              {/* Focus */}
+              <div className="mb-4 p-3 border border-[#C9A84C]/10 rounded-xl bg-[#C9A84C]/3">
+                <p className="text-[10px] text-[#E5E4E2]/40 leading-relaxed">{plan.focus}</p>
+              </div>
 
-              {/* Duration Selection */}
+              {/* Duration */}
               {plan.durations.length > 0 && (
                 <div className="mb-4">
                   <p className="text-[10px] tracking-widest text-[#E5E4E2]/30 uppercase mb-2">Select Duration</p>
@@ -260,7 +246,6 @@ export default function PricingPlans() {
               {plan.comingSoon ? (
                 <motion.button
                   whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
                   onClick={() => handleWhatsApp(plan)}
                   className="w-full py-3 border border-[#9B59B6]/40 text-[#9B59B6]/70 text-xs tracking-widest uppercase flex items-center justify-center gap-2 hover:bg-[#9B59B6]/5 transition-all duration-300 rounded-xl"
                 >
@@ -298,7 +283,7 @@ export default function PricingPlans() {
           className="text-center mt-12"
         >
           <p className="text-xs tracking-[0.3em] text-[#E5E4E2]/20 uppercase">
-            All services: 1 Day · 1 Week · 1 Month · 1 Year (Coming Soon)
+            All plans include WhatsApp support · Annual plan coming soon
           </p>
         </motion.div>
       </div>
