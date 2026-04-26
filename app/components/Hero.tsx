@@ -6,7 +6,8 @@ import Image from 'next/image'
 
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: ref })
+  const [mounted, setMounted] = useState(false)
+  const { scrollYProgress } = useScroll({ target: mounted ? ref : undefined })
   const y = useTransform(scrollYProgress, [0, 1], ['0%', '30%'])
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
   const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1])
@@ -16,10 +17,12 @@ export default function Hero() {
   const springX = useSpring(mouseX, { stiffness: 50, damping: 20 })
   const springY = useSpring(mouseY, { stiffness: 50, damping: 20 })
 
-  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
-    setMounted(true)
     const handleMouse = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 30
       const y = (e.clientY / window.innerHeight - 0.5) * 30
@@ -30,7 +33,7 @@ export default function Hero() {
     return () => window.removeEventListener('mousemove', handleMouse)
   }, [mouseX, mouseY])
 
-  if (!mounted) return null
+  if (!mounted) return <div className="min-h-screen" />;
 
   return (
     <section ref={ref} className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
@@ -55,27 +58,35 @@ export default function Hero() {
 
       {/* Floating Particles */}
       <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 rounded-full bg-[#C9A84C]"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              opacity: Math.random() * 0.5 + 0.1,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0.1, 0.6, 0.1],
-              scale: [1, 1.5, 1],
-            }}
-            transition={{
-              duration: Math.random() * 4 + 3,
-              repeat: Infinity,
-              delay: Math.random() * 3,
-            }}
-          />
-        ))}
+        {[...Array(20)].map((_, i) => {
+          const left = `${(i * 7.7) % 100}%`;
+          const top = `${(i * 13.3) % 100}%`;
+          const opacityVal = 0.1 + (i * 0.02) % 0.5;
+          const duration = 3 + (i * 0.2) % 4;
+          const delay = (i * 0.15) % 3;
+
+          return (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 rounded-full bg-[#C9A84C]"
+              style={{
+                left,
+                top,
+                opacity: opacityVal,
+              }}
+              animate={{
+                y: [0, -30, 0],
+                opacity: [0.1, 0.6, 0.1],
+                scale: [1, 1.5, 1],
+              }}
+              transition={{
+                duration,
+                repeat: Infinity,
+                delay,
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* Parallax Mouse Layer */}

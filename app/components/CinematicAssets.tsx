@@ -12,8 +12,17 @@ import * as THREE from 'three'
 
 // --- SHARED COMPONENTS ---
 
-function WorldImage({ url, position, scale, opacity = 1, transparent = true, blending = THREE.NormalBlending }: any) {
-  const texture = useTexture(url)
+interface WorldImageProps {
+  url: string
+  position: [number, number, number]
+  scale: [number, number, number]
+  opacity?: number
+  transparent?: boolean
+  blending?: THREE.Blending
+}
+
+function WorldImage({ url, position, scale, opacity = 1, transparent = true, blending = THREE.NormalBlending }: WorldImageProps) {
+  const texture = useTexture(url) as THREE.Texture
   return (
     <mesh position={position} scale={scale}>
       <planeGeometry args={[1, 1]} />
@@ -122,7 +131,7 @@ function World5({ scrollY }: { scrollY: number }) {
   const group = useRef<THREE.Group>(null)
   const start = window.innerHeight * 4
   const range = (scrollY - start) / window.innerHeight
-  const texture = useTexture('/sun.jpg.jpeg')
+  const texture = useTexture('/sun.jpg.jpeg') as THREE.Texture
 
   useFrame((state) => {
     if (group.current) {
@@ -155,7 +164,11 @@ export default function CinematicAssets() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true)
+  }, [])
+
+  useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)

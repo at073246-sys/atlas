@@ -47,7 +47,7 @@ export default function ServiceDetail() {
                 {service.title}
               </h1>
               <p className="text-2xl text-[#E5E4E2]/70 font-light mb-8 italic">
-                "{service.powerStatement}"
+                &ldquo;{service.powerStatement}&rdquo;
               </p>
               <p className="text-[#E5E4E2]/50 text-lg leading-relaxed mb-10 max-w-xl">
                 {service.desc} Our professionals are hand-picked for their exceptional expertise and commitment to your success.
@@ -124,7 +124,7 @@ export default function ServiceDetail() {
             <div>
               <h3 className="text-[#C9A84C] font-bold mb-4 uppercase tracking-widest text-xs">Our Commitment</h3>
               <p className="text-sm text-[#E5E4E2]/50 leading-relaxed italic">
-                "We do not just deliver a service; we deliver peace of mind. Every ATLAS professional is a master of their craft, ensuring that your world remains as extraordinary as you are."
+                &ldquo;We do not just deliver a service; we deliver peace of mind. Every ATLAS professional is a master of their craft, ensuring that your world remains as extraordinary as you are.&rdquo;
               </p>
             </div>
           </div>
