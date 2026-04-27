@@ -1,8 +1,7 @@
 'use client'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { CheckCircle, Crown, Sparkles, Mail } from 'lucide-react'
-import { useState, useRef } from 'react'
-import Image from 'next/image'
+import { useState } from 'react'
 import ParallaxBg from './ParallaxBg'
 
 const WHATSAPP_NUMBER = '917550124573'
@@ -16,7 +15,7 @@ const plans = [
     services: [
       { name: 'Planner', value: 'Weekly + Monthly guidance' },
       { name: 'Dietitian', value: 'Weekly plan + progress tracking' },
-      { name: 'Skills', value: 'Basic skill-building roadmap' },
+      { name: 'Skills Coach', value: 'Basic skill-building roadmap' },
       { name: 'Content Writer', value: '2 posts/month' },
     ],
     focus: '🌟 Focus: Consistency + Foundation',
@@ -26,8 +25,8 @@ const plans = [
     ],
     popular: false,
     comingSoon: false,
-    color: 'border-[#E5E4E2]/10',
-    whatsappMsg: 'Hi! I want to subscribe to the PRO PLAN on ATLAS.%0A%0APrice: ',
+    borderColor: 'rgba(229,228,226,0.12)',
+    whatsappMsg: 'Hi! I want to subscribe to the PRO PLAN on ATLAS.',
   },
   {
     icon: '🟡',
@@ -37,7 +36,7 @@ const plans = [
     services: [
       { name: 'Planner', value: 'Advanced + personalized' },
       { name: 'Dietitian', value: 'Weekly + detailed tracking' },
-      { name: 'Skills', value: 'Advanced learning system' },
+      { name: 'Skills Coach', value: 'Advanced learning system' },
       { name: 'Content Writer', value: '5 posts/month' },
       { name: 'Digital Designer', value: '3 designs/month' },
       { name: 'Personal Mentor', value: '2 weekend sessions/month' },
@@ -49,8 +48,8 @@ const plans = [
     ],
     popular: false,
     comingSoon: false,
-    color: 'border-[#C9A84C]/20',
-    whatsappMsg: 'Hi! I want to subscribe to the GOLD PLAN on ATLAS.%0A%0APrice: ',
+    borderColor: 'rgba(201,168,76,0.25)',
+    whatsappMsg: 'Hi! I want to subscribe to the GOLD PLAN on ATLAS.',
   },
   {
     icon: '🔶',
@@ -60,7 +59,7 @@ const plans = [
     services: [
       { name: 'Planner', value: 'Fully personalized + priority' },
       { name: 'Dietitian', value: 'Full month transformation plan' },
-      { name: 'Skills', value: 'Complete mastery roadmap' },
+      { name: 'Skills Coach', value: 'Complete mastery roadmap' },
       { name: 'Content Writer', value: '10 posts/month' },
       { name: 'Digital Designer', value: '5 premium designs' },
       { name: 'Personal Editor', value: '2 professional works' },
@@ -72,8 +71,8 @@ const plans = [
     ],
     popular: true,
     comingSoon: false,
-    color: 'border-[#C9A84C]/50',
-    whatsappMsg: 'Hi! I want to subscribe to the ELITE PLAN on ATLAS.%0A%0APrice: ',
+    borderColor: 'rgba(201,168,76,0.55)',
+    whatsappMsg: 'Hi! I want to subscribe to the ELITE PLAN on ATLAS.',
   },
   {
     icon: '🔮',
@@ -90,15 +89,22 @@ const plans = [
     durations: [],
     popular: false,
     comingSoon: true,
-    color: 'border-[#9B59B6]/20',
+    borderColor: 'rgba(155,89,182,0.25)',
     whatsappMsg: 'Hi! I want to join the ANNUAL PLAN waitlist on ATLAS.',
   },
 ]
 
+const sendWhatsApp = (number: string, msg: string) => {
+  const link = document.createElement('a')
+  link.href = `https://wa.me/${number}?text=${msg}`
+  link.target = '_blank'
+  link.rel = 'noopener noreferrer'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
 export default function PricingPlans() {
-  const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const y = useTransform(scrollYProgress, [0, 1], ['5%', '-5%'])
   const [selectedDurations, setSelectedDurations] = useState<{ [key: string]: string }>({
     'PRO PLAN': '1 Month',
     'GOLD PLAN': '1 Month',
@@ -109,47 +115,33 @@ export default function PricingPlans() {
     const duration = selectedDurations[plan.name] || plan.durations[0]?.label || '1 Month'
     const durationObj = plan.durations.find(d => d.label === duration)
     const price = durationObj?.price || ''
-    const msg = `${plan.whatsappMsg}${price}%0ADuration: ${duration}%0A%0APlease confirm my booking.`
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
+    const msg = `${encodeURIComponent(plan.whatsappMsg)}%0A%0APlan: ${encodeURIComponent(plan.name)}%0ADuration: ${encodeURIComponent(duration)}%0APrice: ${encodeURIComponent(price)}%0A%0APlease confirm my booking.`
+    sendWhatsApp(WHATSAPP_NUMBER, msg)
   }
 
   return (
-    <section ref={ref} id="membership" className="relative py-28 overflow-hidden">
-      {/* Cinematic Background */}
-      <motion.div className="absolute inset-0 z-0" style={{ y }}>
-        <Image src="/king.jpg.jpeg" alt="Membership Background" fill className="object-cover object-center" quality={90} />
-        <div className="absolute inset-0 bg-[#0A0A0A]/88" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A] via-transparent to-[#0A0A0A]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(201,168,76,0.07),transparent_70%)]" />
-      </motion.div>
+    <section id="membership" style={{ position: 'relative', padding: '120px 0', overflow: 'hidden' }}>
+      {/* 3D Parallax Background */}
+      <ParallaxBg src="/king.jpg.jpeg" opacity={0.88} />
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="text-center mb-20"
-        >
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <motion.div className="h-px bg-[#C9A84C]/50"
-              initial={{ width: 0 }} whileInView={{ width: 48 }} viewport={{ once: true }} transition={{ duration: 1 }} />
-            <span className="text-xs tracking-[0.4em] text-[#C9A84C] uppercase">Membership</span>
-            <motion.div className="h-px bg-[#C9A84C]/50"
-              initial={{ width: 0 }} whileInView={{ width: 48 }} viewport={{ once: true }} transition={{ duration: 1 }} />
+        <motion.div initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1 }} style={{ textAlign: 'center', marginBottom: 64 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 24 }}>
+            <motion.div style={{ height: 1, background: 'rgba(201,168,76,0.5)' }} initial={{ width: 0 }} whileInView={{ width: 40 }} viewport={{ once: true }} transition={{ duration: 1 }} />
+            <span style={{ fontSize: 10, letterSpacing: '0.4em', color: '#C9A84C', textTransform: 'uppercase' }}>Membership</span>
+            <motion.div style={{ height: 1, background: 'rgba(201,168,76,0.5)' }} initial={{ width: 0 }} whileInView={{ width: 40 }} viewport={{ once: true }} transition={{ duration: 1 }} />
           </div>
-          <h2 className="text-5xl md:text-7xl font-playfair font-black text-white mb-6">
-            Choose Your<br />
-            <span className="gold-text">Level of Excellence</span>
+          <h2 className="font-playfair" style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)', fontWeight: 900, color: 'white', marginBottom: 16 }}>
+            Choose Your<br /><span className="gold-text">Level of Excellence</span>
           </h2>
-          <p className="text-[#E5E4E2]/60 text-lg max-w-xl mx-auto">
+          <p style={{ color: 'rgba(229,228,226,0.6)', fontSize: 16, maxWidth: 500, margin: '0 auto', lineHeight: 1.8 }}>
             Every plan is designed to transform you. Pick your level and start today.
           </p>
         </motion.div>
 
         {/* Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, maxWidth: 1300, margin: '0 auto' }}>
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
@@ -158,85 +150,80 @@ export default function PricingPlans() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: index * 0.1 }}
               whileHover={{ y: -10, scale: 1.02 }}
-              className={`relative glass-card rounded-3xl p-8 border-2 flex flex-col
-                ${plan.color}
-                ${plan.popular ? 'shadow-[0_0_80px_rgba(201,168,76,0.25)]' : ''}
-                ${plan.comingSoon ? 'opacity-60' : ''}`}
+              className="glass-card"
+              style={{
+                borderRadius: 24,
+                padding: 28,
+                border: `2px solid ${plan.borderColor}`,
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'relative',
+                opacity: plan.comingSoon ? 0.65 : 1,
+                boxShadow: plan.popular ? '0 0 80px rgba(201,168,76,0.2)' : 'none',
+              }}
             >
-              {/* Popular badge */}
+              {/* Popular Badge */}
               {plan.popular && (
                 <motion.div
-                  animate={{ y: [0, -3, 0] }}
+                  animate={{ y: [0, -4, 0] }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  className="absolute -top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-5 py-1.5 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] rounded-full whitespace-nowrap"
+                  style={{ position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', gap: 6, padding: '6px 16px', background: 'linear-gradient(to right, #C9A84C, #F0D080)', borderRadius: 100, whiteSpace: 'nowrap' }}
                 >
-                  <Crown className="w-3 h-3 text-[#0A0A0A]" />
-                  <span className="text-[10px] font-black text-[#0A0A0A] uppercase tracking-widest">Most Popular</span>
+                  <Crown size={12} style={{ color: '#0A0A0A' }} />
+                  <span style={{ fontSize: 10, fontWeight: 900, color: '#0A0A0A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Most Popular</span>
                 </motion.div>
               )}
 
               {plan.comingSoon && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-5 py-1.5 border border-[#9B59B6]/40 rounded-full bg-[#0A0A0A] whitespace-nowrap">
-                  <Sparkles className="w-3 h-3 text-[#9B59B6]" />
-                  <span className="text-[10px] text-[#9B59B6] uppercase tracking-widest">Coming Soon</span>
+                <div style={{ position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', gap: 6, padding: '6px 16px', border: '1px solid rgba(155,89,182,0.4)', borderRadius: 100, background: '#0A0A0A', whiteSpace: 'nowrap' }}>
+                  <Sparkles size={12} style={{ color: '#9B59B6' }} />
+                  <span style={{ fontSize: 10, color: '#9B59B6', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Coming Soon</span>
                 </div>
               )}
 
               {plan.popular && (
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C9A84C] to-transparent" />
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(to right, transparent, #C9A84C, transparent)', borderRadius: '24px 24px 0 0' }} />
               )}
 
               {/* Icon & Name */}
-              <div className="text-4xl mb-4 float-animation" style={{ animationDelay: `${index * 0.3}s` }}>
-                {plan.icon}
-              </div>
+              <div className="float-animation" style={{ fontSize: 36, marginBottom: 12, animationDelay: `${index * 0.3}s` }}>{plan.icon}</div>
 
-              <h3 className={`text-xl font-playfair font-black mb-1 tracking-widest
-                ${plan.popular ? 'gold-text' : 'text-white'}`}>
-                {plan.name}
+              <h3 className="font-playfair" style={{ fontSize: 18, fontWeight: 900, marginBottom: 4, letterSpacing: '0.08em', ...(plan.popular ? {} : { color: 'white' }) }}>
+                {plan.popular ? <span className="gold-text">{plan.name}</span> : plan.name}
               </h3>
-              <p className="text-sm text-[#E5E4E2]/40 italic mb-1">{plan.tagline}</p>
-              <p className="text-xs text-[#E5E4E2]/30 tracking-wider mb-4 pb-4 border-b border-[#C9A84C]/10">
-                {plan.suitable}
-              </p>
+              <p style={{ fontSize: 13, color: 'rgba(229,228,226,0.4)', fontStyle: 'italic', marginBottom: 4 }}>{plan.tagline}</p>
+              <p style={{ fontSize: 11, color: 'rgba(229,228,226,0.3)', letterSpacing: '0.05em', marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid rgba(201,168,76,0.1)' }}>{plan.suitable}</p>
 
               {/* Services */}
-              <ul className="space-y-2 mb-4 flex-1">
-                {plan.services.map((service) => (
-                  <li key={service.name} className="flex items-start justify-between gap-2">
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className={`w-3 h-3 mt-0.5 flex-shrink-0
-                        ${plan.popular ? 'text-[#C9A84C]' : 'text-[#C9A84C]/50'}`} />
-                      <span className="text-xs text-[#E5E4E2]/60">{service.name}</span>
+              <ul style={{ listStyle: 'none', padding: 0, marginBottom: 16, flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {plan.services.map(service => (
+                  <li key={service.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                      <CheckCircle size={13} style={{ color: plan.popular ? '#C9A84C' : 'rgba(201,168,76,0.5)', flexShrink: 0, marginTop: 2 }} />
+                      <span style={{ fontSize: 12, color: 'rgba(229,228,226,0.6)' }}>{service.name}</span>
                     </div>
-                    <span className="text-[10px] text-[#C9A84C]/50 whitespace-nowrap text-right">{service.value}</span>
+                    <span style={{ fontSize: 10, color: 'rgba(201,168,76,0.5)', whiteSpace: 'nowrap', textAlign: 'right' }}>{service.value}</span>
                   </li>
                 ))}
               </ul>
 
               {/* Focus */}
-              <div className="mb-4 p-3 border border-[#C9A84C]/10 rounded-xl bg-[#C9A84C]/3">
-                <p className="text-[10px] text-[#E5E4E2]/40 leading-relaxed">{plan.focus}</p>
+              <div style={{ padding: '10px 14px', border: '1px solid rgba(201,168,76,0.12)', borderRadius: 10, background: 'rgba(201,168,76,0.04)', marginBottom: 16 }}>
+                <p style={{ fontSize: 11, color: 'rgba(229,228,226,0.4)', lineHeight: 1.6 }}>{plan.focus}</p>
               </div>
 
               {/* Duration */}
               {plan.durations.length > 0 && (
-                <div className="mb-4">
-                  <p className="text-[10px] tracking-widest text-[#E5E4E2]/30 uppercase mb-2">Select Duration</p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {plan.durations.map((d) => (
-                      <motion.button
-                        key={d.label}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                <div style={{ marginBottom: 16 }}>
+                  <p style={{ fontSize: 10, letterSpacing: '0.1em', color: 'rgba(229,228,226,0.3)', textTransform: 'uppercase', marginBottom: 8 }}>Select Duration</p>
+                  <div style={{ display: 'grid', gridTemplateColumns: `repeat(${plan.durations.length}, 1fr)`, gap: 8 }}>
+                    {plan.durations.map(d => (
+                      <motion.button key={d.label}
+                        whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                         onClick={() => setSelectedDurations(prev => ({ ...prev, [plan.name]: d.label }))}
-                        className={`p-2 border rounded-lg text-center transition-all duration-300
-                          ${selectedDurations[plan.name] === d.label
-                            ? 'border-[#C9A84C] bg-[#C9A84C]/15'
-                            : 'border-[#C9A84C]/15 hover:border-[#C9A84C]/40'}`}
-                      >
-                        <div className="text-[10px] text-[#E5E4E2]/40">{d.label}</div>
-                        <div className="text-sm font-bold gold-text">{d.price}</div>
+                        style={{ padding: '10px 8px', border: `1px solid ${selectedDurations[plan.name] === d.label ? '#C9A84C' : 'rgba(201,168,76,0.18)'}`, borderRadius: 10, background: selectedDurations[plan.name] === d.label ? 'rgba(201,168,76,0.15)' : 'transparent', cursor: 'pointer', textAlign: 'center', transition: 'all 0.3s' }}>
+                        <div style={{ fontSize: 10, color: 'rgba(229,228,226,0.4)', marginBottom: 4 }}>{d.label}</div>
+                        <div className="font-playfair gold-text" style={{ fontSize: 15, fontWeight: 700 }}>{d.price}</div>
                       </motion.button>
                     ))}
                   </div>
@@ -245,31 +232,20 @@ export default function PricingPlans() {
 
               {/* CTA */}
               {plan.comingSoon ? (
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  onClick={() => handleWhatsApp(plan)}
-                  className="w-full py-3 border border-[#9B59B6]/40 text-[#9B59B6]/70 text-xs tracking-widest uppercase flex items-center justify-center gap-2 hover:bg-[#9B59B6]/5 transition-all duration-300 rounded-xl"
-                >
-                  <Mail className="w-4 h-4" />
-                  Join Waitlist
+                <motion.button whileHover={{ scale: 1.02 }} onClick={() => handleWhatsApp(plan)}
+                  style={{ width: '100%', padding: '14px', border: '1px solid rgba(155,89,182,0.4)', color: 'rgba(155,89,182,0.7)', background: 'transparent', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  <Mail size={14} /> Join Waitlist
                 </motion.button>
               ) : plan.popular ? (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleWhatsApp(plan)}
-                  className="w-full bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-xs flex items-center justify-center gap-2 rounded-xl gold-pulse"
-                >
-                  <Crown className="w-4 h-4" />
-                  Book on WhatsApp
+                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => handleWhatsApp(plan)}
+                  className="gold-button" style={{ width: '100%', justifyContent: 'center', borderRadius: 12 }}>
+                  <Crown size={14} /> Book on WhatsApp
                 </motion.button>
               ) : (
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => handleWhatsApp(plan)}
-                  className="w-full py-4 border border-[#C9A84C]/30 text-[#C9A84C] text-xs tracking-widest uppercase hover:bg-[#C9A84C]/5 transition-all duration-300 rounded-xl"
-                >
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={() => handleWhatsApp(plan)}
+                  style={{ width: '100%', padding: '14px', border: '1px solid rgba(201,168,76,0.3)', color: '#C9A84C', background: 'transparent', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer', borderRadius: 10, transition: 'all 0.3s' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(201,168,76,0.07)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                   Book on WhatsApp
                 </motion.button>
               )}
@@ -277,13 +253,8 @@ export default function PricingPlans() {
           ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-center mt-12"
-        >
-          <p className="text-xs tracking-[0.3em] text-[#E5E4E2]/20 uppercase">
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} style={{ textAlign: 'center', marginTop: 40 }}>
+          <p style={{ fontSize: 11, letterSpacing: '0.2em', color: 'rgba(229,228,226,0.2)', textTransform: 'uppercase' }}>
             All plans include WhatsApp support · Annual plan coming soon
           </p>
         </motion.div>
@@ -291,4 +262,3 @@ export default function PricingPlans() {
     </section>
   )
 }
- <ParallaxBg src="/king.jpg.jpeg" opacity={0.88} />
