@@ -1,123 +1,74 @@
 'use client'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { ShieldCheck, Lock, Star, Eye, Clock, CreditCard } from 'lucide-react'
-import { useRef } from 'react'
-import Image from 'next/image'
+import ParallaxBg from './ParallaxBg'
 
 const trustPoints = [
-  { icon: <ShieldCheck className="w-6 h-6 md:w-8 md:h-8 text-[#C9A84C]" />, title: '100% Background Verified', desc: 'Every professional undergoes rigorous credential checks and background verification before joining.' },
-  { icon: <Lock className="w-6 h-6 md:w-8 md:h-8 text-[#C9A84C]" />, title: 'NDA on Every Engagement', desc: 'Your privacy is sacred. Every professional signs a strict NDA before they meet you.' },
-  { icon: <Star className="w-6 h-6 md:w-8 md:h-8 text-[#C9A84C]" />, title: 'Quality Guaranteed', desc: 'If you are not satisfied with the service, we will make it right. Your satisfaction is our promise.' },
-  { icon: <Eye className="w-6 h-6 md:w-8 md:h-8 text-[#C9A84C]" />, title: 'Complete Privacy', desc: 'Your personal details, bookings, and engagements are strictly confidential. Always.' },
-  { icon: <Clock className="w-6 h-6 md:w-8 md:h-8 text-[#C9A84C]" />, title: '24/7 Support', desc: 'Our team is available around the clock via WhatsApp and email. No question goes unanswered.' },
-  { icon: <CreditCard className="w-6 h-6 md:w-8 md:h-8 text-[#C9A84C]" />, title: 'Secure Payments', desc: 'Every transaction is verified manually. Your payment is safe and tracked at every step.' },
+  { icon: <ShieldCheck size={28} style={{ color: '#C9A84C' }} />, title: '100% Background Verified', desc: 'Every professional undergoes rigorous credential checks and background verification before joining.' },
+  { icon: <Lock size={28} style={{ color: '#C9A84C' }} />, title: 'NDA on Every Engagement', desc: 'Your privacy is sacred. Every professional signs a strict NDA before they meet you.' },
+  { icon: <Star size={28} style={{ color: '#C9A84C' }} />, title: 'Quality Guaranteed', desc: 'If you are not satisfied, we will make it right. Your satisfaction is our promise.' },
+  { icon: <Eye size={28} style={{ color: '#C9A84C' }} />, title: 'Complete Privacy', desc: 'Your personal details, bookings, and engagements are strictly confidential. Always.' },
+  { icon: <Clock size={28} style={{ color: '#C9A84C' }} />, title: '24/7 Support', desc: 'Our team is available via WhatsApp and email. No question goes unanswered.' },
+  { icon: <CreditCard size={28} style={{ color: '#C9A84C' }} />, title: 'Secure Payments', desc: 'Every transaction is verified manually. Your payment is safe and tracked at every step.' },
 ]
 
 const whyAtlas = [
-  { icon: '🎯', title: 'Purpose-Driven', desc: 'ATLAS was built with one mission — to make elite, world-class professionals accessible to everyone who is serious about growth.' },
-  { icon: '🤝', title: 'Real Professionals', desc: 'Every professional on ATLAS is personally reviewed by our team. We do not list anyone without verification.' },
-  { icon: '🚀', title: 'Results First', desc: 'We are not here to sell plans. We are here to deliver real, measurable transformation in your life, career, and skills.' },
+  { icon: '🎯', title: 'Purpose-Driven', desc: 'ATLAS was built to make elite professionals accessible to everyone serious about growth.' },
+  { icon: '🤝', title: 'Real Professionals', desc: 'Every professional is personally reviewed by our team before being listed.' },
+  { icon: '🚀', title: 'Results First', desc: 'We are here to deliver real, measurable transformation in your life, career, and skills.' },
 ]
 
 export default function TrustSection() {
-  const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const y = useTransform(scrollYProgress, [0, 1], ['8%', '-8%'])
-  const imageScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.05, 1, 1.05])
-
   return (
-    <section ref={ref} id="trust" className="relative py-20 md:py-28 overflow-hidden">
-      {/* 3D Motion Background */}
-      <motion.div className="absolute inset-0 z-0" style={{ y, scale: imageScale }}>
-        <Image src="/eye.jpg.jpeg" alt="Trust Background" fill className="object-cover object-center" quality={90} />
-        <div className="absolute inset-0 bg-[#0A0A0A]/85" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A] via-transparent to-[#0A0A0A]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(201,168,76,0.06),transparent_70%)]" />
-      </motion.div>
+    <section id="trust" style={{ position: 'relative', padding: '120px 0', overflow: 'hidden' }}>
+      <ParallaxBg src="/eye.jpg.jpeg" opacity={0.85} />
 
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="text-center mb-12 md:mb-20"
-        >
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <motion.div className="h-px bg-[#C9A84C]/50"
-              initial={{ width: 0 }} whileInView={{ width: 40 }} viewport={{ once: true }} transition={{ duration: 1 }} />
-            <span className="text-[10px] md:text-xs tracking-[0.3em] text-[#C9A84C] uppercase">Trust & Credibility</span>
-            <motion.div className="h-px bg-[#C9A84C]/50"
-              initial={{ width: 0 }} whileInView={{ width: 40 }} viewport={{ once: true }} transition={{ duration: 1 }} />
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
+        <motion.div initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1 }} style={{ textAlign: 'center', marginBottom: 64 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 24 }}>
+            <motion.div style={{ height: 1, background: 'rgba(201,168,76,0.5)' }} initial={{ width: 0 }} whileInView={{ width: 40 }} viewport={{ once: true }} transition={{ duration: 1 }} />
+            <span style={{ fontSize: 10, letterSpacing: '0.4em', color: '#C9A84C', textTransform: 'uppercase' }}>Trust & Credibility</span>
+            <motion.div style={{ height: 1, background: 'rgba(201,168,76,0.5)' }} initial={{ width: 0 }} whileInView={{ width: 40 }} viewport={{ once: true }} transition={{ duration: 1 }} />
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-playfair font-black gold-text mb-4 md:mb-6">
-            Why Trust Us
-          </h2>
-          <p className="text-[#E5E4E2]/60 text-sm md:text-lg max-w-xl mx-auto px-4">
+          <h2 className="font-playfair gold-text" style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)', fontWeight: 900, marginBottom: 16 }}>Why Trust Us</h2>
+          <p style={{ color: 'rgba(229,228,226,0.6)', fontSize: 16, maxWidth: 580, margin: '0 auto', lineHeight: 1.8 }}>
             We built ATLAS on three principles — Transparency, Quality, and Results. No shortcuts. No compromises.
           </p>
         </motion.div>
 
-        {/* Trust Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-16 md:mb-24">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 80 }}>
           {trustPoints.map((point, index) => (
-            <motion.div
-              key={point.title}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: (index % 3) * 0.15 }}
+            <motion.div key={point.title}
+              initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: (index % 3) * 0.15 }}
               whileHover={{ y: -8, scale: 1.02 }}
-              className="glass-card rounded-2xl p-5 md:p-8 group relative overflow-hidden"
-            >
-              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C9A84C]/30 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-br from-[#C9A84C]/0 to-transparent group-hover:from-[#C9A84C]/5 transition-all duration-500 rounded-2xl" />
-              <div className="mb-4 md:mb-5 p-2 md:p-3 inline-block border border-[#C9A84C]/20 rounded-xl bg-[#C9A84C]/5 relative z-10 group-hover:border-[#C9A84C]/50 transition-colors duration-300">
+              className="glass-card" style={{ borderRadius: 16, padding: 28, position: 'relative', overflow: 'hidden' }}>
+              <div style={{ marginBottom: 16, padding: 10, display: 'inline-block', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 12, background: 'rgba(201,168,76,0.05)' }}>
                 {point.icon}
               </div>
-              <h3 className="text-base md:text-xl font-playfair font-bold text-white mb-2 md:mb-3 group-hover:text-[#C9A84C] transition-colors duration-300 relative z-10">
-                {point.title}
-              </h3>
-              <p className="text-[#E5E4E2]/50 text-xs md:text-sm leading-relaxed relative z-10">{point.desc}</p>
-              <div className="absolute bottom-0 left-0 h-px w-0 group-hover:w-full bg-gradient-to-r from-transparent via-[#C9A84C]/40 to-transparent transition-all duration-700" />
+              <h3 className="font-playfair" style={{ fontSize: 17, fontWeight: 700, color: 'white', marginBottom: 8 }}>{point.title}</h3>
+              <p style={{ color: 'rgba(229,228,226,0.5)', fontSize: 13, lineHeight: 1.7 }}>{point.desc}</p>
             </motion.div>
           ))}
         </div>
 
-        {/* Why ATLAS Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-8 md:mb-12"
-        >
-          <h3 className="text-xl md:text-3xl font-playfair font-bold text-white mb-2">
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} style={{ textAlign: 'center', marginBottom: 32 }}>
+          <h3 className="font-playfair" style={{ fontSize: 28, fontWeight: 700, color: 'white', marginBottom: 8 }}>
             Why <span className="gold-text">ATLAS</span> Exists
           </h3>
-          <p className="text-[#E5E4E2]/40 text-sm max-w-lg mx-auto">
-            We are a new platform, growing every day. Here is what we stand for.
+          <p style={{ color: 'rgba(229,228,226,0.4)', fontSize: 14, maxWidth: 500, margin: '0 auto' }}>
+            We are a growing platform. Here is what we stand for.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20 }}>
           {whyAtlas.map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: i * 0.2 }}
+            <motion.div key={i}
+              initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: i * 0.2 }}
               whileHover={{ y: -5 }}
-              className="glass-card rounded-2xl p-5 md:p-8 border-l-2 border-l-[#C9A84C]/40 relative overflow-hidden group"
-            >
-              <div className="text-3xl md:text-4xl mb-3 md:mb-4 float-animation" style={{ animationDelay: `${i * 0.4}s` }}>
-                {item.icon}
-              </div>
-              <h4 className="text-base md:text-lg font-playfair font-bold text-white mb-2 group-hover:text-[#C9A84C] transition-colors duration-300">
-                {item.title}
-              </h4>
-              <p className="text-[#E5E4E2]/55 text-xs md:text-sm leading-relaxed">{item.desc}</p>
+              className="glass-card" style={{ borderRadius: 16, padding: 28, borderLeft: '2px solid rgba(201,168,76,0.4)' }}>
+              <div className="float-animation" style={{ fontSize: 32, marginBottom: 12, animationDelay: `${i * 0.4}s` }}>{item.icon}</div>
+              <h4 className="font-playfair" style={{ fontSize: 16, fontWeight: 700, color: 'white', marginBottom: 8 }}>{item.title}</h4>
+              <p style={{ color: 'rgba(229,228,226,0.55)', fontSize: 13, lineHeight: 1.7 }}>{item.desc}</p>
             </motion.div>
           ))}
         </div>

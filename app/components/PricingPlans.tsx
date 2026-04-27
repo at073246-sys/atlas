@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { CheckCircle, Crown, Sparkles, Mail } from 'lucide-react'
 import { useState, useRef } from 'react'
 import Image from 'next/image'
+import ParallaxBg from './ParallaxBg'
 
 const WHATSAPP_NUMBER = '917550124573'
 
@@ -290,3 +291,4 @@ export default function PricingPlans() {
     </section>
   )
 }
+ <ParallaxBg src="/king.jpg.jpeg" opacity={0.88} />

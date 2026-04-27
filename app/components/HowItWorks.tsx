@@ -1,131 +1,68 @@
 'use client'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Search, UserCheck, CreditCard, Sparkles } from 'lucide-react'
-import { useRef } from 'react'
 import Image from 'next/image'
+import ParallaxBg from './ParallaxBg'
 
 const steps = [
-  {
-    number: '01',
-    icon: <Search className="w-5 h-5 md:w-7 md:h-7 text-[#0A0A0A]" />,
-    title: 'Choose Your Need',
-    desc: 'Browse our curated categories. Tell us exactly what you need — we listen to every detail.',
-    image: '/book.jpg.jpeg',
-  },
-  {
-    number: '02',
-    icon: <UserCheck className="w-5 h-5 md:w-7 md:h-7 text-[#0A0A0A]" />,
-    title: 'Pick Your Professional',
-    desc: 'Browse verified profiles, portfolios, fees, and availability. Only the best make it here.',
-    image: '/samuraye.jpg.jpeg',
-  },
-  {
-    number: '03',
-    icon: <CreditCard className="w-5 h-5 md:w-7 md:h-7 text-[#0A0A0A]" />,
-    title: 'One Payment, Full Access',
-    desc: 'Book, pay securely, and they arrive. No hidden fees. Just seamless elite service.',
-    image: '/sun.jpg.jpeg',
-  },
-  {
-    number: '04',
-    icon: <Sparkles className="w-5 h-5 md:w-7 md:h-7 text-[#0A0A0A]" />,
-    title: 'Experience Excellence',
-    desc: 'Sit back. Your professional is on the way. This is what it feels like when the world works for you.',
-    image: '/ceow.jpg.jpeg',
-  },
+  { number: '01', icon: <Search size={22} style={{ color: '#0A0A0A' }} />, title: 'Choose Your Need', desc: 'Browse our curated categories. Tell us exactly what you need.', image: '/book.jpg.jpeg' },
+  { number: '02', icon: <UserCheck size={22} style={{ color: '#0A0A0A' }} />, title: 'Pick Your Professional', desc: 'Browse verified profiles, fees, and availability. Only the best.', image: '/samuraye.jpg.jpeg' },
+  { number: '03', icon: <CreditCard size={22} style={{ color: '#0A0A0A' }} />, title: 'One Payment, Full Access', desc: 'Book, pay securely, and they arrive. No hidden fees.', image: '/sun.jpg.jpeg' },
+  { number: '04', icon: <Sparkles size={22} style={{ color: '#0A0A0A' }} />, title: 'Experience Excellence', desc: 'This is what it feels like when the world works for you.', image: '/ceow.jpg.jpeg' },
 ]
 
 export default function HowItWorks() {
-  const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const y = useTransform(scrollYProgress, [0, 1], ['8%', '-8%'])
-  const imageScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.05, 1, 1.05])
-
   return (
-    <section ref={ref} className="relative py-20 md:py-28 overflow-hidden">
-      {/* 3D Motion Background */}
-      <motion.div className="absolute inset-0 z-0" style={{ y, scale: imageScale }}>
-        <Image src="/watch.jpg.jpeg" alt="How It Works" fill className="object-cover object-center" quality={90} />
-        <div className="absolute inset-0 bg-[#0A0A0A]/88" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A] via-transparent to-[#0A0A0A]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(201,168,76,0.06),transparent_70%)]" />
-      </motion.div>
+    <section style={{ position: 'relative', padding: '120px 0', overflow: 'hidden' }}>
+      <ParallaxBg src="/watch.jpg.jpeg" opacity={0.88} />
 
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="text-center mb-16 md:mb-24"
-        >
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <motion.div className="h-px bg-[#C9A84C]/50"
-              initial={{ width: 0 }} whileInView={{ width: 40 }} viewport={{ once: true }} transition={{ duration: 1 }} />
-            <span className="text-[10px] md:text-xs tracking-[0.3em] text-[#C9A84C] uppercase">How It Works</span>
-            <motion.div className="h-px bg-[#C9A84C]/50"
-              initial={{ width: 0 }} whileInView={{ width: 40 }} viewport={{ once: true }} transition={{ duration: 1 }} />
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
+        <motion.div initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1 }} style={{ textAlign: 'center', marginBottom: 80 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 24 }}>
+            <motion.div style={{ height: 1, background: 'rgba(201,168,76,0.5)' }} initial={{ width: 0 }} whileInView={{ width: 40 }} viewport={{ once: true }} transition={{ duration: 1 }} />
+            <span style={{ fontSize: 10, letterSpacing: '0.4em', color: '#C9A84C', textTransform: 'uppercase' }}>How It Works</span>
+            <motion.div style={{ height: 1, background: 'rgba(201,168,76,0.5)' }} initial={{ width: 0 }} whileInView={{ width: 40 }} viewport={{ once: true }} transition={{ duration: 1 }} />
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-playfair font-black text-white mb-4 md:mb-6">
-            Simple.<br />
-            <span className="gold-text">Fast. Elite.</span>
+          <h2 className="font-playfair" style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)', fontWeight: 900, color: 'white', marginBottom: 16 }}>
+            Simple.<br /><span className="gold-text">Fast. Elite.</span>
           </h2>
-          <p className="text-[#E5E4E2]/60 text-sm md:text-lg max-w-xl mx-auto px-4">
-            Four steps stand between you and world-class service. We made sure they are effortless.
+          <p style={{ color: 'rgba(229,228,226,0.6)', fontSize: 16, maxWidth: 500, margin: '0 auto', lineHeight: 1.8 }}>
+            Four steps stand between you and world-class service.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-6xl mx-auto">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 32, maxWidth: 1100, margin: '0 auto 64px' }}>
           {steps.map((step, index) => (
-            <motion.div
-              key={step.number}
-              initial={{ opacity: 0, y: 60 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: index * 0.2 }}
-              className="flex flex-col items-center text-center group"
+            <motion.div key={step.number}
+              initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: index * 0.2 }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}
+              className="group"
             >
-              <div className="relative w-full h-20 md:h-28 mb-4 md:mb-6 rounded-xl overflow-hidden">
-                <Image src={step.image} alt={step.title} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-[#0A0A0A]/50" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <motion.div
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-[#C9A84C] to-[#F0D080] flex items-center justify-center shadow-[0_0_30px_rgba(201,168,76,0.5)]"
-                  >
+              <div style={{ position: 'relative', width: '100%', height: 140, borderRadius: 16, overflow: 'hidden', marginBottom: 24 }}>
+                <Image src={step.image} alt={step.title} fill style={{ objectFit: 'cover', transition: 'transform 0.5s' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,10,10,0.5)' }} />
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <motion.div whileHover={{ scale: 1.1, rotate: 5 }}
+                    style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg, #C9A84C, #F0D080)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 30px rgba(201,168,76,0.5)' }}>
                     {step.icon}
                   </motion.div>
                 </div>
-                <div className="absolute top-1 right-2 text-[10px] font-black text-[#C9A84C] font-playfair">
+                <div style={{ position: 'absolute', top: 8, right: 10, fontSize: 11, fontWeight: 900, color: '#C9A84C', fontFamily: 'Playfair Display, serif' }}>
                   {step.number}
                 </div>
               </div>
-
-              <h3 className="text-sm md:text-lg font-playfair font-bold text-white mb-2 group-hover:text-[#C9A84C] transition-colors duration-300">
-                {step.title}
-              </h3>
-              <p className="text-[#E5E4E2]/45 text-xs leading-relaxed hidden md:block">{step.desc}</p>
+              <h3 className="font-playfair" style={{ fontSize: 17, fontWeight: 700, color: 'white', marginBottom: 8 }}>{step.title}</h3>
+              <p style={{ color: 'rgba(229,228,226,0.45)', fontSize: 13, lineHeight: 1.7 }}>{step.desc}</p>
             </motion.div>
           ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="text-center mt-12 md:mt-20"
-        >
-          <motion.a
-            href="#membership"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="gold-button inline-flex items-center gap-3"
-          >
-            Begin Your Journey
-            <Sparkles className="w-4 h-4" />
+        <div style={{ textAlign: 'center' }}>
+          <motion.a href="#membership" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+            className="gold-button" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            Begin Your Journey <Sparkles size={16} />
           </motion.a>
-        </motion.div>
+        </div>
       </div>
     </section>
   )

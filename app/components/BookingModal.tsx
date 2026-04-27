@@ -50,11 +50,21 @@ export default function BookingModal({ service, onClose }: Props) {
 
   const validateStep1 = () => {
     const newErrors: { [key: string]: string } = {}
-    if (!name.trim() || name.trim().length < 2) newErrors.name = '⚠️ Valid naam daalo (min 2 characters)'
+    if (!name.trim() || name.trim().length < 2) newErrors.name = '⚠️ Valid naam daalo'
     if (!phone || !isValidPhoneNumber(phone)) newErrors.phone = '⚠️ Valid phone number daalo'
-    if (!validateEmail(email)) newErrors.email = '⚠️ Valid email daalo (e.g. name@gmail.com)'
+    if (!validateEmail(email)) newErrors.email = '⚠️ Valid email daalo'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
+  }
+
+  const sendWhatsApp = (msg: string) => {
+    const link = document.createElement('a')
+    link.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`
+    link.target = '_blank'
+    link.rel = 'noopener noreferrer'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   }
 
   const handleConfirmPayment = async () => {
@@ -68,6 +78,22 @@ export default function BookingModal({ service, onClose }: Props) {
     }
     setPayError('')
     setLoading(true)
+
+    const waMsg =
+      `✅ *New Booking — ATLAS!*%0A%0A` +
+      `👤 *Name:* ${encodeURIComponent(name)}%0A` +
+      `📱 *Phone:* ${encodeURIComponent(phone)}%0A` +
+      `📧 *Email:* ${encodeURIComponent(email)}%0A` +
+      `🛠 *Service:* ${encodeURIComponent(service.title)}%0A` +
+      `⏳ *Duration:* ${encodeURIComponent(durations[selectedDuration].label)}%0A` +
+      `💰 *Amount:* ₹${finalPrice}%0A` +
+      `💳 *Payment:* ${encodeURIComponent(paymentMethod)}%0A` +
+      `🔖 *Transaction ID:* ${encodeURIComponent(transactionId)}%0A%0A` +
+      `_ATLAS — Your World, Our Promise._`
+
+    // Send WhatsApp FIRST (before async)
+    sendWhatsApp(waMsg)
+
     try {
       // Save to Supabase
       await supabase.from('bookings').insert({
@@ -82,13 +108,14 @@ export default function BookingModal({ service, onClose }: Props) {
         status: 'confirmed'
       })
 
-      // Email notification
+      // Send Email via Formspree
       await fetch(FORMSPREE_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({
           _subject: `🔔 New Booking — ${service.title} — ATLAS`,
-          type: '✅ NEW BOOKING — PAYMENT RECEIVED',
+          _replyto: email,
+          type: 'NEW BOOKING',
           client_name: name,
           client_phone: phone,
           client_email: email,
@@ -97,34 +124,29 @@ export default function BookingModal({ service, onClose }: Props) {
           amount: `₹${finalPrice}`,
           payment_method: paymentMethod,
           transaction_id: transactionId,
-          message: `New booking received on ATLAS! Please verify the transaction ID and confirm the service.`
         }),
       })
 
-      // WhatsApp notification
-      const msg =
-        `✅ *New Booking — ATLAS!*%0A%0A` +
-        `👤 *Name:* ${name}%0A` +
-        `📱 *Phone:* ${phone}%0A` +
-        `📧 *Email:* ${email}%0A` +
-        `🛠 *Service:* ${service.title}%0A` +
-        `⏳ *Duration:* ${durations[selectedDuration].label}%0A` +
-        `💰 *Amount:* ₹${finalPrice}%0A` +
-        `💳 *Payment:* ${paymentMethod}%0A` +
-        `🔖 *Transaction ID:* ${transactionId}%0A%0A` +
-        `_ATLAS — Your World, Our Promise._`
-
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
       setDone(true)
     } catch (err) {
       console.error(err)
+      setDone(true)
     } finally {
       setLoading(false)
     }
   }
 
-  const inputClass = (field: string) =>
-    `w-full bg-[#0A0A0A] border ${errors[field] ? 'border-red-500/50' : 'border-[#C9A84C]/20'} rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm`
+  const inputStyle = (field: string) => ({
+    width: '100%',
+    background: 'rgba(10,10,10,0.9)',
+    border: `1px solid ${errors[field] ? 'rgba(239,68,68,0.5)' : 'rgba(201,168,76,0.25)'}`,
+    borderRadius: 12,
+    padding: '12px 16px',
+    color: 'white',
+    fontSize: 14,
+    outline: 'none',
+    boxSizing: 'border-box' as const,
+  })
 
   return (
     <AnimatePresence>
@@ -132,8 +154,7 @@ export default function BookingModal({ service, onClose }: Props) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center px-4 overflow-y-auto py-4"
-        style={{ backgroundColor: 'rgba(0,0,0,0.88)' }}
+        style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, overflowY: 'auto', background: 'rgba(0,0,0,0.88)' }}
         onClick={onClose}
       >
         <motion.div
@@ -141,32 +162,30 @@ export default function BookingModal({ service, onClose }: Props) {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 50 }}
           transition={{ duration: 0.3 }}
-          className="w-full max-w-lg bg-[#0D1B2A] border border-[#C9A84C]/30 rounded-3xl p-6 md:p-8 relative my-auto"
-          onClick={(e) => e.stopPropagation()}
+          style={{ width: '100%', maxWidth: 520, background: '#0D1B2A', border: '1px solid rgba(201,168,76,0.3)', borderRadius: 24, padding: 32, position: 'relative', margin: 'auto' }}
+          onClick={e => e.stopPropagation()}
         >
-          <button onClick={onClose} className="absolute top-4 right-4 text-[#E5E4E2]/40 hover:text-[#C9A84C] transition-colors z-10">
-            <X className="w-6 h-6" />
+          <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', color: 'rgba(229,228,226,0.4)', cursor: 'pointer', padding: 4 }}>
+            <X size={22} />
           </button>
 
           {/* Header */}
           {!done && (
-            <div className="mb-6">
-              <div className="flex items-center gap-3 mb-1">
-                <div className="h-px w-8 bg-[#C9A84C]/50" />
-                <span className="text-xs tracking-[0.4em] text-[#C9A84C] uppercase">Book Service</span>
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
+                <div style={{ height: 1, width: 32, background: 'rgba(201,168,76,0.5)' }} />
+                <span style={{ fontSize: 10, letterSpacing: '0.4em', color: '#C9A84C', textTransform: 'uppercase' }}>Book Service</span>
               </div>
-              <h3 className="text-lg md:text-xl font-playfair font-black text-white">{service.title}</h3>
-              <div className="flex items-center gap-1 mt-4">
+              <h3 className="font-playfair" style={{ fontSize: 20, fontWeight: 900, color: 'white', marginBottom: 16 }}>{service.title}</h3>
+              {/* Step indicators */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 {['Details', 'Pay', 'Done'].map((s, i) => (
-                  <div key={s} className="flex items-center gap-1 flex-1">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all
-                      ${step > i + 1 ? 'bg-[#C9A84C] text-[#0A0A0A]' :
-                        step === i + 1 ? 'bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A]' :
-                        'border border-[#C9A84C]/30 text-[#C9A84C]/40'}`}>
+                  <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1 }}>
+                    <div style={{ width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, background: step > i + 1 ? '#C9A84C' : step === i + 1 ? 'linear-gradient(to right, #C9A84C, #F0D080)' : 'transparent', color: step >= i + 1 ? '#0A0A0A' : 'rgba(201,168,76,0.4)', border: step >= i + 1 ? 'none' : '1px solid rgba(201,168,76,0.3)' }}>
                       {i + 1}
                     </div>
-                    <span className={`text-[10px] tracking-wider uppercase flex-1 ${step === i + 1 ? 'text-[#C9A84C]' : 'text-[#E5E4E2]/20'}`}>{s}</span>
-                    {i < 2 && <div className="w-3 h-px bg-[#C9A84C]/20" />}
+                    <span style={{ fontSize: 10, color: step === i + 1 ? '#C9A84C' : 'rgba(229,228,226,0.2)', textTransform: 'uppercase', letterSpacing: '0.1em', flex: 1 }}>{s}</span>
+                    {i < 2 && <div style={{ width: 12, height: 1, background: 'rgba(201,168,76,0.2)' }} />}
                   </div>
                 ))}
               </div>
@@ -175,58 +194,52 @@ export default function BookingModal({ service, onClose }: Props) {
 
           {/* STEP 1 */}
           {step === 1 && (
-            <div className="space-y-4">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {/* Duration */}
               <div>
-                <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-3">Select Duration</p>
-                <div className="grid grid-cols-3 gap-2">
+                <p style={{ fontSize: 10, letterSpacing: '0.15em', color: 'rgba(229,228,226,0.4)', textTransform: 'uppercase', marginBottom: 10 }}>Select Duration</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
                   {durations.map((d, i) => (
                     <button key={d.label} onClick={() => setSelectedDuration(i)}
-                      className={`p-3 border rounded-xl text-center transition-all duration-300
-                        ${selectedDuration === i ? 'border-[#C9A84C] bg-[#C9A84C]/10' : 'border-[#C9A84C]/20 hover:border-[#C9A84C]/50'}`}>
-                      <div className="text-xs font-bold text-white">{d.label}</div>
-                      <div className="text-xs text-[#C9A84C] mt-1">₹{numericPrice * d.multiplier}</div>
+                      style={{ padding: '12px 8px', border: `1px solid ${selectedDuration === i ? '#C9A84C' : 'rgba(201,168,76,0.2)'}`, borderRadius: 12, background: selectedDuration === i ? 'rgba(201,168,76,0.1)' : 'transparent', cursor: 'pointer', textAlign: 'center', transition: 'all 0.3s' }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: 'white', marginBottom: 4 }}>{d.label}</div>
+                      <div style={{ fontSize: 11, color: '#C9A84C' }}>₹{numericPrice * d.multiplier}</div>
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Full Name</p>
-                <input type="text" value={name}
-                  onChange={(e) => { setName(e.target.value); setErrors(p => ({ ...p, name: '' })) }}
-                  placeholder="Your full name" className={inputClass('name')} />
-                {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
+                <p style={{ fontSize: 10, letterSpacing: '0.15em', color: 'rgba(229,228,226,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Full Name</p>
+                <input type="text" value={name} onChange={e => { setName(e.target.value); setErrors(p => ({ ...p, name: '' })) }}
+                  placeholder="Your full name" style={inputStyle('name')} />
+                {errors.name && <p style={{ color: 'rgba(239,68,68,0.8)', fontSize: 11, marginTop: 4 }}>{errors.name}</p>}
               </div>
 
               <div>
-                <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Phone Number</p>
-                <div className={`border ${errors.phone ? 'border-red-500/50' : 'border-[#C9A84C]/20'} rounded-xl overflow-hidden`}>
-                  <PhoneInput
-                    international
-                    defaultCountry="IN"
-                    value={phone}
-                    onChange={(val) => { setPhone(val || ''); setErrors(p => ({ ...p, phone: '' })) }}
-                    style={{ background: '#0A0A0A', padding: '12px 16px', color: 'white', fontSize: '14px' }}
-                  />
+                <p style={{ fontSize: 10, letterSpacing: '0.15em', color: 'rgba(229,228,226,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Phone Number</p>
+                <div style={{ border: `1px solid ${errors.phone ? 'rgba(239,68,68,0.5)' : 'rgba(201,168,76,0.25)'}`, borderRadius: 12, overflow: 'hidden' }}>
+                  <PhoneInput international defaultCountry="IN" value={phone}
+                    onChange={val => { setPhone(val || ''); setErrors(p => ({ ...p, phone: '' })) }}
+                    style={{ background: 'rgba(10,10,10,0.9)', padding: '12px 16px', color: 'white', fontSize: 14 }} />
                 </div>
-                {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone}</p>}
+                {errors.phone && <p style={{ color: 'rgba(239,68,68,0.8)', fontSize: 11, marginTop: 4 }}>{errors.phone}</p>}
               </div>
 
               <div>
-                <p className="text-xs tracking-widets text-[#E5E4E2]/40 uppercase mb-2">Email</p>
-                <input type="email" value={email}
-                  onChange={(e) => { setEmail(e.target.value); setErrors(p => ({ ...p, email: '' })) }}
-                  placeholder="your@email.com" className={inputClass('email')} />
-                {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
+                <p style={{ fontSize: 10, letterSpacing: '0.15em', color: 'rgba(229,228,226,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Email</p>
+                <input type="email" value={email} onChange={e => { setEmail(e.target.value); setErrors(p => ({ ...p, email: '' })) }}
+                  placeholder="your@email.com" style={inputStyle('email')} />
+                {errors.email && <p style={{ color: 'rgba(239,68,68,0.8)', fontSize: 11, marginTop: 4 }}>{errors.email}</p>}
               </div>
 
-              <div className="flex justify-between items-center p-3 border border-[#C9A84C]/20 rounded-xl">
-                <span className="text-[#E5E4E2]/50 text-sm">Total Amount</span>
-                <span className="text-xl font-playfair font-black gold-text">₹{finalPrice}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 12 }}>
+                <span style={{ color: 'rgba(229,228,226,0.5)', fontSize: 14 }}>Total Amount</span>
+                <span className="font-playfair gold-text" style={{ fontSize: 22, fontWeight: 900 }}>₹{finalPrice}</span>
               </div>
 
               <button onClick={() => { if (validateStep1()) setStep(2) }}
-                className="w-full bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-4 uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300">
+                className="gold-button" style={{ width: '100%', justifyContent: 'center' }}>
                 Proceed to Payment →
               </button>
             </div>
@@ -234,100 +247,99 @@ export default function BookingModal({ service, onClose }: Props) {
 
           {/* STEP 2 */}
           {step === 2 && (
-            <div className="space-y-4">
-              <p className="text-xs tracking-widest text-[#E5E4E2]/40 uppercase mb-2">Payment Method</p>
-              <div className="grid grid-cols-3 gap-2">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <p style={{ fontSize: 10, letterSpacing: '0.15em', color: 'rgba(229,228,226,0.4)', textTransform: 'uppercase' }}>Payment Method</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
                 {[
-                  { id: 'upi_qr', label: 'QR Code', icon: <Smartphone className="w-4 h-4" /> },
-                  { id: 'upi_id', label: 'UPI ID', icon: <CreditCard className="w-4 h-4" /> },
-                  { id: 'bank', label: 'Net Banking', icon: <Building2 className="w-4 h-4" /> },
-                ].map((m) => (
+                  { id: 'upi_qr', label: 'QR Code', icon: <Smartphone size={16} /> },
+                  { id: 'upi_id', label: 'UPI ID', icon: <CreditCard size={16} /> },
+                  { id: 'bank', label: 'Net Banking', icon: <Building2 size={16} /> },
+                ].map(m => (
                   <button key={m.id} onClick={() => setPaymentMethod(m.id)}
-                    className={`p-3 border rounded-xl flex flex-col items-center gap-1 transition-all
-                      ${paymentMethod === m.id ? 'border-[#C9A84C] bg-[#C9A84C]/10' : 'border-[#C9A84C]/20'}`}>
-                    <span className="text-[#C9A84C]">{m.icon}</span>
-                    <span className="text-[10px] text-white">{m.label}</span>
+                    style={{ padding: '12px 8px', border: `1px solid ${paymentMethod === m.id ? '#C9A84C' : 'rgba(201,168,76,0.2)'}`, borderRadius: 12, background: paymentMethod === m.id ? 'rgba(201,168,76,0.1)' : 'transparent', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, transition: 'all 0.3s' }}>
+                    <span style={{ color: '#C9A84C' }}>{m.icon}</span>
+                    <span style={{ fontSize: 10, color: 'white' }}>{m.label}</span>
                   </button>
                 ))}
               </div>
 
-              {/* QR Code — pay.jpg */}
+              {/* QR Code */}
               {paymentMethod === 'upi_qr' && (
-                <div className="p-4 border border-[#C9A84C]/20 rounded-2xl text-center">
-                  <p className="text-xs text-[#C9A84C] tracking-widest uppercase mb-3">Scan & Pay</p>
-                  <div className="flex justify-center mb-3">
+                <div style={{ padding: 16, border: '1px solid rgba(201,168,76,0.2)', borderRadius: 16, textAlign: 'center' }}>
+                  <p style={{ fontSize: 10, letterSpacing: '0.3em', color: '#C9A84C', textTransform: 'uppercase', marginBottom: 12 }}>Scan & Pay</p>
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/pay.jpg.jpeg" alt="UPI QR"
-                      className="rounded-xl border border-[#C9A84C]/20 w-44 h-44 object-cover" />
+                    <img src="/pay.jpg.jpeg" alt="UPI QR" style={{ width: 160, height: 160, borderRadius: 12, border: '1px solid rgba(201,168,76,0.2)', objectFit: 'cover' }} />
                   </div>
-                  <p className="text-xs text-[#E5E4E2]/50 mb-2">{UPI_ID}</p>
-                  <div className="p-2 bg-[#C9A84C]/10 rounded-xl">
-                    <p className="text-lg font-black gold-text">₹{finalPrice}</p>
+                  <p style={{ fontSize: 12, color: 'rgba(229,228,226,0.5)', marginBottom: 8 }}>{UPI_ID}</p>
+                  <div style={{ background: 'rgba(201,168,76,0.1)', borderRadius: 10, padding: '8px 16px', display: 'inline-block' }}>
+                    <span className="font-playfair gold-text" style={{ fontSize: 18, fontWeight: 900 }}>₹{finalPrice}</span>
                   </div>
-                  <p className="text-[10px] text-[#E5E4E2]/30 mt-2">GPay / PhonePe / Paytm → Scan QR → Pay</p>
+                  <p style={{ fontSize: 10, color: 'rgba(229,228,226,0.3)', marginTop: 8 }}>GPay / PhonePe / Paytm → Scan QR → Pay</p>
                 </div>
               )}
 
               {/* UPI ID */}
               {paymentMethod === 'upi_id' && (
-                <div className="p-4 border border-[#C9A84C]/20 rounded-2xl">
-                  <p className="text-xs text-[#C9A84C] tracking-widets uppercase mb-3">UPI ID Copy Karo</p>
-                  <div className="flex items-center justify-between bg-[#0A0A0A] px-4 py-3 rounded-xl mb-3">
-                    <span className="text-white font-bold text-sm">{UPI_ID}</span>
-                    <button onClick={copyUPI} className="text-[#C9A84C] hover:scale-110 transition-transform ml-2">
-                      {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                <div style={{ padding: 16, border: '1px solid rgba(201,168,76,0.2)', borderRadius: 16 }}>
+                  <p style={{ fontSize: 10, letterSpacing: '0.15em', color: '#C9A84C', textTransform: 'uppercase', marginBottom: 10 }}>UPI ID Copy Karo</p>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(10,10,10,0.9)', padding: '12px 16px', borderRadius: 10, marginBottom: 10 }}>
+                    <span style={{ color: 'white', fontWeight: 700, fontSize: 14 }}>{UPI_ID}</span>
+                    <button onClick={copyUPI} style={{ background: 'none', border: 'none', color: '#C9A84C', cursor: 'pointer', padding: 4 }}>
+                      {copied ? <Check size={18} /> : <Copy size={18} />}
                     </button>
                   </div>
-                  <div className="p-2 bg-[#C9A84C]/10 rounded-xl text-center mb-2">
-                    <p className="text-lg font-black gold-text">₹{finalPrice}</p>
+                  <div style={{ background: 'rgba(201,168,76,0.1)', borderRadius: 10, padding: '8px 16px', textAlign: 'center' }}>
+                    <span className="font-playfair gold-text" style={{ fontSize: 18, fontWeight: 900 }}>₹{finalPrice}</span>
                   </div>
-                  <p className="text-[10px] text-[#E5E4E2]/30">UPI ID copy karo → GPay/PhonePe → Pay</p>
+                  <p style={{ fontSize: 10, color: 'rgba(229,228,226,0.3)', marginTop: 8 }}>UPI ID copy karo → GPay/PhonePe → Pay</p>
                 </div>
               )}
 
               {/* Net Banking */}
               {paymentMethod === 'bank' && (
-                <div className="p-4 border border-[#C9A84C]/20 rounded-2xl text-center">
-                  <p className="text-sm text-white mb-3">Bank transfer ke liye contact karo</p>
-                  <p className="text-xs text-[#E5E4E2]/40 mb-1">📧 atlasofficial2090@gmail.com</p>
-                  <p className="text-xs text-[#E5E4E2]/40">📱 +91 7550124573</p>
+                <div style={{ padding: 16, border: '1px solid rgba(201,168,76,0.2)', borderRadius: 16, textAlign: 'center' }}>
+                  <p style={{ color: 'white', fontSize: 13, marginBottom: 8 }}>Bank transfer ke liye contact karo</p>
+                  <p style={{ fontSize: 12, color: 'rgba(229,228,226,0.4)', marginBottom: 4 }}>📧 atlasofficial2090@gmail.com</p>
+                  <p style={{ fontSize: 12, color: 'rgba(229,228,226,0.4)' }}>📱 +91 7550124573</p>
                 </div>
               )}
 
               {/* Transaction ID */}
-              <div className="p-4 border-2 border-[#C9A84C]/40 rounded-2xl bg-[#C9A84C]/5">
-                <p className="text-xs tracking-widets text-[#C9A84C] uppercase mb-2">Transaction ID / UTR Number</p>
+              <div style={{ padding: 16, border: '2px solid rgba(201,168,76,0.4)', borderRadius: 16, background: 'rgba(201,168,76,0.04)' }}>
+                <p style={{ fontSize: 10, letterSpacing: '0.15em', color: '#C9A84C', textTransform: 'uppercase', marginBottom: 10 }}>Transaction ID / UTR Number</p>
                 <input type="text" value={transactionId}
-                  onChange={(e) => { setTransactionId(e.target.value); setPayError('') }}
+                  onChange={e => { setTransactionId(e.target.value); setPayError('') }}
                   placeholder="e.g. 426789123456 (min 10 digits)"
-                  className="w-full bg-[#0A0A0A] border border-[#C9A84C]/30 rounded-xl px-4 py-3 text-white placeholder-[#E5E4E2]/20 focus:outline-none focus:border-[#C9A84C]/60 transition-colors text-sm" />
-                <p className="text-[10px] text-[#E5E4E2]/30 mt-2">GPay/PhonePe → Transaction History → UTR number</p>
+                  style={{ width: '100%', background: 'rgba(10,10,10,0.9)', border: '1px solid rgba(201,168,76,0.3)', borderRadius: 10, padding: '12px 16px', color: 'white', fontSize: 13, outline: 'none', boxSizing: 'border-box' }} />
+                <p style={{ fontSize: 10, color: 'rgba(229,228,226,0.3)', marginTop: 6 }}>GPay/PhonePe → Transaction History → UTR number</p>
               </div>
 
               {/* Checkbox */}
-              <div className="flex items-start gap-3 p-3 border border-[#C9A84C]/20 rounded-xl">
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: 14, border: '1px solid rgba(201,168,76,0.2)', borderRadius: 12 }}>
                 <input type="checkbox" id="payconfirm" checked={paymentConfirmed}
-                  onChange={(e) => { setPaymentConfirmed(e.target.checked); setPayError('') }}
-                  className="mt-0.5 w-4 h-4 flex-shrink-0 accent-[#C9A84C]" />
-                <label htmlFor="payconfirm" className="text-xs text-[#E5E4E2]/60 cursor-pointer leading-relaxed">
-                  ✅ Maine <span className="text-[#C9A84C] font-bold">₹{finalPrice}</span> ka payment kar diya hai aur Transaction ID bilkul sahi hai
+                  onChange={e => { setPaymentConfirmed(e.target.checked); setPayError('') }}
+                  style={{ width: 16, height: 16, marginTop: 2, accentColor: '#C9A84C', flexShrink: 0 }} />
+                <label htmlFor="payconfirm" style={{ fontSize: 12, color: 'rgba(229,228,226,0.6)', cursor: 'pointer', lineHeight: 1.6 }}>
+                  ✅ Maine <strong style={{ color: '#C9A84C' }}>₹{finalPrice}</strong> ka payment kar diya hai aur Transaction ID bilkul sahi hai
                 </label>
               </div>
 
               {payError && (
-                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl">
-                  <p className="text-red-400 text-xs">{payError}</p>
+                <div style={{ padding: '10px 14px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 10 }}>
+                  <p style={{ color: 'rgba(239,68,68,0.9)', fontSize: 12 }}>{payError}</p>
                 </div>
               )}
 
-              <div className="flex gap-3">
+              <div style={{ display: 'flex', gap: 10 }}>
                 <button onClick={() => setStep(1)}
-                  className="flex-1 py-3 border border-[#C9A84C]/30 text-[#C9A84C] text-xs tracking-widets uppercase hover:bg-[#C9A84C]/5 transition-all duration-300">
+                  style={{ flex: 1, padding: '14px', border: '1px solid rgba(201,168,76,0.3)', color: '#C9A84C', background: 'transparent', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer', borderRadius: 6 }}>
                   ← Back
                 </button>
                 <button onClick={handleConfirmPayment}
                   disabled={loading || !transactionId.trim() || transactionId.trim().length < 10 || !paymentConfirmed}
-                  className="flex-1 bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold py-3 uppercase tracking-widets text-xs hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                  className="gold-button"
+                  style={{ flex: 2, justifyContent: 'center', opacity: (loading || !transactionId.trim() || transactionId.trim().length < 10 || !paymentConfirmed) ? 0.5 : 1, cursor: (loading || !transactionId.trim() || transactionId.trim().length < 10 || !paymentConfirmed) ? 'not-allowed' : 'pointer' }}>
                   {loading ? 'Confirming...' : '✅ Confirm Booking'}
                 </button>
               </div>
@@ -336,20 +348,17 @@ export default function BookingModal({ service, onClose }: Props) {
 
           {/* DONE */}
           {done && (
-            <div className="text-center py-6">
-              <div className="text-5xl mb-4">🎉</div>
-              <h3 className="text-2xl md:text-3xl font-playfair font-black gold-text mb-4">Booking Confirmed!</h3>
-              <p className="text-[#E5E4E2]/60 mb-2 text-sm">Service: <span className="text-white font-bold">{service.title}</span></p>
-              <p className="text-[#E5E4E2]/60 mb-2 text-sm">Duration: <span className="text-white font-bold">{durations[selectedDuration].label}</span></p>
-              <p className="text-[#E5E4E2]/60 mb-2 text-sm">Amount Paid: <span className="gold-text font-bold">₹{finalPrice}</span></p>
-              <p className="text-[#E5E4E2]/60 mb-6 text-sm">Transaction ID: <span className="text-white font-bold text-xs">{transactionId}</span></p>
-              <p className="text-xs text-[#E5E4E2]/40 tracking-widets uppercase mb-6">
+            <div style={{ textAlign: 'center', padding: '24px 0' }}>
+              <div style={{ fontSize: 56, marginBottom: 16 }}>🎉</div>
+              <h3 className="font-playfair gold-text" style={{ fontSize: 28, fontWeight: 900, marginBottom: 16 }}>Booking Confirmed!</h3>
+              <p style={{ color: 'rgba(229,228,226,0.6)', marginBottom: 8, fontSize: 14 }}>Service: <strong style={{ color: 'white' }}>{service.title}</strong></p>
+              <p style={{ color: 'rgba(229,228,226,0.6)', marginBottom: 8, fontSize: 14 }}>Duration: <strong style={{ color: 'white' }}>{durations[selectedDuration].label}</strong></p>
+              <p style={{ color: 'rgba(229,228,226,0.6)', marginBottom: 8, fontSize: 14 }}>Amount: <strong className="gold-text">₹{finalPrice}</strong></p>
+              <p style={{ color: 'rgba(229,228,226,0.6)', marginBottom: 20, fontSize: 12 }}>Transaction ID: <strong style={{ color: 'white', fontSize: 11 }}>{transactionId}</strong></p>
+              <p style={{ fontSize: 11, color: 'rgba(229,228,226,0.35)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 24 }}>
                 Hamari team 2 ghante mein {phone} pe contact karegi
               </p>
-              <button onClick={onClose}
-                className="bg-gradient-to-r from-[#C9A84C] to-[#F0D080] text-[#0A0A0A] font-bold px-8 py-3 uppercase tracking-widets text-sm hover:scale-105 transition-all duration-300">
-                Done
-              </button>
+              <button onClick={onClose} className="gold-button" style={{ margin: '0 auto' }}>Done</button>
             </div>
           )}
         </motion.div>

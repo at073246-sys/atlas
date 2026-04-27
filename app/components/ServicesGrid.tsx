@@ -4,6 +4,7 @@ import { ArrowUpRight, ChevronDown, ChevronUp } from 'lucide-react'
 import { useState, useRef } from 'react'
 import Image from 'next/image'
 import BookingModal from './BookingModal'
+import ParallaxBg from './ParallaxBg'
 
 const services = [
   {
@@ -260,3 +261,4 @@ export default function ServicesGrid() {
     </section>
   )
 }
+<ParallaxBg src="/book.jpg.jpeg" opacity={0.85} />
