@@ -322,7 +322,7 @@ export default function TalentRegister() {
 
                     <div style={{ padding: 16, border: '1px solid rgba(201,168,76,0.2)', borderRadius: 12, background: 'rgba(201,168,76,0.04)' }}>
                       <p style={{ fontSize: 13, color: 'white', marginBottom: 4 }}>📋 Document Verification</p>
-                      <p style={{ fontSize: 11, color: 'rgba(229,228,226,0.4)', lineHeight: 1.7 }}>Submit karne ke baad hamari team email pe contact karegi — certificates aur ID proof verify karne ke liye.</p>
+                      <p style={{ fontSize: 11, color: 'rgba(229,228,226,0.4)', lineHeight: 1.7 }}>After submission, our team will contact you via email to verify your certificates and ID proof..</p>
                     </div>
 
                     <div style={{ display: 'flex', gap: 10 }}>
