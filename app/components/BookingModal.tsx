@@ -69,11 +69,11 @@ export default function BookingModal({ service, onClose }: Props) {
 
   const handleConfirmPayment = async () => {
     if (!paymentConfirmed) {
-      setPayError('⚠️ Pehle payment confirm karo — checkbox tick karo')
+      setPayError('⚠️ First confirm the payment — tick the checkbox')
       return
     }
     if (!transactionId.trim() || transactionId.trim().length < 10) {
-      setPayError('⚠️ Valid Transaction ID / UTR Number daalo (min 10 digits)')
+      setPayError('⚠️ Enter a valid Transaction ID / UTR number (min 10 digits)')
       return
     }
     setPayError('')

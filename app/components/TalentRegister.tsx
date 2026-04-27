@@ -43,27 +43,27 @@ export default function TalentRegister() {
 
   const validateStep1 = () => {
     const newErrors: { [key: string]: string } = {}
-    if (!form.name.trim() || form.name.trim().length < 2) newErrors.name = '⚠️ Valid naam daalo'
+    if (!form.name.trim() || form.name.trim().length < 2) newErrors.name = '⚠️ Enter a valid name'
     if (!validateEmail(form.email)) newErrors.email = '⚠️ Valid email daalo'
-    if (!form.phone || !isValidPhoneNumber(form.phone)) newErrors.phone = '⚠️ Valid phone number daalo'
-    if (!form.category) newErrors.category = '⚠️ Category select karo'
-    if (form.category === 'Other — I will describe below' && !form.otherCategory.trim()) newErrors.otherCategory = '⚠️ Apni category describe karo'
+    if (!form.phone || !isValidPhoneNumber(form.phone)) newErrors.phone = '⚠️ Enter a valid phone number'
+    if (!form.category) newErrors.category = '⚠️ Select a category '
+    if (form.category === 'Other — I will deseribe below' && !form.otherCategory.trim()) newErrors.otherCategory = '⚠️ Describe your category'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
   const validateStep2 = () => {
     const newErrors: { [key: string]: string } = {}
-    if (!form.experience.trim()) newErrors.experience = '⚠️ Experience daalo'
-    if (!form.bio.trim() || form.bio.trim().length < 10) newErrors.bio = '⚠️ Bio detail mein likho'
+    if (!form.experience.trim()) newErrors.experience = '⚠️ Enter your experience'
+    if (!form.bio.trim() || form.bio.trim().length < 10) newErrors.bio = '⚠️ Write your bio in detail'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
   const validateStep3 = () => {
     const newErrors: { [key: string]: string } = {}
-    if (!form.certification.trim()) newErrors.certification = '⚠️ Certification daalo'
-    if (!form.rate.trim()) newErrors.rate = '⚠️ Expected rate daalo'
+    if (!form.certification.trim()) newErrors.certification = '⚠️ Enter your certification'
+    if (!form.rate.trim()) newErrors.rate = '⚠️ Enter your expected rate'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }

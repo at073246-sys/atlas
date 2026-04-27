@@ -59,16 +59,6 @@ const services = [
     ],
   },
   {
-    icon: '🧠',
-    title: 'Skills Coach',
-    desc: 'Master any skill with a structured elite roadmap.',
-    fullDesc: `Whether you are starting from scratch or refining your expertise, our Skills Coach builds a personalized learning roadmap designed for real, measurable progress. From basic foundations to advanced mastery — every session is purposeful, every week is a transformation. Built for those who refuse to plateau.`,
-    pricing: [
-      { label: '1 Week', price: '₹499' },
-      { label: '1 Month', price: '₹1,899' },
-    ],
-  },
-  {
     icon: '🗣️',
     title: 'Communication Coach',
     desc: 'Turn your voice into your greatest asset.',
