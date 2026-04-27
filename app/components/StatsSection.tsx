@@ -5,55 +5,54 @@ import { ShieldCheck, Lock, Star } from 'lucide-react'
 import Image from 'next/image'
 
 const badges = [
-  { icon: <ShieldCheck className="w-4 h-4 md:w-5 md:h-5" />, label: 'Background Verified' },
-  { icon: <Lock className="w-4 h-4 md:w-5 md:h-5" />, label: 'NDA Protected' },
-  { icon: <Star className="w-4 h-4 md:w-5 md:h-5" />, label: 'Elite Rated' },
+  { icon: <ShieldCheck size={18} />, label: 'Background Verified' },
+  { icon: <Lock size={18} />, label: 'NDA Protected' },
+  { icon: <Star size={18} />, label: 'Elite Rated' },
 ]
 
 export default function StatsSection() {
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const y = useTransform(scrollYProgress, [0, 1], ['8%', '-8%'])
-  const imageScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.05, 1, 1.05])
+  const y = useTransform(scrollYProgress, [0, 1], ['10%', '-10%'])
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1, 1.08])
 
   return (
-    <section ref={ref} className="relative py-20 md:py-32 overflow-hidden">
-      {/* 3D Motion Background */}
-      <motion.div className="absolute inset-0 z-0" style={{ y, scale: imageScale }}>
-        <Image src="/globe.jpg.jpeg" alt="Globe" fill className="object-cover object-center" quality={90} />
-        <div className="absolute inset-0 bg-[#0A0A0A]/82" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A] via-transparent to-[#0A0A0A]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(201,168,76,0.08),transparent_70%)]" />
+    <section ref={ref} style={{ position: 'relative', padding: '120px 0', overflow: 'hidden' }}>
+      {/* 3D Cinematic Background */}
+      <motion.div style={{ position: 'absolute', inset: 0, zIndex: 0, y, scale }}>
+        <Image src="/globe.jpg.jpeg" alt="Globe" fill style={{ objectFit: 'cover', objectPosition: 'center' }} quality={90} />
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,10,10,0.82)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0A0A0A, transparent, #0A0A0A)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.07), transparent 70%)' }} />
       </motion.div>
 
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
         <motion.div
           initial={{ opacity: 0, y: 60 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1 }}
-          className="text-center mb-12 md:mb-20"
+          style={{ textAlign: 'center', marginBottom: 64 }}
         >
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <motion.div className="h-px bg-[#C9A84C]/50"
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 24 }}>
+            <motion.div style={{ height: 1, background: 'rgba(201,168,76,0.5)' }}
               initial={{ width: 0 }} whileInView={{ width: 40 }} viewport={{ once: true }} transition={{ duration: 1 }} />
-            <span className="text-[10px] md:text-xs tracking-[0.3em] md:tracking-[0.4em] text-[#C9A84C] uppercase">Who We Are</span>
-            <motion.div className="h-px bg-[#C9A84C]/50"
+            <span style={{ fontSize: 10, letterSpacing: '0.4em', color: '#C9A84C', textTransform: 'uppercase' }}>Who We Are</span>
+            <motion.div style={{ height: 1, background: 'rgba(201,168,76,0.5)' }}
               initial={{ width: 0 }} whileInView={{ width: 40 }} viewport={{ once: true }} transition={{ duration: 1 }} />
           </div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-playfair font-black text-white mb-4 md:mb-6 leading-tight">
-            We Don&apos;t Sell Products.
-            <br />
+          <h2 className="font-playfair" style={{ fontSize: 'clamp(2rem, 6vw, 4rem)', fontWeight: 900, color: 'white', marginBottom: 16, lineHeight: 1.1 }}>
+            We Don&apos;t Sell Products.<br />
             <span className="gold-text">We Deliver People.</span>
           </h2>
-          <p className="text-[#E5E4E2]/60 text-sm md:text-lg max-w-2xl mx-auto font-light leading-relaxed px-4">
+          <p style={{ color: 'rgba(229,228,226,0.6)', fontSize: 16, maxWidth: 600, margin: '0 auto', lineHeight: 1.8, padding: '0 16px' }}>
             ATLAS connects you with the right professional — verified, elite, and ready on demand. Your exact need. Your exact time. Zero compromise.
           </p>
         </motion.div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-8 mb-10 md:mb-16 max-w-4xl mx-auto">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 24, maxWidth: 900, margin: '0 auto 48px' }}>
           {[
             { icon: '🌍', title: 'Global Reach', desc: 'Professionals from across the world, at your service' },
             { icon: '⚡', title: 'On Demand', desc: 'Request a professional and get matched within hours' },
@@ -61,45 +60,35 @@ export default function StatsSection() {
           ].map((item, i) => (
             <motion.div
               key={item.title}
-              initial={{ opacity: 0, y: 60 }}
+              initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: i * 0.2 }}
               whileHover={{ y: -8, scale: 1.02 }}
-              className="glass-card rounded-2xl p-6 md:p-8 text-center relative overflow-hidden group"
+              className="glass-card"
+              style={{ borderRadius: 16, padding: '32px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#C9A84C]/0 to-[#C9A84C]/0 group-hover:from-[#C9A84C]/5 transition-all duration-500 rounded-2xl" />
-              <div className="text-3xl md:text-5xl mb-4 md:mb-5 float-animation" style={{ animationDelay: `${i * 0.5}s` }}>
-                {item.icon}
-              </div>
-              <h3 className="text-lg md:text-xl font-playfair font-bold text-white mb-2 md:mb-3 group-hover:text-[#C9A84C] transition-colors duration-300">
-                {item.title}
-              </h3>
-              <p className="text-[#E5E4E2]/50 text-xs md:text-sm leading-relaxed">{item.desc}</p>
-              <div className="absolute bottom-0 left-0 h-px w-0 group-hover:w-full bg-gradient-to-r from-transparent via-[#C9A84C] to-transparent transition-all duration-500" />
+              <div className="float-animation" style={{ fontSize: 40, marginBottom: 16, animationDelay: `${i * 0.5}s` }}>{item.icon}</div>
+              <h3 className="font-playfair" style={{ fontSize: 18, fontWeight: 700, color: 'white', marginBottom: 8 }}>{item.title}</h3>
+              <p style={{ color: 'rgba(229,228,226,0.5)', fontSize: 13, lineHeight: 1.7 }}>{item.desc}</p>
             </motion.div>
           ))}
         </div>
 
         {/* Badges */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="flex flex-wrap justify-center gap-3 md:gap-4"
-        >
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12 }}>
           {badges.map((badge) => (
             <motion.div
               key={badge.label}
               whileHover={{ scale: 1.05, y: -3 }}
-              className="flex items-center gap-2 px-4 py-2 border border-[#C9A84C]/20 rounded-full text-[#C9A84C] text-xs md:text-sm tracking-wide glass-card"
+              className="glass-card"
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 100, color: '#C9A84C', fontSize: 13 }}
             >
               {badge.icon}
               <span>{badge.label}</span>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   )
