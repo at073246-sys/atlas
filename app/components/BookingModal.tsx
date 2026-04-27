@@ -50,9 +50,9 @@ export default function BookingModal({ service, onClose }: Props) {
 
   const validateStep1 = () => {
     const newErrors: { [key: string]: string } = {}
-    if (!name.trim() || name.trim().length < 2) newErrors.name = '⚠️ Valid naam daalo'
-    if (!phone || !isValidPhoneNumber(phone)) newErrors.phone = '⚠️ Valid phone number daalo'
-    if (!validateEmail(email)) newErrors.email = '⚠️ Valid email daalo'
+    if (!name.trim() || name.trim().length < 2) newErrors.name = '⚠️ Enter your valid name'
+    if (!phone || !isValidPhoneNumber(phone)) newErrors.phone = '⚠️ Enter your Valid phone number '
+    if (!validateEmail(email)) newErrors.email = '⚠️ Enter your Valid email '
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -321,7 +321,7 @@ export default function BookingModal({ service, onClose }: Props) {
                   onChange={e => { setPaymentConfirmed(e.target.checked); setPayError('') }}
                   style={{ width: 16, height: 16, marginTop: 2, accentColor: '#C9A84C', flexShrink: 0 }} />
                 <label htmlFor="payconfirm" style={{ fontSize: 12, color: 'rgba(229,228,226,0.6)', cursor: 'pointer', lineHeight: 1.6 }}>
-                  ✅ Maine <strong style={{ color: '#C9A84C' }}>₹{finalPrice}</strong> ka payment kar diya hai aur Transaction ID bilkul sahi hai
+                  ✅ Maine <strong style={{ color: '#C9A84C' }}>₹{finalPrice}</strong> Your payment has been done, and the Transaction ID is correct.
                 </label>
               </div>
 

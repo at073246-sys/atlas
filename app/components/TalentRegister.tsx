@@ -44,7 +44,7 @@ export default function TalentRegister() {
   const validateStep1 = () => {
     const newErrors: { [key: string]: string } = {}
     if (!form.name.trim() || form.name.trim().length < 2) newErrors.name = '⚠️ Enter a valid name'
-    if (!validateEmail(form.email)) newErrors.email = '⚠️ Valid email daalo'
+    if (!validateEmail(form.email)) newErrors.email = '⚠️  Enter Valid email '
     if (!form.phone || !isValidPhoneNumber(form.phone)) newErrors.phone = '⚠️ Enter a valid phone number'
     if (!form.category) newErrors.category = '⚠️ Select a category '
     if (form.category === 'Other — I will deseribe below' && !form.otherCategory.trim()) newErrors.otherCategory = '⚠️ Describe your category'
@@ -255,7 +255,7 @@ export default function TalentRegister() {
                           placeholder="e.g. Astrologer, Voice Artist, Tarot Reader..."
                           value={form.otherCategory} onChange={e => update('otherCategory', e.target.value)} />
                         {errors.otherCategory && <p style={{ color: 'rgba(239,68,68,0.8)', fontSize: 11, marginTop: 4 }}>{errors.otherCategory}</p>}
-                        <p style={{ fontSize: 10, color: 'rgba(229,228,226,0.25)', marginTop: 4 }}>✅ Apni skill apne words mein likho</p>
+                        <p style={{ fontSize: 10, color: 'rgba(229,228,226,0.25)', marginTop: 4 }}>✅ Describe your skills in your own words</p>
                       </div>
                     )}
 
