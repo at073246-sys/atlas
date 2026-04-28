@@ -3,7 +3,18 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 import Image from 'next/image'
 
-type AnimType = 'walk' | 'fall' | 'clock' | 'eye' | 'wind' | 'swirl' | 'float' | 'king'
+type AnimType = 'walk' | 'fall' | 'clock' | 'eye' | 'king' | 'wind' | 'swirl' | 'float'
+
+const animMap: Record<AnimType, string> = {
+  walk: 'bg-anim-walk',
+  fall: 'bg-anim-fall',
+  clock: 'bg-anim-clock',
+  eye: 'bg-anim-eye',
+  king: 'bg-anim-king',
+  wind: 'bg-anim-wind',
+  swirl: 'bg-anim-swirl',
+  float: 'bg-anim-float',
+}
 
 interface Props {
   src: string
@@ -11,40 +22,65 @@ interface Props {
   anim?: AnimType
 }
 
-const animStyles: Record<AnimType, string> = {
-  walk: 'cinematic-walk',
-  fall: 'cinematic-fall',
-  clock: 'cinematic-clock',
-  eye: 'cinematic-eye',
-  wind: 'cinematic-wind',
-  swirl: 'cinematic-swirl',
-  float: 'cinematic-float',
-  king: 'cinematic-king',
-}
-
 export default function CinematicBg({ src, opacity = 0.85, anim = 'float' }: Props) {
   const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const y = useTransform(scrollYProgress, [0, 1], ['-12%', '12%'])
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.12, 1.0, 1.12])
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start end', 'end start'],
+  })
+  const parallaxY = useTransform(scrollYProgress, [0, 1], ['-8%', '8%'])
 
   return (
     <motion.div
       ref={ref}
-      style={{ position: 'absolute', inset: 0, zIndex: 0, y, scale, willChange: 'transform', overflow: 'hidden' }}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        zIndex: 0,
+        y: parallaxY,
+        willChange: 'transform',
+        overflow: 'hidden',
+      }}
     >
-      <div className={animStyles[anim]} style={{ position: 'absolute', inset: '-20%', width: '140%', height: '140%' }}>
+      {/* Image with CSS animation */}
+      <div
+        className={animMap[anim]}
+        style={{
+          position: 'absolute',
+          inset: '-25%',
+          width: '150%',
+          height: '150%',
+        }}
+      >
         <Image
           src={src}
-          alt="bg"
+          alt="section background"
           fill
           style={{ objectFit: 'cover', objectPosition: 'center' }}
-          quality={85}
+          quality={80}
         />
       </div>
-      <div style={{ position: 'absolute', inset: 0, background: `rgba(10,10,10,${opacity})` }} />
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0A0A0A 0%, transparent 25%, transparent 75%, #0A0A0A 100%)' }} />
-      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.06), transparent 70%)' }} />
+
+      {/* Dark overlay */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: `rgba(10,10,10,${opacity})`,
+      }} />
+
+      {/* Gradient top/bottom fade */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'linear-gradient(to bottom, #0A0A0A 0%, transparent 20%, transparent 80%, #0A0A0A 100%)',
+      }} />
+
+      {/* Gold radial glow */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.05), transparent 70%)',
+      }} />
     </motion.div>
   )
 }

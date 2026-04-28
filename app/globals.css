@@ -1,9 +1,7 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Cormorant+Garamond:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   background-color: #0A0A0A;
@@ -15,9 +13,9 @@ body {
 
 * { box-sizing: border-box; }
 
-.font-playfair { font-family: 'Playfair Display', serif; }
-.font-cormorant { font-family: 'Cormorant Garamond', serif; }
-.font-inter { font-family: 'Inter', sans-serif; }
+.font-playfair { font-family: 'Playfair Display', serif !important; }
+.font-cormorant { font-family: 'Cormorant Garamond', serif !important; }
+.font-inter { font-family: 'Inter', sans-serif !important; }
 
 .gold-text {
   background: linear-gradient(to right, #C9A84C, #F0D080);
@@ -27,7 +25,7 @@ body {
 }
 
 .glass-card {
-  background: linear-gradient(135deg, rgba(10,10,10,0.80), rgba(13,27,42,0.80));
+  background: linear-gradient(135deg, rgba(10,10,10,0.82), rgba(13,27,42,0.82));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(201,168,76,0.15);
@@ -49,6 +47,8 @@ body {
   align-items: center;
   gap: 8px;
   white-space: nowrap;
+  border: none;
+  cursor: pointer;
 }
 
 .gold-button:hover {
@@ -63,154 +63,120 @@ body {
 }
 
 /* Phone Input */
-.PhoneInput {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #0A0A0A;
-}
-.PhoneInputInput {
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 14px;
-  outline: none;
-  flex: 1;
-  min-width: 0;
-}
-.PhoneInputCountrySelect {
-  background: #0A0A0A;
-  color: white;
-  border: none;
-  outline: none;
-}
-.PhoneInputCountryIcon {
-  width: 1.5em;
-  height: 1em;
-}
+.PhoneInput { display: flex; align-items: center; gap: 8px; background: rgba(10,10,10,0.9); }
+.PhoneInputInput { background: transparent; border: none; color: white; font-size: 14px; outline: none; flex: 1; min-width: 0; }
+.PhoneInputCountrySelect { background: #0A0A0A; color: white; border: none; outline: none; }
+.PhoneInputCountryIcon { width: 1.5em; height: 1em; }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: #0A0A0A; }
 ::-webkit-scrollbar-thumb { background: #C9A84C; border-radius: 2px; }
 
-/* Animations */
+/* ===== BASE ANIMATIONS ===== */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
+  50% { transform: translateY(-12px); }
 }
 @keyframes goldPulse {
   0%, 100% { box-shadow: 0 0 20px rgba(201,168,76,0.3); }
   50% { box-shadow: 0 0 60px rgba(201,168,76,0.8); }
 }
-@keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
 .float-animation { animation: float 6s ease-in-out infinite; }
 .gold-pulse { animation: goldPulse 2s ease-in-out infinite; }
 
-/* Responsive fixes */
-@media (max-width: 768px) {
-  .gold-button {
-    padding: 12px 20px;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-  }
-}
-/* ============ CINEMATIC BACKGROUND ANIMATIONS ============ */
+/* ===== CINEMATIC 3D BACKGROUND ANIMATIONS ===== */
 
-/* WALK — peg.jpg — admi aage chal raha hai */
-@keyframes cinematicWalk {
-  0%   { transform: scale(1.12) translateX(0%) translateY(0%); }
-  25%  { transform: scale(1.08) translateX(-2%) translateY(-1%); }
-  50%  { transform: scale(1.0)  translateX(-4%) translateY(-2%); }
-  75%  { transform: scale(1.08) translateX(-2%) translateY(-1%); }
-  100% { transform: scale(1.12) translateX(0%) translateY(0%); }
+/* peg.jpg — admi slowly aage chal raha hai */
+@keyframes bgWalk {
+  0%   { transform: scale(1.18) translateX(0%) translateY(0%); }
+  33%  { transform: scale(1.12) translateX(-3%) translateY(-1.5%); }
+  66%  { transform: scale(1.06) translateX(-6%) translateY(-3%); }
+  100% { transform: scale(1.18) translateX(0%) translateY(0%); }
 }
-.cinematic-walk {
-  animation: cinematicWalk 20s ease-in-out infinite;
+.bg-anim-walk {
+  animation: bgWalk 25s ease-in-out infinite;
+  transform-origin: center bottom;
 }
 
-/* FALL — book.jpg — books aur admi slowly fall */
-@keyframes cinematicFall {
-  0%   { transform: scale(1.15) translateY(-3%) rotate(0deg); }
-  30%  { transform: scale(1.10) translateY(-1%) rotate(0.5deg); }
-  60%  { transform: scale(1.05) translateY(1%)  rotate(-0.5deg); }
-  100% { transform: scale(1.15) translateY(-3%) rotate(0deg); }
+/* book.jpg — books gir rahi hain, admi bhi */
+@keyframes bgFall {
+  0%   { transform: scale(1.15) translateY(-4%) rotate(0deg); }
+  25%  { transform: scale(1.10) translateY(-2%) rotate(0.4deg); }
+  50%  { transform: scale(1.05) translateY(0%) rotate(0deg); }
+  75%  { transform: scale(1.10) translateY(-2%) rotate(-0.4deg); }
+  100% { transform: scale(1.15) translateY(-4%) rotate(0deg); }
 }
-.cinematic-fall {
-  animation: cinematicFall 18s ease-in-out infinite;
+.bg-anim-fall {
+  animation: bgFall 20s ease-in-out infinite;
 }
 
-/* CLOCK — watch.jpg — dial slowly rotate */
-@keyframes cinematicClock {
-  0%   { transform: scale(1.1) rotate(-1deg); }
-  50%  { transform: scale(1.05) rotate(1deg); }
-  100% { transform: scale(1.1) rotate(-1deg); }
+/* watch.jpg — sui slowly ghoom rahi hai */
+@keyframes bgClock {
+  0%   { transform: scale(1.12) rotate(-1.5deg); }
+  50%  { transform: scale(1.06) rotate(1.5deg); }
+  100% { transform: scale(1.12) rotate(-1.5deg); }
 }
-.cinematic-clock {
-  animation: cinematicClock 25s ease-in-out infinite;
+.bg-anim-clock {
+  animation: bgClock 30s ease-in-out infinite;
   transform-origin: center center;
 }
 
-/* EYE — eye.jpg — blink + water shimmer */
-@keyframes cinematicEye {
+/* eye.jpg — aankhon mein pani + blink */
+@keyframes bgEye {
   0%   { transform: scale(1.12) translateY(0%); opacity: 1; }
-  45%  { transform: scale(1.08) translateY(-1%); opacity: 1; }
-  50%  { transform: scale(1.06) translateY(-1.5%); opacity: 0.88; }
-  55%  { transform: scale(1.08) translateY(-1%); opacity: 1; }
+  48%  { transform: scale(1.08) translateY(-1.5%); opacity: 1; }
+  50%  { transform: scale(1.08) translateY(-1.5%); opacity: 0.82; }
+  52%  { transform: scale(1.08) translateY(-1.5%); opacity: 1; }
   100% { transform: scale(1.12) translateY(0%); opacity: 1; }
 }
-.cinematic-eye {
-  animation: cinematicEye 8s ease-in-out infinite;
+.bg-anim-eye {
+  animation: bgEye 9s ease-in-out infinite;
 }
 
-/* WIND — samuraye.jpg — wind blowing */
-@keyframes cinematicWind {
-  0%   { transform: scale(1.12) translateX(0%) skewX(0deg); }
-  25%  { transform: scale(1.08) translateX(-1.5%) skewX(0.3deg); }
-  50%  { transform: scale(1.05) translateX(-3%) skewX(0deg); }
-  75%  { transform: scale(1.08) translateX(-1.5%) skewX(-0.3deg); }
-  100% { transform: scale(1.12) translateX(0%) skewX(0deg); }
+/* king.jpg — laal dupatta/scarf me hawa */
+@keyframes bgKing {
+  0%   { transform: scale(1.14) translateX(0%) translateY(0%) skewX(0deg); }
+  20%  { transform: scale(1.10) translateX(-1.5%) translateY(-0.8%) skewX(0.4deg); }
+  40%  { transform: scale(1.06) translateX(-3%) translateY(-1.5%) skewX(0deg); }
+  60%  { transform: scale(1.10) translateX(-1.5%) translateY(-0.8%) skewX(-0.4deg); }
+  80%  { transform: scale(1.12) translateX(-0.5%) translateY(-0.3%) skewX(0.2deg); }
+  100% { transform: scale(1.14) translateX(0%) translateY(0%) skewX(0deg); }
 }
-.cinematic-wind {
-  animation: cinematicWind 22s ease-in-out infinite;
+.bg-anim-king {
+  animation: bgKing 18s ease-in-out infinite;
 }
 
-/* SWIRL — sun.jpg — slow spiral */
-@keyframes cinematicSwirl {
-  0%   { transform: scale(1.15) rotate(0deg) translateX(0%); }
-  25%  { transform: scale(1.10) rotate(0.5deg) translateX(-1%); }
-  50%  { transform: scale(1.05) rotate(0deg) translateX(-2%); }
-  75%  { transform: scale(1.10) rotate(-0.5deg) translateX(-1%); }
-  100% { transform: scale(1.15) rotate(0deg) translateX(0%); }
+/* samuraye.jpg — hawa mein kapda hilna */
+@keyframes bgWind {
+  0%   { transform: scale(1.14) translateX(0%) skewX(0deg); }
+  25%  { transform: scale(1.09) translateX(-2%) skewX(0.5deg); }
+  50%  { transform: scale(1.05) translateX(-4%) skewX(0deg); }
+  75%  { transform: scale(1.09) translateX(-2%) skewX(-0.5deg); }
+  100% { transform: scale(1.14) translateX(0%) skewX(0deg); }
 }
-.cinematic-swirl {
-  animation: cinematicSwirl 30s ease-in-out infinite;
+.bg-anim-wind {
+  animation: bgWind 22s ease-in-out infinite;
+}
+
+/* globe.jpg — slowly swirl */
+@keyframes bgSwirl {
+  0%   { transform: scale(1.14) rotate(0deg) translateX(0%); }
+  33%  { transform: scale(1.08) rotate(0.6deg) translateX(-1.5%); }
+  66%  { transform: scale(1.04) rotate(0deg) translateX(-3%); }
+  100% { transform: scale(1.14) rotate(0deg) translateX(0%); }
+}
+.bg-anim-swirl {
+  animation: bgSwirl 35s ease-in-out infinite;
   transform-origin: center center;
 }
 
-/* FLOAT — default gentle float */
-@keyframes cinematicFloat {
+/* peg.jpg footer / default float */
+@keyframes bgFloat {
   0%   { transform: scale(1.12) translateY(0%); }
-  50%  { transform: scale(1.06) translateY(-2%); }
+  50%  { transform: scale(1.06) translateY(-2.5%); }
   100% { transform: scale(1.12) translateY(0%); }
 }
-.cinematic-float {
-  animation: cinematicFloat 20s ease-in-out infinite;
-}
-
-/* KING — king.jpg — scarf/cloth wave */
-@keyframes cinematicKing {
-  0%   { transform: scale(1.12) translateX(0%) translateY(0%) rotate(0deg); }
-  20%  { transform: scale(1.09) translateX(-1%) translateY(-0.5%) rotate(0.3deg); }
-  40%  { transform: scale(1.06) translateX(-2%) translateY(-1%) rotate(0deg); }
-  60%  { transform: scale(1.09) translateX(-1%) translateY(-0.5%) rotate(-0.3deg); }
-  80%  { transform: scale(1.10) translateX(-0.5%) translateY(0%) rotate(0.2deg); }
-  100% { transform: scale(1.12) translateX(0%) translateY(0%) rotate(0deg); }
-}
-.cinematic-king {
-  animation: cinematicKing 16s ease-in-out infinite;
+.bg-anim-float {
+  animation: bgFloat 22s ease-in-out infinite;
 }
