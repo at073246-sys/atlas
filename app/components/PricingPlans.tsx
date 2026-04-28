@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion'
 import { CheckCircle, Crown, Sparkles, Mail } from 'lucide-react'
 import { useState } from 'react'
-import ParallaxBg from './ParallaxBg'
+import CinematicBg from './CinematicBg'
 
 const WHATSAPP_NUMBER = '917550124573'
 
@@ -122,7 +122,7 @@ export default function PricingPlans() {
   return (
     <section id="membership" style={{ position: 'relative', padding: '120px 0', overflow: 'hidden' }}>
       {/* 3D Parallax Background */}
-      <ParallaxBg src="/king.jpg.jpeg" opacity={0.88} />
+      <CinematicBg src="/king.jpg.jpeg" opacity={0.88} anim="king" />
 
       <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
         {/* Header */}

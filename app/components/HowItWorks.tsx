@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion'
 import { Search, UserCheck, CreditCard, Sparkles } from 'lucide-react'
 import Image from 'next/image'
-import ParallaxBg from './ParallaxBg'
+import CinematicBg from './CinematicBg'
 
 const steps = [
   { number: '01', icon: <Search size={22} style={{ color: '#0A0A0A' }} />, title: 'Choose Your Need', desc: 'Browse our curated categories. Tell us exactly what you need.', image: '/book.jpg.jpeg' },
@@ -14,7 +14,8 @@ const steps = [
 export default function HowItWorks() {
   return (
     <section style={{ position: 'relative', padding: '120px 0', overflow: 'hidden' }}>
-      <ParallaxBg src="/watch.jpg.jpeg" opacity={0.88} />
+      {/* watch.jpg — clock/dial rotation */}
+      <CinematicBg src="/watch.jpg.jpeg" opacity={0.88} anim="clock" />
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
         <motion.div initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1 }} style={{ textAlign: 'center', marginBottom: 80 }}>
@@ -35,11 +36,9 @@ export default function HowItWorks() {
           {steps.map((step, index) => (
             <motion.div key={step.number}
               initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: index * 0.2 }}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}
-              className="group"
-            >
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <div style={{ position: 'relative', width: '100%', height: 140, borderRadius: 16, overflow: 'hidden', marginBottom: 24 }}>
-                <Image src={step.image} alt={step.title} fill style={{ objectFit: 'cover', transition: 'transform 0.5s' }} />
+                <Image src={step.image} alt={step.title} fill style={{ objectFit: 'cover' }} />
                 <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,10,10,0.5)' }} />
                 <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <motion.div whileHover={{ scale: 1.1, rotate: 5 }}
@@ -47,9 +46,7 @@ export default function HowItWorks() {
                     {step.icon}
                   </motion.div>
                 </div>
-                <div style={{ position: 'absolute', top: 8, right: 10, fontSize: 11, fontWeight: 900, color: '#C9A84C', fontFamily: 'Playfair Display, serif' }}>
-                  {step.number}
-                </div>
+                <div style={{ position: 'absolute', top: 8, right: 10, fontSize: 11, fontWeight: 900, color: '#C9A84C', fontFamily: 'Playfair Display, serif' }}>{step.number}</div>
               </div>
               <h3 className="font-playfair" style={{ fontSize: 17, fontWeight: 700, color: 'white', marginBottom: 8 }}>{step.title}</h3>
               <p style={{ color: 'rgba(229,228,226,0.45)', fontSize: 13, lineHeight: 1.7 }}>{step.desc}</p>

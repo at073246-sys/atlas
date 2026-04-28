@@ -2,8 +2,8 @@
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Mail } from 'lucide-react'
 import { useRef, Suspense } from 'react'
-import Image from 'next/image'
 import dynamic from 'next/dynamic'
+import CinematicBg from './CinematicBg'
 
 const Globe3D = dynamic(() => import('./Globe3D'), { ssr: false })
 
@@ -24,12 +24,7 @@ export default function Footer() {
 
   return (
     <footer ref={ref} style={{ position: 'relative', paddingTop: 80, paddingBottom: 40, overflow: 'hidden' }}>
-      {/* 3D Motion Background */}
-      <motion.div style={{ position: 'absolute', inset: 0, zIndex: 0, y, scale: imageScale }}>
-        <Image src="/peg.jpg.jpeg" alt="Footer Background" fill style={{ objectFit: 'cover', objectPosition: 'center' }} quality={90} />
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,10,10,0.92)' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0A0A0A, transparent, #0A0A0A)' }} />
-      </motion.div>
+     <CinematicBg src="/peg.jpg.jpeg" opacity={0.92} anim="walk" />
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
 

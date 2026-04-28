@@ -119,3 +119,98 @@ body {
     letter-spacing: 0.08em;
   }
 }
+/* ============ CINEMATIC BACKGROUND ANIMATIONS ============ */
+
+/* WALK — peg.jpg — admi aage chal raha hai */
+@keyframes cinematicWalk {
+  0%   { transform: scale(1.12) translateX(0%) translateY(0%); }
+  25%  { transform: scale(1.08) translateX(-2%) translateY(-1%); }
+  50%  { transform: scale(1.0)  translateX(-4%) translateY(-2%); }
+  75%  { transform: scale(1.08) translateX(-2%) translateY(-1%); }
+  100% { transform: scale(1.12) translateX(0%) translateY(0%); }
+}
+.cinematic-walk {
+  animation: cinematicWalk 20s ease-in-out infinite;
+}
+
+/* FALL — book.jpg — books aur admi slowly fall */
+@keyframes cinematicFall {
+  0%   { transform: scale(1.15) translateY(-3%) rotate(0deg); }
+  30%  { transform: scale(1.10) translateY(-1%) rotate(0.5deg); }
+  60%  { transform: scale(1.05) translateY(1%)  rotate(-0.5deg); }
+  100% { transform: scale(1.15) translateY(-3%) rotate(0deg); }
+}
+.cinematic-fall {
+  animation: cinematicFall 18s ease-in-out infinite;
+}
+
+/* CLOCK — watch.jpg — dial slowly rotate */
+@keyframes cinematicClock {
+  0%   { transform: scale(1.1) rotate(-1deg); }
+  50%  { transform: scale(1.05) rotate(1deg); }
+  100% { transform: scale(1.1) rotate(-1deg); }
+}
+.cinematic-clock {
+  animation: cinematicClock 25s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+/* EYE — eye.jpg — blink + water shimmer */
+@keyframes cinematicEye {
+  0%   { transform: scale(1.12) translateY(0%); opacity: 1; }
+  45%  { transform: scale(1.08) translateY(-1%); opacity: 1; }
+  50%  { transform: scale(1.06) translateY(-1.5%); opacity: 0.88; }
+  55%  { transform: scale(1.08) translateY(-1%); opacity: 1; }
+  100% { transform: scale(1.12) translateY(0%); opacity: 1; }
+}
+.cinematic-eye {
+  animation: cinematicEye 8s ease-in-out infinite;
+}
+
+/* WIND — samuraye.jpg — wind blowing */
+@keyframes cinematicWind {
+  0%   { transform: scale(1.12) translateX(0%) skewX(0deg); }
+  25%  { transform: scale(1.08) translateX(-1.5%) skewX(0.3deg); }
+  50%  { transform: scale(1.05) translateX(-3%) skewX(0deg); }
+  75%  { transform: scale(1.08) translateX(-1.5%) skewX(-0.3deg); }
+  100% { transform: scale(1.12) translateX(0%) skewX(0deg); }
+}
+.cinematic-wind {
+  animation: cinematicWind 22s ease-in-out infinite;
+}
+
+/* SWIRL — sun.jpg — slow spiral */
+@keyframes cinematicSwirl {
+  0%   { transform: scale(1.15) rotate(0deg) translateX(0%); }
+  25%  { transform: scale(1.10) rotate(0.5deg) translateX(-1%); }
+  50%  { transform: scale(1.05) rotate(0deg) translateX(-2%); }
+  75%  { transform: scale(1.10) rotate(-0.5deg) translateX(-1%); }
+  100% { transform: scale(1.15) rotate(0deg) translateX(0%); }
+}
+.cinematic-swirl {
+  animation: cinematicSwirl 30s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+/* FLOAT — default gentle float */
+@keyframes cinematicFloat {
+  0%   { transform: scale(1.12) translateY(0%); }
+  50%  { transform: scale(1.06) translateY(-2%); }
+  100% { transform: scale(1.12) translateY(0%); }
+}
+.cinematic-float {
+  animation: cinematicFloat 20s ease-in-out infinite;
+}
+
+/* KING — king.jpg — scarf/cloth wave */
+@keyframes cinematicKing {
+  0%   { transform: scale(1.12) translateX(0%) translateY(0%) rotate(0deg); }
+  20%  { transform: scale(1.09) translateX(-1%) translateY(-0.5%) rotate(0.3deg); }
+  40%  { transform: scale(1.06) translateX(-2%) translateY(-1%) rotate(0deg); }
+  60%  { transform: scale(1.09) translateX(-1%) translateY(-0.5%) rotate(-0.3deg); }
+  80%  { transform: scale(1.10) translateX(-0.5%) translateY(0%) rotate(0.2deg); }
+  100% { transform: scale(1.12) translateX(0%) translateY(0%) rotate(0deg); }
+}
+.cinematic-king {
+  animation: cinematicKing 16s ease-in-out infinite;
+}

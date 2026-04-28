@@ -1,12 +1,12 @@
 'use client'
 import { motion } from 'framer-motion'
 import { ShieldCheck, Lock, Star } from 'lucide-react'
-import ParallaxBg from './ParallaxBg'
+import CinematicBg from './CinematicBg'
 
 export default function StatsSection() {
   return (
     <section style={{ position: 'relative', padding: '120px 0', overflow: 'hidden' }}>
-      <ParallaxBg src="/globe.jpg.jpeg" opacity={0.82} />
+      <CinematicBg src="/globe.jpg.jpeg" opacity={0.82} anim="swirl" />
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
         <motion.div initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1 }} style={{ textAlign: 'center', marginBottom: 64 }}>

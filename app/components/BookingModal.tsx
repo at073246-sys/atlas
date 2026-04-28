@@ -108,14 +108,12 @@ export default function BookingModal({ service, onClose }: Props) {
         status: 'confirmed'
       })
 
-      // Send Email via Formspree
-      await fetch(FORMSPREE_URL, {
+      // Send Email via API
+      await fetch('/api/notify', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          _subject: `🔔 New Booking — ${service.title} — ATLAS`,
-          _replyto: email,
-          type: 'NEW BOOKING',
+          type: 'BOOKING',
           client_name: name,
           client_phone: phone,
           client_email: email,

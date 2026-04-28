@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { ArrowUpRight, ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
 import BookingModal from './BookingModal'
-import ParallaxBg from './ParallaxBg'
+import CinematicBg from './CinematicBg'
 
 const services = [
   {
@@ -186,7 +186,7 @@ export default function ServicesGrid() {
   return (
     <section id="services" style={{ position: 'relative', padding: '120px 0', overflow: 'hidden' }}>
       {/* 3D Parallax Background */}
-      <ParallaxBg src="/book.jpg.jpeg" opacity={0.85} />
+      <CinematicBg src="/book.jpg.jpeg" opacity={0.85} anim="fall" />
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
         <motion.div initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1 }} style={{ textAlign: 'center', marginBottom: 64 }}>

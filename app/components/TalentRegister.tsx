@@ -5,7 +5,7 @@ import { CheckCircle, ArrowRight } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
-import Image from 'next/image'
+import CinematicBg from './CinematicBg'
 
 const FORMSPREE_URL = 'https://formspree.io/f/mqewwolv'
 const WHATSAPP_NUMBER = '917550124573'
@@ -104,13 +104,11 @@ export default function TalentRegister() {
         certification: form.certification, rate: form.rate, status: 'pending'
       })
 
-      await fetch(FORMSPREE_URL, {
+      await fetch('/api/notify', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          _subject: `🌟 New Talent Registration — ${finalCategory} — ATLAS`,
-          _replyto: form.email,
-          type: 'TALENT REGISTRATION',
+          type: 'TALENT',
           name: form.name, email: form.email, phone: form.phone,
           category: finalCategory, experience: form.experience,
           bio: form.bio, portfolio: form.portfolio || 'Not provided',
@@ -138,12 +136,7 @@ export default function TalentRegister() {
 
   return (
     <section id="join" style={{ position: 'relative', padding: '120px 0', overflow: 'hidden' }}>
-      {/* Cinematic Background */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <Image src="/samuraye.jpg.jpeg" alt="Join" fill style={{ objectFit: 'cover', objectPosition: 'center' }} quality={90} />
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,10,10,0.88)' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0A0A0A, transparent, #0A0A0A)' }} />
-      </div>
+      <CinematicBg src="/samuraye.jpg.jpeg" opacity={0.88} anim="wind" />
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
         {/* Header */}

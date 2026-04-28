@@ -1,7 +1,7 @@
 'use client'
 import { motion } from 'framer-motion'
 import { ShieldCheck, Lock, Star, Eye, Clock, CreditCard } from 'lucide-react'
-import ParallaxBg from './ParallaxBg'
+import CinematicBg from './CinematicBg'
 
 const trustPoints = [
   { icon: <ShieldCheck size={28} style={{ color: '#C9A84C' }} />, title: '100% Background Verified', desc: 'Every professional undergoes rigorous credential checks and background verification before joining.' },
@@ -21,7 +21,8 @@ const whyAtlas = [
 export default function TrustSection() {
   return (
     <section id="trust" style={{ position: 'relative', padding: '120px 0', overflow: 'hidden' }}>
-      <ParallaxBg src="/eye.jpg.jpeg" opacity={0.85} />
+      {/* eye.jpg — blink animation */}
+      <CinematicBg src="/eye.jpg.jpeg" opacity={0.85} anim="eye" />
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
         <motion.div initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1 }} style={{ textAlign: 'center', marginBottom: 64 }}>
@@ -32,7 +33,7 @@ export default function TrustSection() {
           </div>
           <h2 className="font-playfair gold-text" style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)', fontWeight: 900, marginBottom: 16 }}>Why Trust Us</h2>
           <p style={{ color: 'rgba(229,228,226,0.6)', fontSize: 16, maxWidth: 580, margin: '0 auto', lineHeight: 1.8 }}>
-            We built ATLAS on three principles — Transparency, Quality, and Results. No shortcuts. No compromises.
+            We built ATLAS on three principles — Transparency, Quality, and Results.
           </p>
         </motion.div>
 
@@ -55,9 +56,6 @@ export default function TrustSection() {
           <h3 className="font-playfair" style={{ fontSize: 28, fontWeight: 700, color: 'white', marginBottom: 8 }}>
             Why <span className="gold-text">ATLAS</span> Exists
           </h3>
-          <p style={{ color: 'rgba(229,228,226,0.4)', fontSize: 14, maxWidth: 500, margin: '0 auto' }}>
-            We are a growing platform. Here is what we stand for.
-          </p>
         </motion.div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20 }}>
