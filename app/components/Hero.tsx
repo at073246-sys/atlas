@@ -6,6 +6,7 @@ import Image from 'next/image'
 import dynamic from 'next/dynamic'
 
 const Globe3D = dynamic(() => import('./Globe3D'), { ssr: false })
+const HeroParticles = dynamic(() => import('./HeroParticles'), { ssr: false })
 
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null)
@@ -24,45 +25,38 @@ export default function Hero() {
 
   useEffect(() => {
     setMounted(true)
-    const checkMobile = () => setIsMobile(window.innerWidth < 768)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
     const handleMouse = (e: MouseEvent) => {
       if (window.innerWidth < 768) return
-      mouseX.set((e.clientX / window.innerWidth - 0.5) * 20)
-      mouseY.set((e.clientY / window.innerHeight - 0.5) * 20)
+      mouseX.set((e.clientX / window.innerWidth - 0.5) * 18)
+      mouseY.set((e.clientY / window.innerHeight - 0.5) * 18)
     }
     window.addEventListener('mousemove', handleMouse)
     return () => {
       window.removeEventListener('mousemove', handleMouse)
-      window.removeEventListener('resize', checkMobile)
+      window.removeEventListener('resize', check)
     }
   }, [mouseX, mouseY])
 
   if (!mounted) return null
 
   return (
-    <section ref={ref} style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+    <section ref={ref} style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
 
-      {/* Cinematic Background */}
+      {/* BG Image — Parallax */}
       <motion.div style={{ position: 'absolute', inset: 0, zIndex: 0, y: bgY, scale: bgScale }}>
         <Image src="/sun.jpg.jpeg" alt="ATLAS" fill style={{ objectFit: 'cover', objectPosition: 'center' }} priority quality={100} />
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,10,10,0.72)' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(10,10,10,0.6), transparent, #0A0A0A)' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.08), transparent 70%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(10,10,10,0.6), transparent 40%, #0A0A0A)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.07), transparent 70%)' }} />
       </motion.div>
 
-      {/* Particles */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none', overflow: 'hidden' }}>
-        {[...Array(12)].map((_, i) => (
-          <motion.div key={i}
-            style={{ position: 'absolute', width: 3, height: 3, borderRadius: '50%', background: '#C9A84C', left: `${10 + i * 8}%`, top: `${20 + (i % 5) * 15}%` }}
-            animate={{ y: [0, -20, 0], opacity: [0.1, 0.5, 0.1] }}
-            transition={{ duration: 3 + i * 0.5, repeat: Infinity, delay: i * 0.3 }}
-          />
-        ))}
-      </div>
+      {/* Gold Particles */}
+      <Suspense fallback={null}>
+        <HeroParticles />
+      </Suspense>
 
       {/* Nav */}
       <motion.div
@@ -85,13 +79,14 @@ export default function Hero() {
             ))}
           </div>
         )}
-        <span style={{ fontSize: 10, letterSpacing: '0.2em', color: 'rgba(229,228,226,0.25)', textTransform: 'uppercase', fontWeight: 300, display: isMobile ? 'none' : 'block' }}>Private. Verified. Elite.</span>
+        <span style={{ fontSize: 10, letterSpacing: '0.2em', color: 'rgba(229,228,226,0.25)', textTransform: 'uppercase', display: isMobile ? 'none' : 'block' }}>Private. Verified. Elite.</span>
       </motion.div>
 
       {/* Main Content */}
-      <motion.div style={{ opacity: contentOpacity, position: 'relative', zIndex: 10, width: '100%', maxWidth: 1280, margin: '0 auto', padding: isMobile ? '80px 16px 40px' : '0 48px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: isMobile ? 24 : 40 }}>
-
-        {/* Left Text */}
+      <motion.div
+        style={{ opacity: contentOpacity, position: 'relative', zIndex: 10, width: '100%', maxWidth: 1280, margin: '0 auto', padding: isMobile ? '80px 20px 40px' : '0 48px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: isMobile ? 24 : 48 }}
+      >
+        {/* Left */}
         <div style={{ flex: 1, textAlign: isMobile ? 'center' : 'left' }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -111,9 +106,9 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, delay: 0.5 }}
             className="font-playfair"
-            style={{ fontSize: isMobile ? 'clamp(4rem, 22vw, 8rem)' : 'clamp(5rem, 12vw, 11rem)', fontWeight: 900, lineHeight: 0.9, marginBottom: 20 }}
+            style={{ fontSize: isMobile ? 'clamp(4rem,22vw,8rem)' : 'clamp(5rem,12vw,11rem)', fontWeight: 900, lineHeight: 0.9, marginBottom: 20 }}
           >
-            <span className="gold-text">ATLAS</span>
+            <span className="gold-text" style={{ textShadow: '0 0 80px rgba(201,168,76,0.15)' }}>ATLAS</span>
           </motion.h1>
 
           <motion.p
@@ -121,7 +116,7 @@ export default function Hero() {
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.9 }}
             className="font-cormorant"
-            style={{ fontSize: isMobile ? 18 : 24, fontWeight: 300, color: 'rgba(229,228,226,0.6)', letterSpacing: '0.2em', marginBottom: 32, fontStyle: 'italic' }}
+            style={{ fontSize: isMobile ? 18 : 22, fontWeight: 300, color: 'rgba(229,228,226,0.6)', letterSpacing: '0.2em', marginBottom: 32, fontStyle: 'italic' }}
           >
             &ldquo;Your World, Our Promise.&rdquo;
           </motion.p>
@@ -133,12 +128,12 @@ export default function Hero() {
             style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 12, justifyContent: isMobile ? 'center' : 'flex-start', alignItems: 'center', marginBottom: 24 }}
           >
             <a href="#services" className="gold-button">
-              Explore Our World
-              <ArrowRight size={16} />
+              Explore Our World <ArrowRight size={15} />
             </a>
-            <a href="#join" style={{ padding: '14px 28px', border: '1px solid rgba(201,168,76,0.3)', color: '#C9A84C', fontSize: 12, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', transition: 'all 0.4s', backdropFilter: 'blur(8px)', whiteSpace: 'nowrap' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(201,168,76,0.1)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            <a href="#join"
+              style={{ padding: '14px 28px', border: '1px solid rgba(201,168,76,0.3)', color: '#C9A84C', fontSize: 12, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', transition: 'all 0.4s', backdropFilter: 'blur(8px)' }}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(201,168,76,0.08)')}
+              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
             >
               Join As Talent
             </a>
@@ -165,8 +160,8 @@ export default function Hero() {
           transition={{ duration: 1.5, delay: 0.6, type: 'spring' }}
           style={{ flex: 1, width: '100%', ...(isMobile ? {} : { x: springX, y: springY }) }}
         >
-          <div style={{ position: 'relative', width: '100%', height: isMobile ? 280 : 540 }}>
-            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.1), transparent 70%)', borderRadius: '50%' }} />
+          <div style={{ position: 'relative', width: '100%', height: isMobile ? 280 : 560 }}>
+            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.1), transparent 70%)' }} />
             <Suspense fallback={null}>
               <Globe3D />
             </Suspense>
