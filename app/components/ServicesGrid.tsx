@@ -5,7 +5,17 @@ import { useState } from 'react'
 import BookingModal from './BookingModal'
 import CinematicBg from './CinematicBg'
 
-const services = [
+type Service = {
+  icon: string
+  title: string
+  desc: string
+  fullDesc?: string
+  pricing: { label: string; price: string }[]
+  note?: string
+  notice?: string
+}
+
+const services: Service[] = [
   {
     icon: '📅',
     title: 'Daily Planner',
@@ -50,12 +60,14 @@ const services = [
   {
     icon: '✂️',
     title: 'Personal Editor',
-    desc: 'Every word refined. Every edit purposeful.',
-    fullDesc: `This Editor's journey is one of quiet dedication and unwavering focus. With a deep passion for language and a disciplined approach to their craft, they refine every word with care. Because the difference between good and great often lies in a single, perfectly chosen word.`,
+    desc: 'Video & Photo editing — professional, precise, powerful.',
+    fullDesc: `This Editor's journey is one of quiet dedication and unwavering focus. Whether it is video production or photo enhancement, every frame is crafted with care and every pixel refined with purpose. From raw footage to cinematic excellence, from ordinary photos to stunning visuals — this is editing at its finest.`,
     pricing: [
-      { label: '1 Work', price: '₹1,199' },
-      { label: '5 Works', price: '₹5,599' },
+      { label: '🎬 Video — 1 Work', price: '₹1,199' },
+      { label: '🎬 Video — 5 Works', price: '₹5,599' },
+      { label: '📸 Photo — 1 Work', price: '₹249' },
     ],
+    notice: '⚡ MINIMUM PRICE — FINAL PRICE MAY VARY BASED ON YOUR WORK COMPLEXITY',
   },
   {
     icon: '🗣️',
@@ -170,6 +182,14 @@ function ServiceCard({ service, index, onBook }: {
         )}
 
         {service.note && <p style={{ fontSize: 10, color: 'rgba(201,168,76,0.5)', fontStyle: 'italic', marginBottom: 12 }}>{service.note}</p>}
+
+        {'notice' in service && service.notice && (
+          <div style={{ marginBottom: 14, padding: '10px 14px', background: 'linear-gradient(135deg, rgba(201,168,76,0.1), rgba(201,168,76,0.05))', border: '1px solid rgba(201,168,76,0.35)', borderRadius: 10 }}>
+            <p style={{ fontSize: 13, fontWeight: 800, color: '#F0D080', letterSpacing: '0.04em', lineHeight: 1.5, textTransform: 'uppercase' }}>
+              {service.notice as string}
+            </p>
+          </div>
+        )}
 
         <motion.button onClick={() => onBook(service)} whileHover={{ x: 5 }}
           style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, letterSpacing: '0.15em', color: '#C9A84C', textTransform: 'uppercase', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
