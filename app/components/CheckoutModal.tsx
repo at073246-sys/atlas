@@ -23,8 +23,27 @@ export default function CheckoutModal({
   const WHATSAPP_NUMBER = '917550124573'
   const UPI_ID = '7550124573@fam'
 
-  const handleConfirmPaid = () => {
+  const handleConfirmPaid = async () => {
     const msg = `${whatsappMsg}%0A%0APlan: ${planName}%0ADuration: ${duration}%0APrice: ${price}%0A%0A*I have completed the payment via UPI. Please confirm my booking.*`
+    
+    // Send Email Notification
+    try {
+      await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'PAYMENT',
+          plan_name: planName,
+          duration: duration,
+          amount: price,
+          status: 'Payment Reported by User',
+          whatsapp_message_sent: 'Yes'
+        }),
+      })
+    } catch (err) {
+      console.error('Payment notification error:', err)
+    }
+
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
     onClose()
   }

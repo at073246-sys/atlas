@@ -104,15 +104,20 @@ export default function TalentRegister() {
         certification: form.certification, rate: form.rate, status: 'pending'
       })
 
-      await fetch('/api/notify', {
+      await fetch('/api/email', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'TALENT',
-          name: form.name, email: form.email, phone: form.phone,
-          category: finalCategory, experience: form.experience,
-          bio: form.bio, portfolio: form.portfolio || 'Not provided',
-          certification: form.certification, rate: form.rate,
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          category: finalCategory,
+          experience: form.experience,
+          bio: form.bio,
+          portfolio: form.portfolio || 'Not provided',
+          certification: form.certification,
+          rate: form.rate,
         }),
       })
 
